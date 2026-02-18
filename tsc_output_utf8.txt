@@ -1,0 +1,152 @@
+﻿node_modules/@tanstack/query-core/build/legacy/focusManager.d.ts(6,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+node_modules/@tanstack/query-core/build/legacy/hydration-BlEVG2Lp.d.ts(9,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+node_modules/@tanstack/query-core/build/legacy/hydration-BlEVG2Lp.d.ts(115,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+node_modules/@tanstack/query-core/build/legacy/hydration-BlEVG2Lp.d.ts(156,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+node_modules/@tanstack/query-core/build/legacy/hydration-BlEVG2Lp.d.ts(205,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+node_modules/@tanstack/query-core/build/legacy/hydration-BlEVG2Lp.d.ts(266,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+node_modules/@tanstack/query-core/build/legacy/hydration-BlEVG2Lp.d.ts(427,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+node_modules/@tanstack/query-core/build/legacy/hydration-BlEVG2Lp.d.ts(444,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+node_modules/@tanstack/query-core/build/legacy/onlineManager.d.ts(6,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+node_modules/@tanstack/query-core/build/legacy/queriesObserver.d.ts(11,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+node_modules/@tanstack/query-core/build/legacy/removable.d.ts(2,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+node_modules/@tanstack/query-core/build/legacy/timeoutManager.d.ts(41,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+src/lib/supabase.ts(3,21): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', or 'nodenext'.
+src/lib/supabase.ts(3,33): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/lib/supabase.ts(4,21): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', or 'nodenext'.
+src/lib/supabase.ts(4,33): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/pages/PedagogueDashboard.tsx(4,25): error TS6142: Module '../contexts/AuthContext' was resolved to 'C:/Users/mgcin/OneDrive/├ürea de Trabalho/projeto novo/guardian-flow/src/contexts/AuthContext.tsx', but '--jsx' is not set.
+src/pages/PedagogueDashboard.tsx(5,26): error TS6142: Module '../components/dashboard/StatCard' was resolved to 'C:/Users/mgcin/OneDrive/├ürea de Trabalho/projeto novo/guardian-flow/src/components/dashboard/StatCard.tsx', but '--jsx' is not set.
+src/pages/PedagogueDashboard.tsx(6,35): error TS6142: Module '../components/dashboard/PedagogicalAgenda' was resolved to 'C:/Users/mgcin/OneDrive/├ürea de Trabalho/projeto novo/guardian-flow/src/components/dashboard/PedagogicalAgenda.tsx', but '--jsx' is not set.
+src/pages/PedagogueDashboard.tsx(9,8): error TS1259: Module '"C:/Users/mgcin/OneDrive/\u00C1rea de Trabalho/projeto novo/guardian-flow/node_modules/clsx/clsx"' can only be default-imported using the 'esModuleInterop' flag
+src/pages/PedagogueDashboard.tsx(105,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(106,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(107,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(113,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(115,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(116,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(117,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(118,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(122,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(123,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(130,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(140,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(141,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(145,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(149,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(157,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(158,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(159,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(163,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(164,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(165,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(166,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(167,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(172,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(174,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(179,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(180,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(181,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(186,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(187,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(188,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(189,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(193,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(194,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(195,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(197,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(213,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(214,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(215,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(216,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(217,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(225,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(226,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(227,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(236,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(237,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(238,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(247,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(248,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(263,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(265,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(266,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(272,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(278,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(285,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(294,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(296,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(297,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(298,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(302,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(304,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(306,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(308,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(309,49): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(310,53): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(311,57): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(312,57): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(316,53): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(320,49): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(321,49): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(328,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(329,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(335,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(337,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(338,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(339,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(340,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(342,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(344,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(347,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(348,49): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(349,53): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(350,53): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(352,49): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(353,53): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(354,53): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(363,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(364,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(365,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(368,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(370,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(373,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(374,49): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(375,49): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(387,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(388,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(389,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(390,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(391,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(399,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(400,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(401,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(405,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(407,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(408,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(409,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(412,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(413,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(414,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(417,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(418,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(419,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(420,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(427,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(441,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(442,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(443,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(444,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(445,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(449,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(451,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(452,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(453,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(456,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(459,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(463,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(464,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(468,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(469,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(470,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(482,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PedagogueDashboard.tsx(483,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.

@@ -126,13 +126,6 @@ export function PsychologistAgenda() {
                         </button>
                     </div>
                 </div>
-                <button
-                    onClick={() => { setEventToEdit(null); setIsEventModalOpen(true); }}
-                    className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
-                >
-                    <span className="material-symbols-outlined">add</span>
-                    Agendar Sessão
-                </button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -298,6 +291,6 @@ export function PsychologistAgenda() {
                 selectedDate={selectedDate}
                 eventToEdit={eventToEdit}
             />
-        </div>
+        </div >
     );
 }

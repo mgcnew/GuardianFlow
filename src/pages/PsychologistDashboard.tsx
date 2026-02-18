@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { StatCard } from '../components/dashboard/StatCard';
 import { PsychologistAgenda } from '../components/dashboard/PsychologistAgenda';
+import { PsychologicalEntryModal } from '../components/dashboard/PsychologicalEntryModal';
 import clsx from 'clsx';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -12,20 +13,10 @@ export function PsychologistDashboard() {
     const { profile } = useAuth();
     const queryClient = useQueryClient();
     const [activeTab, setActiveTab] = useState<'summary' | 'patients' | 'history' | 'agenda' | 'analysis'>('summary');
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [selectedChildId, setSelectedChildId] = useState('');
+    const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
+    const [selectedChildId, setSelectedChildId] = useState<string | undefined>();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterRisk, setFilterRisk] = useState('all');
-    const [form, setForm] = useState({
-        title: '',
-        content: '',
-        urgency: 'low' as 'low' | 'medium' | 'high',
-        next_appointment: '',
-        mood: 3, // 1-5 scale
-        sleep: 'normal',
-        appetite: 'normal',
-        indicators: [] as string[]
-    });
 
     const { data: psychData, isLoading } = useQuery({
         queryKey: ['psychDashboard', profile?.organization_id],
@@ -69,40 +60,6 @@ export function PsychologistDashboard() {
             };
         },
         enabled: !!profile?.organization_id
-    });
-
-    const createEvolution = useMutation({
-        mutationFn: async () => {
-            if (!profile || !selectedChildId) throw new Error('Selecione uma criança e certifique-se de estar logado');
-
-            const { error } = await supabase.from('child_entries').insert({
-                child_id: selectedChildId,
-                organization_id: profile.organization_id,
-                author_id: profile.id,
-                type: 'psychological',
-                title: form.title,
-                content: form.content,
-                urgency: form.urgency,
-                next_appointment: form.next_appointment || null,
-                metadata: {
-                    mood: form.mood,
-                    sleep: form.sleep,
-                    appetite: form.appetite,
-                    indicators: form.indicators
-                }
-            });
-
-            if (error) throw error;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['psychDashboard', profile?.organization_id] });
-            queryClient.invalidateQueries({ queryKey: ['child-appointments'] });
-            setForm({ title: '', content: '', urgency: 'low', next_appointment: '', mood: 3, sleep: 'normal', appetite: 'normal', indicators: [] });
-            setSelectedChildId('');
-            setIsFormOpen(false);
-            alert('Evolução registrada com sucesso!');
-        },
-        onError: (err: any) => alert('Erro ao salvar: ' + err.message),
     });
 
     const filteredChildren = psychData?.allChildren.filter(child => {
@@ -156,195 +113,15 @@ export function PsychologistDashboard() {
                         ))}
                     </div>
                     <button
-                        onClick={() => setIsFormOpen(!isFormOpen)}
+                        onClick={() => { setSelectedChildId(undefined); setIsEntryModalOpen(true); }}
                         className="px-4 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
                     >
-                        <span className="material-symbols-outlined text-lg">{isFormOpen ? 'close' : 'clinical_notes'}</span>
-                        {isFormOpen ? 'Fechar' : 'Nova Sessão'}
+                        <span className="material-symbols-outlined text-lg">clinical_notes</span>
+                        Nova Sessão
                     </button>
                 </div>
             </div>
 
-            {/* Evolution Form */}
-            {isFormOpen && (
-                <div className="bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 rounded-2xl p-6 shadow-xl animate-in slide-in-from-top-4 duration-300">
-                    <h2 className="text-lg font-bold text-text-main dark:text-white mb-6 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-primary">history_edu</span>
-                        Registrar Sessão Clínica
-                    </h2>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {/* Col 1: Patient & Meta */}
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-xs font-bold text-text-secondary mb-1.5 block uppercase tracking-wider">Acolhido / Paciente</label>
-                                <select
-                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
-                                    value={selectedChildId}
-                                    onChange={(e) => setSelectedChildId(e.target.value)}
-                                >
-                                    <option value="">Selecione um paciente...</option>
-                                    {psychData?.allChildren.map(child => (
-                                        <option key={child.id} value={child.id}>{child.full_name}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="text-xs font-bold text-text-secondary mb-1.5 block uppercase tracking-wider">Título do Registro</label>
-                                <input
-                                    type="text"
-                                    placeholder="Ex: Sessão Semanal, Avaliação Inicial..."
-                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
-                                    value={form.title}
-                                    onChange={(e) => setForm({ ...form, title: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-xs font-bold text-text-secondary mb-1.5 block uppercase tracking-wider">Prioridade</label>
-                                    <div className="flex gap-2">
-                                        {(['low', 'medium', 'high'] as const).map((u) => (
-                                            <button
-                                                key={u}
-                                                type="button"
-                                                onClick={() => setForm({ ...form, urgency: u })}
-                                                className={clsx(
-                                                    "flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase border transition-all",
-                                                    form.urgency === u
-                                                        ? u === 'high' ? "bg-red-50 border-red-200 text-red-600" : u === 'medium' ? "bg-orange-50 border-orange-200 text-orange-600" : "bg-blue-50 border-blue-200 text-blue-600"
-                                                        : "bg-white dark:bg-gray-800 border-border-light dark:border-gray-700 text-text-secondary"
-                                                )}
-                                            >
-                                                {u === 'high' ? 'Crítico' : u === 'medium' ? 'Médio' : 'Baixo'}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-text-secondary mb-1.5 block uppercase tracking-wider">Humor (1-5)</label>
-                                    <div className="flex items-center gap-1.5 h-[34px] px-2 bg-gray-50 dark:bg-gray-900 rounded-xl border border-border-light dark:border-gray-700">
-                                        {[1, 2, 3, 4, 5].map(v => (
-                                            <button
-                                                key={v}
-                                                type="button"
-                                                onClick={() => setForm({ ...form, mood: v })}
-                                                className={clsx(
-                                                    "size-5 rounded-full text-[10px] font-bold transition-all",
-                                                    form.mood === v ? "bg-primary text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500"
-                                                )}
-                                            >
-                                                {v}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Col 2: Clinical Details */}
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-xs font-bold text-text-secondary mb-1.5 block uppercase tracking-wider">Qualidade do Sono</label>
-                                    <select
-                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-border-light dark:border-gray-700 rounded-xl text-sm"
-                                        value={form.sleep}
-                                        onChange={(e) => setForm({ ...form, sleep: e.target.value })}
-                                    >
-                                        <option value="normal">Normal</option>
-                                        <option value="agitated">Agitado</option>
-                                        <option value="insomnia">Insônia</option>
-                                        <option value="excessive">Hipersônia</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-text-secondary mb-1.5 block uppercase tracking-wider">Apetite</label>
-                                    <select
-                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-border-light dark:border-gray-700 rounded-xl text-sm"
-                                        value={form.appetite}
-                                        onChange={(e) => setForm({ ...form, appetite: e.target.value })}
-                                    >
-                                        <option value="normal">Normal</option>
-                                        <option value="reduced">Reduzido</option>
-                                        <option value="increased">Aumentado</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="text-xs font-bold text-text-secondary mb-1.5 block uppercase tracking-wider">Sinais Clínicos Observados</label>
-                                <div className="grid grid-cols-2 gap-2">
-                                    {[
-                                        { id: 'anxiety', label: 'Ansiedade' },
-                                        { id: 'aggressiveness', label: 'Agressividade' },
-                                        { id: 'isolation', label: 'Isolamento' },
-                                        { id: 'cooperation', label: 'Cooperação' },
-                                        { id: 'stability', label: 'Estabilidade' },
-                                        { id: 'regression', label: 'Regressão' }
-                                    ].map(indicator => (
-                                        <label key={indicator.id} className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors border border-transparent">
-                                            <input
-                                                type="checkbox"
-                                                className="size-3.5 rounded border-gray-300 text-primary focus:ring-primary"
-                                                checked={form.indicators.includes(indicator.id)}
-                                                onChange={(e) => {
-                                                    const newIndicators = e.target.checked
-                                                        ? [...form.indicators, indicator.id]
-                                                        : form.indicators.filter(i => i !== indicator.id);
-                                                    setForm({ ...form, indicators: newIndicators });
-                                                }}
-                                            />
-                                            <span className="text-[10px] font-bold text-text-main dark:text-gray-300">{indicator.label}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Col 3: Content */}
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-xs font-bold text-text-secondary mb-1.5 block uppercase tracking-wider">Registro da Evolução</label>
-                                <textarea
-                                    rows={8}
-                                    placeholder="Anamnese, intervenções realizadas, resposta do paciente, plano terapêutico..."
-                                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm resize-none"
-                                    value={form.content}
-                                    onChange={(e) => setForm({ ...form, content: e.target.value })}
-                                />
-                            </div>
-                            <div className="flex flex-col gap-4">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <label className="text-xs font-bold text-text-secondary uppercase">Retorno:</label>
-                                        <input
-                                            type="date"
-                                            className="px-3 py-1 bg-gray-50 dark:bg-gray-900 border border-border-light dark:border-gray-700 rounded-lg text-xs"
-                                            value={form.next_appointment}
-                                            onChange={(e) => setForm({ ...form, next_appointment: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <input type="checkbox" id="urgent_alert" className="size-4 rounded border-gray-300 text-primary focus:ring-primary" />
-                                        <label htmlFor="urgent_alert" className="text-[10px] font-black text-red-600 uppercase tracking-tighter">Notificar Urgência</label>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={() => createEvolution.mutate()}
-                                    disabled={!selectedChildId || !form.title || !form.content || createEvolution.isPending}
-                                    className="w-full py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
-                                >
-                                    {createEvolution.isPending ? 'Salvando...' : 'Salvar Registro Clínico'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Content Based on Active Tab */}
             {activeTab === 'summary' && (
                 <>
                     {/* Stats */}
@@ -515,7 +292,7 @@ export function PsychologistDashboard() {
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                         <button
-                                            onClick={() => { setSelectedChildId(child.id); setIsFormOpen(true); }}
+                                            onClick={() => { setSelectedChildId(child.id); setIsEntryModalOpen(true); }}
                                             className="py-2.5 bg-primary/5 text-primary text-[10px] font-black uppercase rounded-xl hover:bg-primary transition-all hover:text-white"
                                         >
                                             Registrar Sessão
@@ -637,6 +414,12 @@ export function PsychologistDashboard() {
                     <PsychologistAgenda />
                 </div>
             )}
+
+            <PsychologicalEntryModal
+                isOpen={isEntryModalOpen}
+                onClose={() => { setIsEntryModalOpen(false); setSelectedChildId(undefined); }}
+                initialChildId={selectedChildId}
+            />
         </div>
     );
 }
