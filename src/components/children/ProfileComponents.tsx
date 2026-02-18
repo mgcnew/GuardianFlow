@@ -4,8 +4,8 @@ import { useAuth } from '../../contexts/AuthContext';
 
 interface ProfileHeaderProps {
     child: any;
-    activeTab: 'resumo' | 'historico' | 'saude' | 'documentos' | 'diario' | 'atendimentos' | 'evolucao';
-    setActiveTab: (tab: 'resumo' | 'historico' | 'saude' | 'documentos' | 'diario' | 'atendimentos' | 'evolucao') => void;
+    activeTab: 'resumo' | 'historico' | 'saude' | 'documentos' | 'diario' | 'evolucao';
+    setActiveTab: (tab: 'resumo' | 'historico' | 'saude' | 'documentos' | 'diario' | 'evolucao') => void;
     onEdit: () => void;
     onPrintPIA: () => void;
 }
@@ -21,7 +21,6 @@ export function ProfileHeader({ child, activeTab, setActiveTab, onEdit, onPrintP
     const tabs = [
         { id: 'resumo', label: 'Resumo', roles: ['saas_admin', 'admin', 'org_admin', 'technical', 'technician', 'pedagogue', 'educator', 'operational'] },
         { id: 'diario', label: 'Diário', roles: ['saas_admin', 'admin', 'org_admin', 'technical', 'technician', 'pedagogue', 'educator', 'operational'] },
-        { id: 'atendimentos', label: 'Atendimentos', roles: ['saas_admin', 'admin', 'org_admin', 'technical', 'technician', 'pedagogue'] },
         { id: 'evolucao', label: 'Evolução', roles: ['saas_admin', 'admin', 'org_admin', 'technical', 'technician', 'pedagogue'] },
         { id: 'historico', label: 'Histórico', roles: ['saas_admin', 'admin', 'org_admin', 'technical', 'technician', 'pedagogue', 'educator', 'operational'] },
         { id: 'saude', label: 'Saúde', roles: ['saas_admin', 'admin', 'org_admin', 'technical', 'technician', 'pedagogue', 'educator'] },
@@ -31,7 +30,7 @@ export function ProfileHeader({ child, activeTab, setActiveTab, onEdit, onPrintP
     const tabIcons: Record<string, string> = {
         resumo: 'person',
         diario: 'edit_note',
-        atendimentos: 'medical_services',
+        atendimentos: 'diversity_3',
         evolucao: 'trending_up',
         historico: 'history',
         saude: 'health_and_safety',

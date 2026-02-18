@@ -14,12 +14,11 @@ import { ChildHistoryTab } from '../components/children/ChildHistoryTab';
 import { EditChildModal } from '../components/children/EditChildModal';
 import { PIADocument } from '../components/documents/PIADocument';
 import { DiaryTab } from '../components/children/DiaryTab';
-import { AppointmentsTab } from '../components/children/AppointmentsTab';
 import { EvolutionTab } from '../components/children/EvolutionTab';
 import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
 
-type ProfileTab = 'resumo' | 'historico' | 'saude' | 'documentos' | 'diario' | 'atendimentos' | 'evolucao';
+type ProfileTab = 'resumo' | 'historico' | 'saude' | 'documentos' | 'diario' | 'evolucao';
 
 import { useAuth } from '../contexts/AuthContext';
 
@@ -99,7 +98,6 @@ export function ChildProfile() {
                     {activeTab === 'saude' && (hasRole(['saas_admin', 'admin', 'technical', 'educator']) ? <HealthOverview child={child} /> : <p className="text-red-500">Acesso Negado</p>)}
                     {activeTab === 'documentos' && (hasRole(['saas_admin', 'admin', 'technical']) ? <RecentDocuments /> : <p className="text-red-500">Acesso Negado</p>)}
                     {activeTab === 'diario' && <DiaryTab childId={child.id} />}
-                    {activeTab === 'atendimentos' && (hasRole(['saas_admin', 'admin', 'technical']) ? <AppointmentsTab childId={child.id} /> : <p className="text-red-500">Acesso Negado</p>)}
                     {activeTab === 'evolucao' && (hasRole(['saas_admin', 'admin', 'technical']) ? <EvolutionTab childId={child.id} /> : <p className="text-red-500">Acesso Negado</p>)}
                 </div>
 

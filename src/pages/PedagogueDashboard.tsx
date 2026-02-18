@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { StatCard } from '../components/dashboard/StatCard';
@@ -7,6 +8,14 @@ import { ptBR } from 'date-fns/locale';
 
 export function PedagogueDashboard() {
     const { profile } = useAuth();
+    const queryClient = useQueryClient();
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [selectedChildId, setSelectedChildId] = useState('');
+    const [form, setForm] = useState({
+        title: '',
+        content: '',
+        next_appointment: '',
+    });
 
     const { data: pedagogueData, isLoading } = useQuery({
         queryKey: ['pedagogueDashboard', profile?.organization_id],
@@ -25,7 +34,7 @@ export function PedagogueDashboard() {
                 .eq('organization_id', profile.organization_id)
                 .eq('type', 'pedagogical')
                 .order('created_at', { ascending: false })
-                .limit(5);
+                .limit(10);
 
             const { data: schoolEvents } = await supabase
                 .from('calendar_events')
@@ -43,12 +52,39 @@ export function PedagogueDashboard() {
                     recentActivities: recentEntries?.length || 0,
                     eventsThisWeek: schoolEvents?.length || 0
                 },
+                allChildren: children || [],
                 recentEntries: recentEntries || [],
                 schoolEvents: schoolEvents || [],
                 schoolingOverview: children?.slice(0, 5) || []
             };
         },
         enabled: !!profile?.organization_id
+    });
+
+    const createActivity = useMutation({
+        mutationFn: async () => {
+            if (!profile || !selectedChildId) throw new Error('Selecione uma criança e certifique-se de estar logado');
+
+            const { error } = await supabase.from('child_entries').insert({
+                child_id: selectedChildId,
+                organization_id: profile.organization_id,
+                author_id: profile.id,
+                type: 'pedagogical',
+                title: form.title,
+                content: form.content,
+                next_appointment: form.next_appointment || null,
+            });
+
+            if (error) throw error;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['pedagogueDashboard', profile?.organization_id] });
+            setForm({ title: '', content: '', next_appointment: '' });
+            setSelectedChildId('');
+            setIsFormOpen(false);
+            alert('Registro pedagógico salvo com sucesso!');
+        },
+        onError: (err: any) => alert('Erro ao salvar: ' + err.message),
     });
 
     if (isLoading) {
@@ -61,7 +97,7 @@ export function PedagogueDashboard() {
     }
 
     return (
-        <div className="flex flex-col gap-6 animate-in fade-in duration-400">
+        <div className="flex flex-col gap-6">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -75,12 +111,94 @@ export function PedagogueDashboard() {
                         <span className="material-symbols-outlined text-lg">school</span>
                         Frequência Escolar
                     </button>
-                    <button className="px-4 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20">
-                        <span className="material-symbols-outlined text-lg">add</span>
-                        Nova Atividade
+                    <button
+                        onClick={() => setIsFormOpen(!isFormOpen)}
+                        className="px-4 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
+                    >
+                        <span className="material-symbols-outlined text-lg">{isFormOpen ? 'close' : 'add'}</span>
+                        {isFormOpen ? 'Fechar Form' : 'Nova Atividade'}
                     </button>
                 </div>
             </div>
+
+            {/* Pedagogical Form */}
+            {isFormOpen && (
+                <div className="bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 rounded-2xl p-6 shadow-xl animate-in slide-in-from-top-4 duration-300">
+                    <h2 className="text-lg font-bold text-text-main dark:text-white mb-6 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-primary">menu_book</span>
+                        Novo Registro Pedagógico
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-xs font-bold text-text-secondary mb-1.5 block uppercase tracking-wider">Acolhido</label>
+                                <select
+                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                                    value={selectedChildId}
+                                    onChange={(e) => setSelectedChildId(e.target.value)}
+                                >
+                                    <option value="">Selecione um acolhido...</option>
+                                    {pedagogueData?.allChildren.map(child => (
+                                        <option key={child.id} value={child.id}>{child.full_name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="text-xs font-bold text-text-secondary mb-1.5 block uppercase tracking-wider">Atividade / Objetivo</label>
+                                <input
+                                    type="text"
+                                    placeholder="Ex: Reforço escolar, Atividade lúdica..."
+                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                                    value={form.title}
+                                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-xs font-bold text-text-secondary mb-1.5 block uppercase tracking-wider">Próxima Atividade / Retorno</label>
+                                <input
+                                    type="date"
+                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                                    value={form.next_appointment}
+                                    onChange={(e) => setForm({ ...form, next_appointment: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="text-xs font-bold text-text-secondary mb-1.5 block uppercase tracking-wider">Desenvolvimento / Observações</label>
+                            <textarea
+                                rows={8}
+                                placeholder="Descreva o desempenho escolar, engajamento na atividade e pontos de evolução..."
+                                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm resize-none"
+                                value={form.content}
+                                onChange={(e) => setForm({ ...form, content: e.target.value })}
+                            />
+                            <div className="mt-4 flex justify-end">
+                                <button
+                                    onClick={() => createActivity.mutate()}
+                                    disabled={!selectedChildId || !form.title || !form.content || createActivity.isPending}
+                                    className="px-8 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:shadow-none flex items-center gap-2"
+                                >
+                                    {createActivity.isPending ? (
+                                        <>
+                                            <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                            Salvando...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="material-symbols-outlined text-lg">save</span>
+                                            Salvar Atividade
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -134,16 +252,17 @@ export function PedagogueDashboard() {
                                     <div key={entry.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                         <div className="flex justify-between items-start mb-2">
                                             <div className="flex items-center gap-2">
-                                                <span className="font-bold text-text-main dark:text-white">{entry.children?.full_name}</span>
-                                                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-100 text-green-700">
+                                                <span className="text-xs font-bold text-text-main dark:text-white uppercase">{entry.children?.full_name}</span>
+                                                <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-green-100 text-green-700">
                                                     Desenvolvimento
                                                 </span>
                                             </div>
-                                            <span className="text-xs text-text-secondary dark:text-gray-500">
+                                            <span className="text-[10px] font-bold text-text-secondary dark:text-gray-500 uppercase">
                                                 {format(new Date(entry.created_at), "dd 'de' MMM, HH:mm", { locale: ptBR })}
                                             </span>
                                         </div>
-                                        <p className="text-sm text-text-secondary dark:text-gray-400 line-clamp-2">
+                                        <h4 className="text-sm font-bold text-text-main dark:text-gray-100 mb-1">{entry.title}</h4>
+                                        <p className="text-sm text-text-secondary dark:text-gray-400 line-clamp-3 leading-relaxed">
                                             {entry.content}
                                         </p>
                                     </div>

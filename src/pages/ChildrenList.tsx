@@ -206,7 +206,7 @@ export function ChildrenList() {
 
             {/* List */}
             {filteredChildren.length === 0 ? (
-                <div className="flex flex-col items-center justify-center p-12 py-20 text-center bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 rounded-3xl shadow-sm reveal">
+                <div className="flex flex-col items-center justify-center p-12 py-20 text-center bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 rounded-3xl shadow-sm">
                     <div className="size-20 bg-gray-50 dark:bg-gray-900 rounded-full flex items-center justify-center text-gray-400 mb-6">
                         <span className="material-symbols-outlined text-5xl">person_search</span>
                     </div>
@@ -222,7 +222,7 @@ export function ChildrenList() {
                     </button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 animate-in fade-in duration-400 reveal">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                     {filteredChildren.map(child => (
                         <ChildCard
                             key={child.id}

@@ -14,6 +14,7 @@ import { Login } from './pages/Login';
 import { LandingPage } from './pages/LandingPage';
 import { PsychologistDashboard } from './pages/PsychologistDashboard';
 import { PedagogueDashboard } from './pages/PedagogueDashboard';
+import { SocialWorkDashboard } from './pages/SocialWorkDashboard';
 import { SuperAdmin } from './pages/admin/SuperAdmin';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LoadingScreen } from './components/shared/LoadingScreen';
@@ -86,6 +87,7 @@ function App() {
               <Route path="settings" element={<UnitSettings />} />
               <Route path="psychology" element={<PsychologistDashboard />} />
               <Route path="pedagogy" element={<PedagogueDashboard />} />
+              <Route path="social" element={<SocialWorkDashboard />} />
               <Route path="profile" element={<UserProfile />} />
               <Route path="*" element={<div>Not Found</div>} />
             </Route>

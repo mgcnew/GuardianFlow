@@ -9,6 +9,7 @@ const navItems = [
     { icon: 'edit_note', label: 'Diário', to: '/dashboard/logbook' },
     { icon: 'psychology', label: 'Psicologia', to: '/dashboard/psychology' },
     { icon: 'school', label: 'Pedagogia', to: '/dashboard/pedagogy' },
+    { icon: 'diversity_3', label: 'Assis. Social', to: '/dashboard/social' },
     { icon: 'inventory_2', label: 'Estoque', to: '/dashboard/inventory' },
     { icon: 'settings', label: 'Configurações', to: '/dashboard/settings' },
 ];
@@ -36,7 +37,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
 
         if (['technical', 'technician', 'pedagogue'].includes(role)) {
             const allowed = [...baseItems];
-            if (role === 'technical' || role === 'technician') allowed.push('psychology');
+            if (role === 'technical' || role === 'technician') allowed.push('psychology', 'diversity_3');
             if (role === 'pedagogue') allowed.push('school');
             return allowed.includes(item.icon);
         }
