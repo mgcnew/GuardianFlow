@@ -58,7 +58,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
         <>
             {/* Logo / Brand */}
             <div className={clsx(
-                "flex items-center gap-3 px-6 py-5 border-b border-border-light dark:border-gray-800 transition-all overflow-hidden",
+                "flex items-center gap-3 px-6 py-6 border-b border-border-light dark:border-gray-800 transition-all overflow-hidden",
                 isCollapsed && !isMobileOpen ? "justify-center px-2" : ""
             )}>
                 <div className="flex items-center justify-center bg-primary/10 rounded-full size-10 text-primary shrink-0">
@@ -145,7 +145,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
             {/* Desktop Sidebar */}
             <aside
                 className={clsx(
-                    "hidden lg:flex flex-col border-r border-border-light bg-surface-light dark:bg-surface-dark shrink-0 h-screen transition-all duration-300",
+                    "hidden lg:flex flex-col border border-border-light dark:border-gray-800 bg-surface-light dark:bg-surface-dark shrink-0 h-full rounded-[2rem] shadow-2xl shadow-primary/5 transition-all duration-300 relative overflow-hidden",
                     isCollapsed ? "w-20" : "w-64"
                 )}
             >
