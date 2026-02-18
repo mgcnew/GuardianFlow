@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { StatCard } from '../components/dashboard/StatCard';
@@ -11,7 +11,6 @@ import { ptBR } from 'date-fns/locale';
 
 export function PsychologistDashboard() {
     const { profile } = useAuth();
-    const queryClient = useQueryClient();
     const [activeTab, setActiveTab] = useState<'summary' | 'patients' | 'history' | 'agenda' | 'analysis'>('summary');
     const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
     const [selectedChildId, setSelectedChildId] = useState<string | undefined>();
