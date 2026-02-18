@@ -78,7 +78,7 @@ export function ChildProfile() {
     }
 
     return (
-        <div className="flex flex-col gap-6 animate-in fade-in duration-300">
+        <div className="flex flex-col gap-6 animate-in fade-in duration-400">
             <ProfileHeader
                 child={child}
                 activeTab={activeTab}

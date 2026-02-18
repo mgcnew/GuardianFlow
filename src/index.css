@@ -32,18 +32,15 @@
 
 @layer utilities {
   .animate-in {
-    animation-duration: 300ms;
+    animation-duration: 400ms;
     animation-fill-mode: both;
-    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-timing-function: ease-out;
   }
 
   .fade-in {
     animation-name: fadeIn;
   }
 
-  .slide-in-from-top-2 {
-    animation-name: slideInFromTop;
-  }
 
   @keyframes fadeIn {
     from {
@@ -55,16 +52,17 @@
     }
   }
 
-  @keyframes slideInFromTop {
-    from {
-      transform: translateY(-8px);
-      opacity: 0;
-    }
+  /* Scroll Reveal Utilities */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    will-change: opacity, transform;
+  }
 
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
+  .reveal-active {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .duration-200 {

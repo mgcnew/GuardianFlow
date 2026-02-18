@@ -153,7 +153,7 @@ export function UnitSettings() {
     ];
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-300">
+        <div className="space-y-6 animate-in fade-in duration-400">
             {/* Header */}
             <div>
                 <h1 className="text-2xl font-extrabold text-text-main dark:text-white tracking-tight">Configurações da Unidade</h1>
@@ -163,7 +163,7 @@ export function UnitSettings() {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 reveal">
                 {[
                     { icon: 'child_care', label: 'Acolhidos ativos', value: stats.children, color: 'text-primary bg-primary/10' },
                     { icon: 'groups', label: 'Membros da equipe', value: stats.staff, color: 'text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30' },
@@ -212,7 +212,7 @@ export function UnitSettings() {
             {activeTab === 'unit' ? (
                 <>
                     {/* Form Card */}
-                    <form onSubmit={handleSave}>
+                    <form onSubmit={handleSave} className="reveal">
                         <div className="rounded-2xl bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 overflow-hidden shadow-sm">
                             <div className="px-6 py-5 border-b border-border-light dark:border-gray-800 flex items-center justify-between">
                                 <div className="flex items-center gap-3">

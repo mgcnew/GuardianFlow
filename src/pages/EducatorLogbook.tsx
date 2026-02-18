@@ -119,7 +119,7 @@ export function EducatorLogbook() {
     const stats = timelineData?.stats || { logs: 0, reports: 0 };
 
     return (
-        <div className="space-y-6 pb-20 animate-in fade-in duration-300">
+        <div className="space-y-6 pb-20 animate-in fade-in duration-400">
 
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -178,7 +178,7 @@ export function EducatorLogbook() {
 
                     {/* Dropdown Menu */}
                     {showActionMenu && (
-                        <div className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-surface-dark rounded-2xl shadow-xl border border-border-light dark:border-gray-800 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                        <div className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-surface-dark rounded-2xl shadow-xl border border-border-light dark:border-gray-800 overflow-hidden z-50 animate-in fade-in duration-200">
                             <button
                                 onClick={() => { setActiveModal('individual'); setShowActionMenu(false); }}
                                 className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors text-left group"
@@ -223,7 +223,7 @@ export function EducatorLogbook() {
 
             {/* Modais */}
             {activeModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-400">
                     <style>
                         {`
                             .scrollbar-hide::-webkit-scrollbar {
