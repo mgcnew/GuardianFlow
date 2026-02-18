@@ -33,7 +33,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
     const userDisplayName = user?.email?.split('@')[0] || 'Usuário';
 
     return (
-        <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-border-light dark:border-gray-800 bg-surface-light dark:bg-surface-dark px-8 py-6 z-40 rounded-[2rem] shadow-sm">
+        <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-border-light dark:border-gray-800 bg-surface-light dark:bg-surface-dark px-8 py-6 z-40 rounded-2xl shadow-sm">
             <div className="flex items-center gap-3">
                 <button onClick={onMenuToggle} className="lg:hidden p-2 -ml-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
                     <span className="material-symbols-outlined">menu</span>

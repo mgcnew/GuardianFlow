@@ -145,7 +145,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
             {/* Desktop Sidebar */}
             <aside
                 className={clsx(
-                    "hidden lg:flex flex-col border border-border-light dark:border-gray-800 bg-surface-light dark:bg-surface-dark shrink-0 h-full rounded-[2rem] shadow-2xl shadow-primary/5 transition-all duration-300 relative overflow-hidden",
+                    "hidden lg:flex flex-col border border-border-light dark:border-gray-800 bg-surface-light dark:bg-surface-dark shrink-0 h-full rounded-2xl shadow-2xl shadow-primary/5 transition-all duration-300 relative overflow-hidden",
                     isCollapsed ? "w-20" : "w-64"
                 )}
             >
