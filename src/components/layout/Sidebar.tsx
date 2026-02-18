@@ -22,7 +22,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile }: SidebarProps) {
-    const { profile } = useAuth();
+    const { profile, organization } = useAuth();
 
     const filteredNavItems = navItems.filter(item => {
         if (!profile) return false;
@@ -83,6 +83,19 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
                 )}
             </div>
 
+            {/* Current Unit - Mobile Only */}
+            {isMobileOpen && (
+                <div className="px-6 py-3 border-b border-border-light dark:border-gray-800 bg-gray-50/10 dark:bg-gray-800/10">
+                    <label className="text-[9px] text-text-secondary dark:text-gray-400 font-black uppercase tracking-widest block mb-1 opacity-70">Unidade Atual</label>
+                    <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-primary text-[16px]">home_work</span>
+                        <span className="text-xs font-bold text-text-main dark:text-white truncate">
+                            {organization?.name || 'Carregando...'}
+                        </span>
+                    </div>
+                </div>
+            )}
+
             {/* Navigation */}
             <nav className="flex-1 flex flex-col gap-2 p-4 overflow-y-auto no-scrollbar overflow-x-hidden">
                 {filteredNavItems.map((item) => (
@@ -123,6 +136,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
                     </NavLink>
                 ))}
             </nav>
+
 
             {/* Collapse Toggle - desktop only */}
             <div className="p-4 border-t border-border-light dark:border-gray-800 hidden lg:block">

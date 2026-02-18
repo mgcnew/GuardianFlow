@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
+import clsx from 'clsx';
 
 interface HeaderProps {
     onMenuToggle?: () => void;
@@ -9,13 +10,18 @@ interface HeaderProps {
 export function Header({ onMenuToggle }: HeaderProps) {
     const { user, profile, organization, signOut, switchRole } = useAuth();
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [searchExpanded, setSearchExpanded] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const searchRef = useRef<HTMLDivElement>(null);
 
-    // Close dropdown when clicking outside
+    // Close dropdown and search when clicking outside
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setDropdownOpen(false);
+            }
+            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+                setSearchExpanded(false);
             }
         }
         document.addEventListener("mousedown", handleClickOutside);
@@ -33,12 +39,13 @@ export function Header({ onMenuToggle }: HeaderProps) {
     const userDisplayName = user?.email?.split('@')[0] || 'Usuário';
 
     return (
-        <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-border-light dark:border-gray-800 bg-surface-light dark:bg-surface-dark px-8 py-6 z-40 rounded-2xl shadow-sm">
-            <div className="flex items-center gap-3">
-                <button onClick={onMenuToggle} className="lg:hidden p-2 -ml-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                    <span className="material-symbols-outlined">menu</span>
+        <header className="flex flex-row items-center justify-between gap-2 md:gap-4 border border-border-light dark:border-gray-800 bg-surface-light dark:bg-surface-dark px-4 py-4 md:px-8 md:py-6 z-40 rounded-2xl shadow-sm">
+            <div className={clsx("flex items-center gap-1 md:gap-2", searchExpanded && "hidden md:flex")}>
+                <button onClick={onMenuToggle} className="lg:hidden p-2 -ml-1 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                    <span className="material-symbols-outlined text-[22px]">menu</span>
                 </button>
-                <div className="flex flex-col">
+                {/* Organization name - Hidden on mobile, visible on desktop */}
+                <div className="hidden md:flex flex-col">
                     <label className="text-xs text-text-secondary dark:text-gray-400 font-medium uppercase tracking-wider">Unidade Atual</label>
                     <div className="flex items-center gap-2 cursor-pointer group">
                         <span className="material-symbols-outlined text-primary text-[20px]">home_work</span>
@@ -50,19 +57,40 @@ export function Header({ onMenuToggle }: HeaderProps) {
                 </div>
             </div>
 
-            <div className="flex flex-col-reverse md:flex-row items-stretch md:items-center gap-4 w-full md:w-auto">
-                <div className="relative w-full md:w-64">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="flex flex-row items-center justify-end gap-2 md:gap-4 w-full md:w-auto">
+                <div
+                    ref={searchRef}
+                    className={clsx(
+                        "relative transition-all duration-300 flex items-center justify-end",
+                        searchExpanded ? "w-full md:w-64" : "w-10 md:w-64"
+                    )}
+                >
+                    <button
+                        onClick={() => setSearchExpanded(!searchExpanded)}
+                        className={clsx(
+                            "md:hidden flex items-center justify-center size-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-text-secondary transition-colors",
+                            searchExpanded && "absolute left-0 z-10"
+                        )}
+                    >
+                        <span className="material-symbols-outlined text-[20px]">search</span>
+                    </button>
+
+                    <div className={clsx("absolute inset-y-0 left-0 pl-3 hidden md:flex items-center pointer-events-none")}>
                         <span className="material-symbols-outlined text-text-secondary dark:text-gray-400 text-[20px]">search</span>
                     </div>
+
                     <input
-                        className="block w-full pl-10 pr-3 py-2 border border-border-light dark:border-gray-700 rounded-lg leading-5 bg-background-light dark:bg-gray-800 placeholder-text-secondary dark:placeholder-gray-500 text-text-main dark:text-white focus:outline-none focus:bg-surface-light dark:focus:bg-gray-900 focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm transition duration-150 ease-in-out"
+                        className={clsx(
+                            "block pr-3 py-2 border border-border-light dark:border-gray-700 rounded-full leading-5 bg-background-light dark:bg-gray-800 placeholder-text-secondary dark:placeholder-gray-500 text-text-main dark:text-white focus:outline-none focus:bg-surface-light dark:focus:bg-gray-900 focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm transition-all duration-300",
+                            searchExpanded ? "w-full pl-10 opacity-100 visible" : "w-0 md:w-full md:pl-10 opacity-0 md:opacity-100 invisible md:visible"
+                        )}
                         placeholder="Pesquisar acolhidos..."
                         type="text"
+                        autoFocus={searchExpanded}
                     />
                 </div>
 
-                <div className="flex items-center justify-end gap-3">
+                <div className={clsx("flex items-center gap-2 md:gap-3", searchExpanded && "hidden md:flex")}>
                     <button className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-text-secondary dark:text-gray-400 transition-colors relative">
                         <span className="material-symbols-outlined">notifications</span>
                         <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-surface-dark"></span>
@@ -70,7 +98,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
 
                     <div className="h-8 w-[1px] bg-border-light dark:bg-gray-700 mx-1 hidden md:block"></div>
 
-                    {/* Profile Dropdown Container */}
+                    {/* Profile Dropdown Container - Visible on both, but styled differently if needed */}
                     <div className="relative" ref={dropdownRef}>
                         <button
                             onClick={() => setDropdownOpen(!dropdownOpen)}
