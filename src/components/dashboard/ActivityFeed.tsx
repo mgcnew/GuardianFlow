@@ -23,21 +23,23 @@ function ActivityItem({ icon, iconColor, iconBg, title, time, description, user,
                     <span className="material-symbols-outlined text-[20px]">{icon}</span>
                 </div>
             </div>
-            <div className="flex-1 pt-1">
-                <div className="flex justify-between items-start mb-1">
-                    <p className="text-text-main dark:text-white font-bold text-sm">{title}</p>
-                    <span className="text-xs text-text-secondary dark:text-gray-400 bg-gray-50 dark:bg-gray-800 px-2 py-0.5 rounded-md">{time}</span>
+            <div className="flex-1 pt-1 min-w-0">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 mb-1">
+                    <p className="text-text-main dark:text-white font-bold text-sm truncate">{title}</p>
+                    <span className="text-[10px] sm:text-xs text-text-secondary dark:text-gray-400 bg-gray-50 dark:bg-gray-800 px-2 py-0.5 rounded-md w-fit">{time}</span>
                 </div>
                 <div className="text-text-secondary dark:text-gray-300 text-sm mb-2">{description}</div>
-                <div className="flex items-center gap-2">
-                    <div
-                        className="bg-primary/10 rounded-full h-5 w-5 flex items-center justify-center text-[10px] text-primary font-bold"
-                    >
-                        {user.charAt(0)}
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                        <div
+                            className="bg-primary/10 rounded-full h-5 w-5 flex items-center justify-center text-[10px] text-primary font-bold shrink-0"
+                        >
+                            {user.charAt(0)}
+                        </div>
+                        <span className="text-[11px] text-text-secondary dark:text-gray-400 font-medium truncate">{user}</span>
                     </div>
-                    <span className="text-xs text-text-secondary dark:text-gray-400 font-medium">{user}</span>
-                    <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                    <span className={`text-xs font-medium ${tagColor} px-2 py-0.5 rounded-full bg-opacity-10`}>{tag}</span>
+                    <span className="hidden sm:block w-1 h-1 bg-gray-300 rounded-full"></span>
+                    <span className={`text-[10px] font-bold ${tagColor} px-2 py-0.5 rounded-full bg-opacity-10 whitespace-nowrap`}>{tag}</span>
                 </div>
             </div>
         </div>
@@ -55,9 +57,9 @@ const CATEGORY_MAP: Record<string, any> = {
 export function ActivityFeed({ logs }: { logs: any[] }) {
     return (
         <div className="lg:col-span-2 flex flex-col gap-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <h2 className="text-text-main dark:text-white text-xl font-bold leading-tight">Feed de Atividades</h2>
-                <button className="flex items-center gap-2 bg-primary text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors shadow-sm shadow-blue-200 dark:shadow-none">
+                <button className="flex items-center justify-center gap-2 bg-primary text-white text-sm font-bold px-4 py-2.5 rounded-lg hover:bg-blue-600 transition-all shadow-sm shadow-blue-200 dark:shadow-none w-full sm:w-auto active:scale-95">
                     <span className="material-symbols-outlined text-[20px]">add</span>
                     <span>Nova Entrada</span>
                 </button>

@@ -133,8 +133,8 @@ export function Dashboard() {
     const { stats, logs, staff } = dashboardData;
 
     return (
-        <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <StatCard
                     icon="group"
                     title="Total de Acolhidos"
@@ -165,7 +165,7 @@ export function Dashboard() {
                 />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                 <ActivityFeed logs={logs} />
                 <div className="flex flex-col gap-6">
                     <StaffList staff={staff} />

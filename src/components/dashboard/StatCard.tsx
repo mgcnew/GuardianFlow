@@ -36,7 +36,7 @@ export function StatCard({ icon, title, value, subValue, variant = 'default' }: 
 
     return (
         <div className={clsx(
-            "bg-white dark:bg-surface-dark p-5 rounded-lg border border-border-light dark:border-gray-800 shadow-sm flex flex-col justify-between h-32 hover:shadow-md transition-shadow",
+            "bg-white dark:bg-surface-dark p-4 sm:p-5 rounded-xl border border-border-light dark:border-gray-800 shadow-sm flex flex-col justify-between min-h-[110px] sm:h-32 hover:shadow-md transition-all active:scale-[0.98]",
             currentStyle.border
         )}>
             <div className="flex justify-between items-start">

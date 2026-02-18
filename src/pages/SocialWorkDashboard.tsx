@@ -56,7 +56,7 @@ export function SocialWorkDashboard() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -65,23 +65,23 @@ export function SocialWorkDashboard() {
                         Gestão de casos, processos e acompanhamento familiar.
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <button className="px-4 py-2.5 bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 text-text-main dark:text-white text-sm font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center gap-2 shadow-sm">
+                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                    <button className="flex-1 sm:flex-none px-4 py-2.5 bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 text-text-main dark:text-white text-sm font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
                         <span className="material-symbols-outlined text-lg">description</span>
-                        Relatórios
+                        <span className="whitespace-nowrap">Relatórios</span>
                     </button>
                     <button
                         onClick={() => { setSelectedChildId(undefined); setIsEntryModalOpen(true); }}
-                        className="px-4 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
+                        className="flex-1 sm:flex-none px-4 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95"
                     >
                         <span className="material-symbols-outlined text-lg">add</span>
-                        Novo Atendimento
+                        <span className="whitespace-nowrap">Novo Atendimento</span>
                     </button>
                 </div>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <StatCard
                     icon="diversity_3"
                     title="Total Acolhidos"
@@ -109,7 +109,7 @@ export function SocialWorkDashboard() {
             </div>
 
             {/* Recent Entries */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                 <div className="lg:col-span-2 space-y-4">
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-bold text-text-main dark:text-white flex items-center gap-2">

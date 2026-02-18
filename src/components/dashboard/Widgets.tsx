@@ -8,9 +8,9 @@ import { ptBR } from 'date-fns/locale';
 export function StaffList({ staff }: { staff: any[] }) {
     return (
         <div className="bg-white dark:bg-surface-dark rounded-xl border border-border-light dark:border-gray-800 shadow-sm p-5">
-            <div className="flex items-center justify-between mb-4">
-                <h3 className="text-text-main dark:text-white text-base font-bold">Equipe em Plantão</h3>
-                <button className="text-primary text-xs font-semibold hover:underline">Ver Todos</button>
+            <div className="flex items-center justify-between gap-2 mb-4">
+                <h3 className="text-text-main dark:text-white text-base font-bold truncate">Equipe em Plantão</h3>
+                <button className="text-primary text-xs font-bold hover:underline shrink-0">Ver Todos</button>
             </div>
             <div className="flex flex-col gap-3">
                 {staff.length === 0 ? (
@@ -90,9 +90,9 @@ export function AgendaWidget() {
 
     return (
         <div className="bg-white dark:bg-surface-dark rounded-xl border border-border-light dark:border-gray-800 shadow-sm p-5 h-full flex flex-col">
-            <h3 className="text-text-main dark:text-white text-base font-bold mb-4 flex items-center justify-between">
+            <h3 className="text-text-main dark:text-white text-base font-bold mb-4 flex flex-wrap items-center justify-between gap-2">
                 <span>Agenda de Hoje</span>
-                <span className="text-xs font-normal text-text-secondary dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg">
+                <span className="text-[10px] font-bold text-text-secondary dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg">
                     {format(today, "d 'de' MMM", { locale: ptBR })}
                 </span>
             </h3>

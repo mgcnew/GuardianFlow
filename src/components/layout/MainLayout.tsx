@@ -30,16 +30,16 @@ export function MainLayout() {
     }, [location.pathname]); // Re-run when page changes
 
     return (
-        <div className="flex h-screen w-full overflow-hidden bg-background-light dark:bg-background-dark text-text-main dark:text-white font-display p-4 gap-4">
+        <div className="flex h-screen w-full overflow-hidden bg-background-light dark:bg-background-dark text-text-main dark:text-white font-display p-2 sm:p-4 gap-2 sm:gap-4">
             <Sidebar
                 isCollapsed={isSidebarCollapsed}
                 toggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                 isMobileOpen={isMobileMenuOpen}
                 closeMobile={() => setIsMobileMenuOpen(false)}
             />
-            <main className="flex-1 flex flex-col h-full gap-4 overflow-hidden relative">
+            <main className="flex-1 flex flex-col h-full gap-2 sm:gap-4 overflow-hidden relative">
                 <Header onMenuToggle={() => setIsMobileMenuOpen(true)} />
-                <div className="flex-1 overflow-y-auto no-scrollbar bg-white dark:bg-surface-dark rounded-2xl border border-border-light dark:border-gray-800 shadow-sm p-6">
+                <div className="flex-1 overflow-y-auto no-scrollbar bg-white dark:bg-surface-dark rounded-2xl border border-border-light dark:border-gray-800 shadow-sm p-4 sm:p-6 transition-all">
                     <div className="max-w-[1200px] mx-auto flex flex-col gap-6">
                         <div key={location.pathname} className="animate-in fade-in duration-400">
                             <Outlet />

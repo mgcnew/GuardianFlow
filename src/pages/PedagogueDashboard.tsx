@@ -73,7 +73,7 @@ export function PedagogueDashboard() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -82,8 +82,8 @@ export function PedagogueDashboard() {
                         Acompanhamento escolar e desenvolvimento educacional.
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
+                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                    <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl flex-1 sm:flex-initial overflow-x-auto no-scrollbar">
                         {[
                             { id: 'summary', icon: 'dashboard', label: 'Início' },
                             { id: 'students', icon: 'school', label: 'Alunos' },
@@ -94,23 +94,23 @@ export function PedagogueDashboard() {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
                                 className={clsx(
-                                    "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
+                                    "flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap min-w-fit flex-1 sm:flex-none",
                                     activeTab === tab.id
                                         ? "bg-white dark:bg-surface-dark text-primary shadow-sm"
                                         : "text-text-secondary hover:text-text-main dark:text-gray-400"
                                 )}
                             >
                                 <span className="material-symbols-outlined text-lg">{tab.icon}</span>
-                                <span className="hidden md:inline">{tab.label}</span>
+                                <span className="hidden sm:inline">{tab.label}</span>
                             </button>
                         ))}
                     </div>
                     <button
                         onClick={() => { setSelectedChildId(undefined); setIsModalOpen(true); }}
-                        className="px-4 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
+                        className="flex-1 sm:flex-none px-4 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95"
                     >
                         <span className="material-symbols-outlined text-lg">edit_note</span>
-                        Novo Registro
+                        <span className="whitespace-nowrap">Novo Registro</span>
                     </button>
                 </div>
             </div>
@@ -119,7 +119,7 @@ export function PedagogueDashboard() {
             {activeTab === 'summary' && (
                 <>
                     {/* Stats */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                         <StatCard
                             icon="school"
                             title="Em Escolarização"
@@ -148,7 +148,7 @@ export function PedagogueDashboard() {
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                         {/* Recent Activities */}
                         <div className="lg:col-span-2 space-y-4">
                             <h2 className="text-lg font-bold text-text-main dark:text-white flex items-center gap-2">

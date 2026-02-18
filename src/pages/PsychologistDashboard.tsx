@@ -78,7 +78,7 @@ export function PsychologistDashboard() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -87,8 +87,8 @@ export function PsychologistDashboard() {
                         Área de trabalho do profissional de psicologia.
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl mr-2">
+                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                    <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl flex-1 sm:flex-initial overflow-x-auto no-scrollbar">
                         {[
                             { id: 'summary', icon: 'dashboard', label: 'Início' },
                             { id: 'patients', icon: 'group', label: 'Pacientes' },
@@ -100,23 +100,23 @@ export function PsychologistDashboard() {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
                                 className={clsx(
-                                    "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
+                                    "flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap min-w-fit flex-1 sm:flex-none",
                                     activeTab === tab.id
                                         ? "bg-white dark:bg-surface-dark text-primary shadow-sm"
                                         : "text-text-secondary hover:text-text-main dark:text-gray-400"
                                 )}
                             >
                                 <span className="material-symbols-outlined text-lg">{tab.icon}</span>
-                                <span className="hidden md:inline">{tab.label}</span>
+                                <span className="hidden sm:inline">{tab.label}</span>
                             </button>
                         ))}
                     </div>
                     <button
                         onClick={() => { setSelectedChildId(undefined); setIsEntryModalOpen(true); }}
-                        className="px-4 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
+                        className="flex-1 sm:flex-none px-4 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95"
                     >
-                        <span className="material-symbols-outlined text-lg">clinical_notes</span>
-                        Nova Sessão
+                        <span className="material-symbols-outlined text-lg">medical_information</span>
+                        <span className="whitespace-nowrap">Nova Sessão</span>
                     </button>
                 </div>
             </div>
@@ -124,7 +124,7 @@ export function PsychologistDashboard() {
             {activeTab === 'summary' && (
                 <>
                     {/* Stats */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                         <StatCard
                             icon="psychology"
                             title="Em Acompanhamento"
@@ -153,7 +153,7 @@ export function PsychologistDashboard() {
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                         {/* Recent Evolutions */}
                         <div className="lg:col-span-2 space-y-4">
                             <h2 className="text-lg font-bold text-text-main dark:text-white flex items-center gap-2">
