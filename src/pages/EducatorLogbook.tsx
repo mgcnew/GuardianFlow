@@ -119,7 +119,7 @@ export function EducatorLogbook() {
     const stats = timelineData?.stats || { logs: 0, reports: 0 };
 
     return (
-        <div className="space-y-6 pb-20">
+        <div className="space-y-6 pb-20 animate-in fade-in duration-300">
 
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

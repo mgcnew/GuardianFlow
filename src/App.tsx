@@ -12,6 +12,8 @@ import { UnitSettings } from './pages/UnitSettings';
 import { UserProfile } from './pages/UserProfile';
 import { Login } from './pages/Login';
 import { LandingPage } from './pages/LandingPage';
+import { PsychologistDashboard } from './pages/PsychologistDashboard';
+import { PedagogueDashboard } from './pages/PedagogueDashboard';
 import { SuperAdmin } from './pages/admin/SuperAdmin';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LoadingScreen } from './components/shared/LoadingScreen';
@@ -31,9 +33,21 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
 
   React.useEffect(() => {
-    document.fonts.ready.then(() => {
+    // Safety timeout to prevent getting stuck
+    const timeout = setTimeout(() => setFontsLoaded(true), 800);
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        clearTimeout(timeout);
+        setFontsLoaded(true);
+      }).catch(() => {
+        setFontsLoaded(true);
+      });
+    } else {
       setFontsLoaded(true);
-    });
+    }
+
+    return () => clearTimeout(timeout);
   }, []);
 
   const loading = authLoading || !fontsLoaded;
@@ -70,6 +84,8 @@ function App() {
               <Route path="agenda" element={<Schedule />} />
               <Route path="logbook" element={<EducatorLogbook />} />
               <Route path="settings" element={<UnitSettings />} />
+              <Route path="psychology" element={<PsychologistDashboard />} />
+              <Route path="pedagogy" element={<PedagogueDashboard />} />
               <Route path="profile" element={<UserProfile />} />
               <Route path="*" element={<div>Not Found</div>} />
             </Route>

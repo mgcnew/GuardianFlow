@@ -38,7 +38,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [organization, setOrganization] = useState<Database['public']['Tables']['organizations']['Row'] | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const fetchProfile = async (userId: string) => {
+    const fetchProfile = async (userId: string, email?: string) => {
+        // Set a provisional profile immediately if we don't have one
+        // so the UI can unblock right away
+        setProfile(prev => prev || ({
+            id: userId,
+            full_name: email?.split('@')[0] || 'Usuário',
+            role: 'operational' as Role, // Fallback role
+            organization_id: null,
+            created_at: new Date().toISOString()
+        } as Profile));
+
         try {
             const { data: profileData, error: profileError } = await supabase
                 .from('profiles')
@@ -46,64 +56,73 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 .eq('id', userId)
                 .single();
 
-            if (profileError) throw profileError;
-
-            if (profileData) {
-                setProfile(profileData);
-
+            if (!profileError && profileData) {
+                setProfile(profileData as Profile);
                 if (profileData.organization_id) {
-                    const { data: orgData, error: orgError } = await supabase
+                    const { data: orgData } = await supabase
                         .from('organizations')
                         .select('*')
                         .eq('id', profileData.organization_id)
                         .single();
-
-                    if (!orgError && orgData) {
-                        setOrganization(orgData);
-                    }
+                    if (orgData) setOrganization(orgData);
                 }
             }
         } catch (error) {
-            console.error('Error fetching profile/org:', error);
+            console.error('Background profile fetch error:', error);
         }
     };
 
     useEffect(() => {
-        const initializeAuth = async () => {
+        let mounted = true;
+
+        const initialize = async () => {
             try {
-                const { data: { session } } = await supabase.auth.getSession();
-                setSession(session);
-                setUser(session?.user ?? null);
-                if (session?.user) {
-                    await fetchProfile(session.user.id);
+                const { data: { session: initialSession } } = await supabase.auth.getSession();
+                if (mounted) {
+                    if (initialSession?.user) {
+                        setSession(initialSession);
+                        setUser(initialSession.user);
+                        // Start fetching in background, don't necessarily await if we want speed
+                        fetchProfile(initialSession.user.id, initialSession.user.email);
+                    } else {
+                        setUser(null);
+                        setSession(null);
+                        setProfile(null);
+                        setOrganization(null);
+                    }
                 }
             } catch (error) {
-                console.error('Initial auth error:', error);
+                console.error('Auth initialization error:', error);
             } finally {
-                setLoading(false);
+                if (mounted) setLoading(false);
             }
         };
 
-        initializeAuth();
+        initialize();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-            try {
-                setSession(session);
-                setUser(session?.user ?? null);
-                if (session?.user) {
-                    await fetchProfile(session.user.id);
-                } else {
-                    setProfile(null);
-                    setOrganization(null);
-                }
-            } catch (error) {
-                console.error('Auth state change error:', error);
-            } finally {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+            if (!mounted) return;
+
+            if (_event === 'SIGNED_OUT') {
+                setSession(null);
+                setUser(null);
+                setProfile(null);
+                setOrganization(null);
+                setLoading(false);
+            } else if (newSession?.user) {
+                setSession(newSession);
+                setUser(newSession.user);
+                fetchProfile(newSession.user.id, newSession.user.email);
+                setLoading(false);
+            } else {
                 setLoading(false);
             }
         });
 
-        return () => subscription.unsubscribe();
+        return () => {
+            mounted = false;
+            subscription.unsubscribe();
+        };
     }, []);
 
     const signOut = async () => {

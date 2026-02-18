@@ -7,6 +7,8 @@ const navItems = [
     { icon: 'child_care', label: 'Acolhidos', to: '/dashboard/children' },
     { icon: 'calendar_month', label: 'Agenda', to: '/dashboard/agenda' },
     { icon: 'edit_note', label: 'Diário', to: '/dashboard/logbook' },
+    { icon: 'psychology', label: 'Psicologia', to: '/dashboard/psychology' },
+    { icon: 'school', label: 'Pedagogia', to: '/dashboard/pedagogy' },
     { icon: 'inventory_2', label: 'Estoque', to: '/dashboard/inventory' },
     { icon: 'settings', label: 'Configurações', to: '/dashboard/settings' },
 ];
@@ -23,21 +25,32 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
 
     const filteredNavItems = navItems.filter(item => {
         if (!profile) return false;
+
+        // Admins see everything
         if (['saas_admin', 'admin', 'org_admin'].includes(profile.role)) return true;
 
-        if (['technical', 'technician', 'pedagogue'].includes(profile.role)) {
-            return ['dashboard', 'child_care', 'calendar_month', 'edit_note'].includes(item.icon);
+        const role = profile.role || 'membro';
+
+        // Base items for almost everyone
+        const baseItems = ['dashboard', 'child_care', 'calendar_month', 'edit_note'];
+
+        if (['technical', 'technician', 'pedagogue'].includes(role)) {
+            const allowed = [...baseItems];
+            if (role === 'technical' || role === 'technician') allowed.push('psychology');
+            if (role === 'pedagogue') allowed.push('school');
+            return allowed.includes(item.icon);
         }
 
-        if (profile.role === 'educator') {
-            return ['dashboard', 'child_care', 'calendar_month', 'edit_note'].includes(item.icon);
+        if (role === 'educator') {
+            return baseItems.includes(item.icon);
         }
 
-        if (profile.role === 'operational') {
-            return ['dashboard', 'inventory_2', 'calendar_month'].includes(item.icon);
+        if (role === 'operational') {
+            return [...baseItems, 'inventory_2'].includes(item.icon);
         }
 
-        return false;
+        // Fallback for 'membro' or any other role: see basic items
+        return baseItems.includes(item.icon) || item.icon === 'dashboard';
     });
 
     const sidebarContent = (

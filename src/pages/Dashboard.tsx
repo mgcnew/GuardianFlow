@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
 export function Dashboard() {
-    const { user, profile } = useAuth();
+    const { user, profile, signOut } = useAuth();
 
     const { data: dashboardData, isLoading, isError, error } = useQuery({
         queryKey: ['dashboardData', user?.id, profile?.organization_id],
@@ -72,7 +72,37 @@ export function Dashboard() {
         return (
             <div className="flex flex-col items-center justify-center py-24">
                 <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-text-secondary font-medium animate-pulse">Carregando dados reais...</p>
+                <p className="text-text-secondary font-medium animate-pulse">Sincronizando seus dados...</p>
+            </div>
+        );
+    }
+
+    // Handle case where profile exists but organization is not set
+    if (profile && !profile.organization_id) {
+        return (
+            <div className="flex flex-col items-center justify-center py-24 text-center px-6">
+                <div className="size-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                    <span className="material-symbols-outlined text-4xl text-primary">analytics</span>
+                </div>
+                <h3 className="text-xl font-bold text-text-main dark:text-white mb-2">Bem-vindo ao GuardianFlow!</h3>
+                <p className="text-text-secondary dark:text-gray-400 max-w-md mb-8">
+                    Sua conta ainda não está vinculada a uma unidade de acolhimento.
+                    Entre em contato com o administrador ou aguarde o convite.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="px-6 py-2.5 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all"
+                    >
+                        Verificar novamente
+                    </button>
+                    <button
+                        onClick={() => signOut()}
+                        className="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-text-main dark:text-white rounded-xl font-bold hover:bg-gray-200 transition-all"
+                    >
+                        Sair
+                    </button>
+                </div>
             </div>
         );
     }
@@ -103,7 +133,7 @@ export function Dashboard() {
     const { stats, logs, staff } = dashboardData;
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500">
+        <div className="space-y-6 animate-in fade-in duration-300">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatCard
                     icon="group"
