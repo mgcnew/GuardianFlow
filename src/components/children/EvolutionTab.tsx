@@ -97,7 +97,7 @@ export function EvolutionTab({ childId }: EvolutionTabProps) {
                 </div>
             </div>
 
-            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
                 {goal.status !== 'completed' && (
                     <button
                         onClick={() => updateStatus.mutate({ id: goal.id, status: 'completed' })}
@@ -130,10 +130,9 @@ export function EvolutionTab({ childId }: EvolutionTabProps) {
     );
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-4 md:space-y-8">
             {/* Header / Add Goal */}
-            {/* Header / Add Goal */}
-            <div className="rounded-2xl md:rounded-3xl bg-primary/5 p-4 md:p-8 border border-primary/10">
+            <div className="rounded-2xl md:rounded-3xl bg-primary/5 p-5 md:p-8 border border-primary/10">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 md:mb-6">
                     <div>
                         <h3 className="text-lg md:text-xl font-black text-text-main dark:text-white font-display tracking-tight flex items-center gap-2">
@@ -144,9 +143,9 @@ export function EvolutionTab({ childId }: EvolutionTabProps) {
                     </div>
                     <button
                         onClick={() => setIsFormOpen(!isFormOpen)}
-                        className="px-4 md:px-6 py-2.5 md:py-3 bg-primary text-white rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 w-full md:w-auto"
+                        className="px-4 md:px-6 py-3 md:py-3 bg-primary text-white rounded-xl text-[11px] md:text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 w-full md:w-auto active:scale-95"
                     >
-                        <span className="material-symbols-outlined text-[16px] md:text-[18px]">add</span>
+                        <span className="material-symbols-outlined text-[18px]">add</span>
                         Nova Meta
                     </button>
                 </div>

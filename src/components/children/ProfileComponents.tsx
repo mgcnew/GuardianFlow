@@ -39,7 +39,7 @@ export function ProfileHeader({ child, activeTab, setActiveTab, onEdit, onPrintP
 
     return (
         <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800 overflow-hidden">
-            <div className="flex flex-col md:flex-row gap-4 md:gap-8 p-4 md:p-8">
+            <div className="flex flex-col md:flex-row gap-6 md:gap-8 p-5 md:p-8">
                 <div className="shrink-0 relative self-center md:self-start">
                     <div className="h-24 w-24 md:h-40 md:w-40 rounded-2xl md:rounded-[2.5rem] ring-4 md:ring-8 ring-gray-50 dark:ring-gray-800/50 shadow-inner overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                         {child.photo_url ? (
@@ -82,20 +82,20 @@ export function ProfileHeader({ child, activeTab, setActiveTab, onEdit, onPrintP
                                 </p>
                             </div>
                         </div>
-                        <div className="flex gap-2 md:gap-3 justify-center md:justify-start">
+                        <div className="flex gap-2 mt-2 md:mt-0 w-full md:w-auto">
                             <button
                                 onClick={onEdit}
-                                className="flex items-center justify-center gap-1.5 md:gap-2 rounded-xl md:rounded-2xl border border-border-light dark:border-gray-700 bg-white dark:bg-transparent px-3 md:px-6 py-2 md:py-3 text-[10px] md:text-xs font-black uppercase tracking-wider md:tracking-widest text-text-secondary dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-display"
+                                className="flex-1 md:flex-none flex items-center justify-center gap-2 rounded-xl md:rounded-2xl border border-border-light dark:border-gray-700 bg-white dark:bg-transparent px-4 py-3 text-[11px] md:text-xs font-black uppercase tracking-wider md:tracking-widest text-text-secondary dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-display active:scale-95"
                             >
-                                <span className="material-symbols-outlined text-[16px] md:text-[18px]">edit_note</span>
+                                <span className="material-symbols-outlined text-[18px]">edit_note</span>
                                 <span className="hidden sm:inline">Editar Tudo</span>
                                 <span className="sm:hidden">Editar</span>
                             </button>
                             <button
                                 onClick={onPrintPIA}
-                                className="flex items-center justify-center gap-1.5 md:gap-2 rounded-xl md:rounded-2xl bg-primary px-3 md:px-6 py-2 md:py-3 text-[10px] md:text-xs font-black uppercase tracking-wider md:tracking-widest text-white shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all font-display"
+                                className="flex-1 md:flex-none flex items-center justify-center gap-2 rounded-xl md:rounded-2xl bg-primary px-4 py-3 text-[11px] md:text-xs font-black uppercase tracking-wider md:tracking-widest text-white shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all font-display active:scale-95"
                             >
-                                <span className="material-symbols-outlined text-[16px] md:text-[18px]">picture_as_pdf</span>
+                                <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
                                 <span className="hidden sm:inline">Relatório PIA</span>
                                 <span className="sm:hidden">PIA</span>
                             </button>
@@ -112,10 +112,10 @@ export function ProfileHeader({ child, activeTab, setActiveTab, onEdit, onPrintP
                             className={clsx(
                                 "md:py-5 md:px-1 md:border-b-2 md:text-[11px] md:font-black md:uppercase md:tracking-[0.2em] transition-all hover:text-text-main dark:hover:text-white whitespace-nowrap",
                                 // Mobile: pill style
-                                "flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold md:rounded-none md:bg-transparent",
+                                "flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-[11px] font-bold md:rounded-none md:bg-transparent min-w-fit flex-1 md:flex-initial",
                                 activeTab === tab.id
                                     ? "md:border-primary text-primary bg-primary/10 md:bg-transparent"
-                                    : "md:border-transparent text-text-secondary dark:text-gray-500 bg-transparent"
+                                    : "text-text-secondary dark:text-gray-500 bg-transparent"
                             )}
                         >
                             <span className="material-symbols-outlined text-[16px] md:hidden">{tabIcons[tab.id] || 'tab'}</span>
@@ -131,7 +131,7 @@ export function ProfileHeader({ child, activeTab, setActiveTab, onEdit, onPrintP
 
 export function BioSummary({ child }: ProfileComponentProps) {
     return (
-        <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark p-4 md:p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
+        <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark p-5 md:p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     <div className="size-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
@@ -140,7 +140,7 @@ export function BioSummary({ child }: ProfileComponentProps) {
                     <h2 className="text-xl font-black text-text-main dark:text-white font-display tracking-tight">Motivo & Situação</h2>
                 </div>
             </div>
-            <p className="text-text-secondary dark:text-gray-300 leading-relaxed font-display text-sm bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 italic">
+            <p className="text-text-secondary dark:text-gray-300 leading-relaxed font-display text-sm bg-gray-50 dark:bg-gray-800/40 p-4 md:p-5 rounded-2xl border border-gray-100 dark:border-gray-800 italic">
                 "{child.reason_for_admission || 'Nenhum motivo de acolhimento detalhado no momento.'}"
             </p>
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -159,7 +159,7 @@ export function BioSummary({ child }: ProfileComponentProps) {
 
 export function FamilyContacts({ child }: ProfileComponentProps) {
     return (
-        <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark p-4 md:p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
+        <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark p-5 md:p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     <div className="size-10 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
@@ -233,7 +233,7 @@ export function DailySchedule() {
 
 export function HealthOverview({ child }: ProfileComponentProps) {
     return (
-        <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark p-4 md:p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
+        <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark p-5 md:p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
             <div className="flex items-center gap-3 mb-8">
                 <div className="size-10 rounded-2xl bg-red-500/10 text-red-500 flex items-center justify-center">
                     <span className="material-symbols-outlined">health_and_safety</span>
@@ -252,12 +252,12 @@ export function HealthOverview({ child }: ProfileComponentProps) {
                     <p className="text-sm font-bold text-blue-900 dark:text-blue-300 font-display">{child.medications || 'Sem medicação em uso.'}</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-gray-50 dark:bg-gray-800/40 p-4 rounded-2xl text-center">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                    <div className="bg-gray-50 dark:bg-gray-800/40 p-4 rounded-xl md:rounded-2xl text-center">
                         <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase mb-1 font-display">Tamanho Roupa</p>
                         <p className="text-base font-bold text-text-main dark:text-white font-display">{child.clothes_size || '--'}</p>
                     </div>
-                    <div className="bg-gray-50 dark:bg-gray-800/40 p-4 rounded-2xl text-center">
+                    <div className="bg-gray-50 dark:bg-gray-800/40 p-4 rounded-xl md:rounded-2xl text-center">
                         <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase mb-1 font-display">Calçado</p>
                         <p className="text-base font-bold text-text-main dark:text-white font-display">{child.shoes_size || '--'}</p>
                     </div>

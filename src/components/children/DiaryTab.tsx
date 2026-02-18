@@ -101,31 +101,33 @@ export function DiaryTab({ childId }: DiaryTabProps) {
             {/* Quick Mood Registration */}
             <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark p-4 md:p-6 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
                 <h3 className="text-xs font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest mb-4 font-display">Humor de Hoje</h3>
-                <div className="flex gap-3 justify-center">
-                    {MOOD_OPTIONS.map((m) => (
-                        <button
-                            key={m.value}
-                            onClick={async () => {
-                                if (!profile) return;
-                                await supabase.from('child_entries').insert({
-                                    child_id: childId,
-                                    organization_id: profile.organization_id,
-                                    author_id: profile.id,
-                                    type: 'diary',
-                                    category: 'mood',
-                                    title: `Humor: ${m.label}`,
-                                    content: `Humor registrado como ${m.label}.`,
-                                    mood: m.value,
-                                    urgency: 'low',
-                                });
-                                queryClient.invalidateQueries({ queryKey: ['child-diary', childId] });
-                            }}
-                            className="flex flex-col items-center gap-1 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all group"
-                        >
-                            <span className="text-3xl group-hover:scale-125 transition-transform">{m.emoji}</span>
-                            <span className="text-[10px] font-bold text-text-secondary dark:text-gray-500 uppercase">{m.label}</span>
-                        </button>
-                    ))}
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-2 px-2 scroll-smooth">
+                    <div className="flex gap-1.5 min-w-full justify-between sm:justify-center">
+                        {MOOD_OPTIONS.map((m) => (
+                            <button
+                                key={m.value}
+                                onClick={async () => {
+                                    if (!profile) return;
+                                    await supabase.from('child_entries').insert({
+                                        child_id: childId,
+                                        organization_id: profile.organization_id,
+                                        author_id: profile.id,
+                                        type: 'diary',
+                                        category: 'mood',
+                                        title: `Humor: ${m.label}`,
+                                        content: `Humor registrado como ${m.label}.`,
+                                        mood: m.value,
+                                        urgency: 'low',
+                                    });
+                                    queryClient.invalidateQueries({ queryKey: ['child-diary', childId] });
+                                }}
+                                className="flex flex-col items-center gap-1 p-2 md:p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all group shrink-0 active:scale-90"
+                            >
+                                <span className="text-2xl md:text-3xl group-hover:scale-110 transition-transform">{m.emoji}</span>
+                                <span className="text-[9px] md:text-[10px] font-bold text-text-secondary dark:text-gray-500 uppercase">{m.label}</span>
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 
@@ -224,22 +226,24 @@ export function DiaryTab({ childId }: DiaryTabProps) {
             </div>
 
             {/* Filter */}
-            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-                <button
-                    onClick={() => setFilterCategory('all')}
-                    className={clsx('px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shrink-0 transition-all', filterCategory === 'all' ? 'bg-primary text-white' : 'bg-white dark:bg-surface-dark text-text-secondary ring-1 ring-border-light dark:ring-gray-800')}
-                >
-                    Todas
-                </button>
-                {CATEGORY_OPTIONS.map((cat) => (
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+                <div className="flex gap-2">
                     <button
-                        key={cat.id}
-                        onClick={() => setFilterCategory(cat.id)}
-                        className={clsx('px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shrink-0 transition-all', filterCategory === cat.id ? 'bg-primary text-white' : 'bg-white dark:bg-surface-dark text-text-secondary ring-1 ring-border-light dark:ring-gray-800')}
+                        onClick={() => setFilterCategory('all')}
+                        className={clsx('px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shrink-0 transition-all active:scale-95', filterCategory === 'all' ? 'bg-primary text-white' : 'bg-white dark:bg-surface-dark text-text-secondary ring-1 ring-border-light dark:ring-gray-800')}
                     >
-                        {cat.label}
+                        Todas
                     </button>
-                ))}
+                    {CATEGORY_OPTIONS.map((cat) => (
+                        <button
+                            key={cat.id}
+                            onClick={() => setFilterCategory(cat.id)}
+                            className={clsx('px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shrink-0 transition-all active:scale-95', filterCategory === cat.id ? 'bg-primary text-white' : 'bg-white dark:bg-surface-dark text-text-secondary ring-1 ring-border-light dark:ring-gray-800')}
+                        >
+                            {cat.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {/* Timeline */}

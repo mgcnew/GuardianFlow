@@ -77,7 +77,7 @@ export function ChildProfile() {
     }
 
     return (
-        <div className="flex flex-col gap-6 animate-in fade-in duration-400">
+        <div className="flex flex-col gap-4 sm:gap-6 animate-in fade-in duration-400">
             <ProfileHeader
                 child={child}
                 activeTab={activeTab}
@@ -86,8 +86,8 @@ export function ChildProfile() {
                 onPrintPIA={handlePrintPIA}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="lg:col-span-2 space-y-4 sm:space-y-6">
                     {activeTab === 'resumo' && (
                         <>
                             <BioSummary child={child} />
@@ -101,7 +101,7 @@ export function ChildProfile() {
                     {activeTab === 'evolucao' && (hasRole(['saas_admin', 'admin', 'technical']) ? <EvolutionTab childId={child.id} /> : <p className="text-red-500">Acesso Negado</p>)}
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                     <QuickNote />
                     <div className="p-6 bg-primary/5 rounded-3xl border border-primary/10">
                         <h4 className="text-xs font-black text-primary uppercase tracking-widest mb-2">Resumo de Acesso</h4>

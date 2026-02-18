@@ -384,7 +384,7 @@ export function ChildHistoryTab({ childId, child }: ChildHistoryTabProps) {
                 <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
                     {/* Overall Score Circle */}
                     <div className="relative flex-shrink-0">
-                        <svg className="size-28 md:size-36 -rotate-90" viewBox="0 0 120 120">
+                        <svg className="size-24 md:size-36 -rotate-90" viewBox="0 0 120 120">
                             <circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" className="text-gray-100 dark:text-gray-800" strokeWidth="10" />
                             <circle
                                 cx="60" cy="60" r="52" fill="none"
@@ -397,8 +397,8 @@ export function ChildHistoryTab({ childId, child }: ChildHistoryTabProps) {
                             />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className={`text-2xl md:text-3xl font-black font-display ${overallColor.text}`}>{profileScore.overall}</span>
-                            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-text-secondary dark:text-gray-500">{overallColor.label}</span>
+                            <span className={`text-xl md:text-3xl font-black font-display ${overallColor.text}`}>{profileScore.overall}</span>
+                            <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-text-secondary dark:text-gray-500">{overallColor.label}</span>
                         </div>
                     </div>
 
@@ -446,25 +446,27 @@ export function ChildHistoryTab({ childId, child }: ChildHistoryTabProps) {
             </div>
 
             {/* ════════ FILTER CHIPS ════════ */}
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-1">
-                {filterChips.map(chip => (
-                    <button
-                        key={chip.key}
-                        type="button"
-                        onClick={() => setFilter(chip.key)}
-                        className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all font-display shrink-0 ${filter === chip.key
-                            ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                            : 'bg-white dark:bg-surface-dark text-text-secondary dark:text-gray-400 ring-1 ring-border-light dark:ring-gray-800 hover:ring-primary hover:text-primary'
-                            }`}
-                    >
-                        <span className="material-symbols-outlined text-sm md:text-base">{chip.icon}</span>
-                        {chip.label}
-                        <span className={`px-1.5 py-0.5 rounded-lg text-[9px] md:text-[10px] ${filter === chip.key ? 'bg-white/20' : 'bg-gray-100 dark:bg-gray-800'
-                            }`}>
-                            {chip.count}
-                        </span>
-                    </button>
-                ))}
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-1 -mx-4 sm:mx-0 sm:px-0">
+                <div className="flex gap-2 px-4 sm:px-0">
+                    {filterChips.map(chip => (
+                        <button
+                            key={chip.key}
+                            type="button"
+                            onClick={() => setFilter(chip.key)}
+                            className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all font-display shrink-0 active:scale-95 ${filter === chip.key
+                                ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                                : 'bg-white dark:bg-surface-dark text-text-secondary dark:text-gray-400 ring-1 ring-border-light dark:ring-gray-800 hover:ring-primary hover:text-primary'
+                                }`}
+                        >
+                            <span className="material-symbols-outlined text-sm md:text-base">{chip.icon}</span>
+                            {chip.label}
+                            <span className={`px-1.5 py-0.5 rounded-lg text-[9px] md:text-[10px] ${filter === chip.key ? 'bg-white/20' : 'bg-gray-100 dark:bg-gray-800'
+                                }`}>
+                                {chip.count}
+                            </span>
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {/* ════════ TIMELINE ════════ */}
