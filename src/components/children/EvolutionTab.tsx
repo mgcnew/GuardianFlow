@@ -132,30 +132,31 @@ export function EvolutionTab({ childId }: EvolutionTabProps) {
     return (
         <div className="space-y-8">
             {/* Header / Add Goal */}
-            <div className="rounded-3xl bg-primary/5 p-8 border border-primary/10">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            {/* Header / Add Goal */}
+            <div className="rounded-2xl md:rounded-3xl bg-primary/5 p-4 md:p-8 border border-primary/10">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 md:mb-6">
                     <div>
-                        <h3 className="text-xl font-black text-text-main dark:text-white font-display tracking-tight flex items-center gap-2">
+                        <h3 className="text-lg md:text-xl font-black text-text-main dark:text-white font-display tracking-tight flex items-center gap-2">
                             <span className="material-symbols-outlined text-primary">flag</span>
-                            Metas do PIA (Plano Individual)
+                            Metas do PIA
                         </h3>
-                        <p className="text-sm text-text-secondary dark:text-gray-400 mt-1 font-display">Acompanhamento estratégico da evolução do acolhido.</p>
+                        <p className="text-xs md:text-sm text-text-secondary dark:text-gray-400 mt-1 font-display">Acompanhamento estratégico da evolução do acolhido.</p>
                     </div>
                     <button
                         onClick={() => setIsFormOpen(!isFormOpen)}
-                        className="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
+                        className="px-4 md:px-6 py-2.5 md:py-3 bg-primary text-white rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 w-full md:w-auto"
                     >
-                        <span className="material-symbols-outlined text-[18px]">add</span>
+                        <span className="material-symbols-outlined text-[16px] md:text-[18px]">add</span>
                         Nova Meta
                     </button>
                 </div>
 
                 {isFormOpen && (
-                    <div className="flex gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="flex flex-col md:flex-row gap-3 md:gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
                         <input
                             type="text"
-                            placeholder="Descreva a meta (ex: Regularizar matrícula escolar, Localizar avós maternos...)"
-                            className="flex-1 px-4 py-3 bg-white dark:bg-gray-800 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:border-primary text-sm"
+                            placeholder="Descreva a meta (ex: Regularizar matrícula escolar...)"
+                            className="flex-1 px-4 py-3 bg-white dark:bg-gray-800 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:border-primary text-sm w-full"
                             value={newGoal}
                             onChange={(e) => setNewGoal(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && createGoal.mutate()}
@@ -163,7 +164,7 @@ export function EvolutionTab({ childId }: EvolutionTabProps) {
                         <button
                             onClick={() => createGoal.mutate()}
                             disabled={!newGoal || createGoal.isPending}
-                            className="px-6 py-3 bg-primary text-white rounded-xl font-bold uppercase text-xs tracking-widest hover:bg-primary/90 disabled:opacity-50 transition-all"
+                            className="px-6 py-3 bg-primary text-white rounded-xl font-bold uppercase text-xs tracking-widest hover:bg-primary/90 disabled:opacity-50 transition-all w-full md:w-auto"
                         >
                             Salvar
                         </button>

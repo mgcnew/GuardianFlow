@@ -99,7 +99,7 @@ export function DiaryTab({ childId }: DiaryTabProps) {
     return (
         <div className="space-y-6">
             {/* Quick Mood Registration */}
-            <div className="rounded-3xl bg-white dark:bg-surface-dark p-6 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
+            <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark p-4 md:p-6 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
                 <h3 className="text-xs font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest mb-4 font-display">Humor de Hoje</h3>
                 <div className="flex gap-3 justify-center">
                     {MOOD_OPTIONS.map((m) => (
@@ -130,18 +130,20 @@ export function DiaryTab({ childId }: DiaryTabProps) {
             </div>
 
             {/* New Entry Form */}
-            <div className="rounded-3xl bg-white dark:bg-surface-dark p-6 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-black text-text-main dark:text-white font-display tracking-tight flex items-center gap-2">
-                        <span className="material-symbols-outlined text-primary">edit_note</span>
-                        Diário do Acolhido
+            <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark p-4 md:p-6 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
+                <div className="flex items-center justify-between mb-4 gap-2">
+                    <h3 className="text-base md:text-xl font-black text-text-main dark:text-white font-display tracking-tight flex items-center gap-2">
+                        <span className="material-symbols-outlined text-primary text-xl">edit_note</span>
+                        <span className="hidden sm:inline">Diário do Acolhido</span>
+                        <span className="sm:hidden">Diário</span>
                     </h3>
                     <button
                         onClick={() => setIsFormOpen(!isFormOpen)}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                        className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-primary text-white rounded-xl text-[10px] md:text-xs font-black uppercase tracking-wider md:tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 shrink-0"
                     >
                         <span className="material-symbols-outlined text-[16px]">{isFormOpen ? 'close' : 'add'}</span>
-                        {isFormOpen ? 'Fechar' : 'Nova Entrada'}
+                        <span className="hidden sm:inline">{isFormOpen ? 'Fechar' : 'Nova Entrada'}</span>
+                        <span className="sm:hidden">{isFormOpen ? 'Fechar' : 'Nova'}</span>
                     </button>
                 </div>
 
@@ -244,7 +246,7 @@ export function DiaryTab({ childId }: DiaryTabProps) {
             {isLoading ? (
                 <div className="flex justify-center py-12"><div className="size-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>
             ) : filteredEntries.length === 0 ? (
-                <div className="text-center py-16 bg-white dark:bg-surface-dark rounded-3xl ring-1 ring-border-light dark:ring-gray-800">
+                <div className="text-center py-12 md:py-16 bg-white dark:bg-surface-dark rounded-2xl md:rounded-3xl ring-1 ring-border-light dark:ring-gray-800">
                     <span className="material-symbols-outlined text-5xl text-gray-300 dark:text-gray-700 mb-3 block">history_edu</span>
                     <p className="text-sm font-bold text-text-main dark:text-white font-display">Nenhum registro ainda</p>
                     <p className="text-xs text-text-secondary dark:text-gray-400 mt-1">Comece registrando o humor ou uma observação do dia.</p>

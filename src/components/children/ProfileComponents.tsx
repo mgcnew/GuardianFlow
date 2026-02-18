@@ -28,81 +28,98 @@ export function ProfileHeader({ child, activeTab, setActiveTab, onEdit, onPrintP
         { id: 'documentos', label: 'Documentos', roles: ['saas_admin', 'admin', 'org_admin', 'technical', 'technician', 'pedagogue'] }
     ].filter(tab => profile && (['saas_admin', 'admin', 'org_admin'].includes(profile.role) || tab.roles.includes(profile.role)));
 
+    const tabIcons: Record<string, string> = {
+        resumo: 'person',
+        diario: 'edit_note',
+        atendimentos: 'medical_services',
+        evolucao: 'trending_up',
+        historico: 'history',
+        saude: 'health_and_safety',
+        documentos: 'description',
+    };
+
     return (
-        <div className="rounded-3xl bg-white dark:bg-surface-dark shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800 overflow-hidden">
-            <div className="flex flex-col md:flex-row gap-8 p-8">
+        <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800 overflow-hidden">
+            <div className="flex flex-col md:flex-row gap-4 md:gap-8 p-4 md:p-8">
                 <div className="shrink-0 relative self-center md:self-start">
-                    <div className="h-40 w-40 rounded-[2.5rem] ring-8 ring-gray-50 dark:ring-gray-800/50 shadow-inner overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                    <div className="h-24 w-24 md:h-40 md:w-40 rounded-2xl md:rounded-[2.5rem] ring-4 md:ring-8 ring-gray-50 dark:ring-gray-800/50 shadow-inner overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                         {child.photo_url ? (
                             <img className="h-full w-full object-cover" src={child.photo_url} alt={child.full_name} />
                         ) : (
-                            <span className="material-symbols-outlined text-gray-300 dark:text-gray-600 text-6xl">child_care</span>
+                            <span className="material-symbols-outlined text-gray-300 dark:text-gray-600 text-4xl md:text-6xl">child_care</span>
                         )}
                     </div>
                     <div className={clsx(
-                        "absolute -bottom-2 -right-2 h-10 w-10 rounded-2xl ring-4 ring-white dark:ring-surface-dark flex items-center justify-center shadow-lg",
+                        "absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 h-7 w-7 md:h-10 md:w-10 rounded-xl md:rounded-2xl ring-2 md:ring-4 ring-white dark:ring-surface-dark flex items-center justify-center shadow-lg",
                         child.status === 'active' ? "bg-green-500" : child.status === 'urgent' ? "bg-red-500" : "bg-orange-500"
                     )}>
-                        <span className="material-symbols-outlined text-white text-[20px]">
+                        <span className="material-symbols-outlined text-white text-[14px] md:text-[20px]">
                             {child.status === 'active' ? 'check' : child.status === 'urgent' ? 'warning' : 'schedule'}
                         </span>
                     </div>
                 </div>
 
                 <div className="flex flex-1 flex-col justify-center text-center md:text-left">
-                    <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+                    <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 md:gap-6">
                         <div>
-                            <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
+                            <div className="flex items-center justify-center md:justify-start gap-3 mb-1 md:mb-2">
                                 {child.status === 'urgent' && (
                                     <span className="px-3 py-1 bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-full animate-pulse">
                                         Prioridade Alta
                                     </span>
                                 )}
                             </div>
-                            <h1 className="text-4xl font-black text-text-main dark:text-white font-display tracking-tight">{child.full_name}</h1>
-                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-3 text-text-secondary dark:text-gray-400 font-display font-medium">
-                                <p className="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 rounded-xl">
-                                    <span className="material-symbols-outlined text-[18px] text-primary">cake</span> {age} anos
+                            <h1 className="text-2xl md:text-4xl font-black text-text-main dark:text-white font-display tracking-tight">{child.full_name}</h1>
+                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-4 mt-2 md:mt-3 text-text-secondary dark:text-gray-400 font-display font-medium">
+                                <p className="flex items-center gap-1 md:gap-1.5 bg-gray-50 dark:bg-gray-800 px-2 md:px-3 py-1 md:py-1.5 rounded-lg md:rounded-xl text-xs">
+                                    <span className="material-symbols-outlined text-[16px] md:text-[18px] text-primary">cake</span> {age} anos
                                 </p>
-                                <p className="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 rounded-xl">
-                                    <span className="material-symbols-outlined text-[18px] text-primary">calendar_today</span>
-                                    Admitido: {new Date(child.admission_date).toLocaleDateString('pt-BR')}
+                                <p className="flex items-center gap-1 md:gap-1.5 bg-gray-50 dark:bg-gray-800 px-2 md:px-3 py-1 md:py-1.5 rounded-lg md:rounded-xl text-xs">
+                                    <span className="material-symbols-outlined text-[16px] md:text-[18px] text-primary">calendar_today</span>
+                                    <span className="hidden sm:inline">Admitido:</span> {new Date(child.admission_date).toLocaleDateString('pt-BR')}
                                 </p>
-                                <p className="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 rounded-xl">
-                                    <span className="material-symbols-outlined text-[18px] text-primary">location_on</span> {child.unit || 'Sem Unidade'}
+                                <p className="flex items-center gap-1 md:gap-1.5 bg-gray-50 dark:bg-gray-800 px-2 md:px-3 py-1 md:py-1.5 rounded-lg md:rounded-xl text-xs">
+                                    <span className="material-symbols-outlined text-[16px] md:text-[18px] text-primary">location_on</span> {child.unit || 'Sem Unidade'}
                                 </p>
                             </div>
                         </div>
-                        <div className="flex gap-3 justify-center md:justify-start">
+                        <div className="flex gap-2 md:gap-3 justify-center md:justify-start">
                             <button
                                 onClick={onEdit}
-                                className="flex-1 md:flex-none flex items-center justify-center gap-2 rounded-2xl border border-border-light dark:border-gray-700 bg-white dark:bg-transparent px-6 py-3 text-xs font-black uppercase tracking-widest text-text-secondary dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-display"
+                                className="flex items-center justify-center gap-1.5 md:gap-2 rounded-xl md:rounded-2xl border border-border-light dark:border-gray-700 bg-white dark:bg-transparent px-3 md:px-6 py-2 md:py-3 text-[10px] md:text-xs font-black uppercase tracking-wider md:tracking-widest text-text-secondary dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-display"
                             >
-                                <span className="material-symbols-outlined text-[18px]">edit_note</span>
-                                Editar Tudo
+                                <span className="material-symbols-outlined text-[16px] md:text-[18px]">edit_note</span>
+                                <span className="hidden sm:inline">Editar Tudo</span>
+                                <span className="sm:hidden">Editar</span>
                             </button>
                             <button
                                 onClick={onPrintPIA}
-                                className="flex-1 md:flex-none flex items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-3 text-xs font-black uppercase tracking-widest text-white shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all font-display"
+                                className="flex items-center justify-center gap-1.5 md:gap-2 rounded-xl md:rounded-2xl bg-primary px-3 md:px-6 py-2 md:py-3 text-[10px] md:text-xs font-black uppercase tracking-wider md:tracking-widest text-white shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all font-display"
                             >
-                                <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
-                                Relatório PIA
+                                <span className="material-symbols-outlined text-[16px] md:text-[18px]">picture_as_pdf</span>
+                                <span className="hidden sm:inline">Relatório PIA</span>
+                                <span className="sm:hidden">PIA</span>
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="border-t border-border-light dark:border-gray-800 px-8 bg-gray-50/30 dark:bg-gray-800/20">
-                <nav className="flex space-x-10 overflow-x-auto scrollbar-hide font-display">
+            <div className="border-t border-border-light dark:border-gray-800 px-2 md:px-8 bg-gray-50/30 dark:bg-gray-800/20">
+                <nav className="flex gap-1 md:gap-0 md:space-x-8 overflow-x-auto scrollbar-hide font-display py-2 md:py-0">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={clsx(
-                                "py-5 px-1 text-[11px] font-black uppercase tracking-[0.2em] transition-all border-b-2 hover:text-text-main dark:hover:text-white",
-                                activeTab === tab.id ? "border-primary text-primary" : "border-transparent text-text-secondary dark:text-gray-500"
+                                "md:py-5 md:px-1 md:border-b-2 md:text-[11px] md:font-black md:uppercase md:tracking-[0.2em] transition-all hover:text-text-main dark:hover:text-white whitespace-nowrap",
+                                // Mobile: pill style
+                                "flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold md:rounded-none md:bg-transparent",
+                                activeTab === tab.id
+                                    ? "md:border-primary text-primary bg-primary/10 md:bg-transparent"
+                                    : "md:border-transparent text-text-secondary dark:text-gray-500 bg-transparent"
                             )}
                         >
+                            <span className="material-symbols-outlined text-[16px] md:hidden">{tabIcons[tab.id] || 'tab'}</span>
                             {tab.label}
                         </button>
                     ))}
@@ -115,7 +132,7 @@ export function ProfileHeader({ child, activeTab, setActiveTab, onEdit, onPrintP
 
 export function BioSummary({ child }: ProfileComponentProps) {
     return (
-        <div className="rounded-3xl bg-white dark:bg-surface-dark p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
+        <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark p-4 md:p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     <div className="size-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
@@ -143,7 +160,7 @@ export function BioSummary({ child }: ProfileComponentProps) {
 
 export function FamilyContacts({ child }: ProfileComponentProps) {
     return (
-        <div className="rounded-3xl bg-white dark:bg-surface-dark p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
+        <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark p-4 md:p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     <div className="size-10 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
@@ -217,7 +234,7 @@ export function DailySchedule() {
 
 export function HealthOverview({ child }: ProfileComponentProps) {
     return (
-        <div className="rounded-3xl bg-white dark:bg-surface-dark p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
+        <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark p-4 md:p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
             <div className="flex items-center gap-3 mb-8">
                 <div className="size-10 rounded-2xl bg-red-500/10 text-red-500 flex items-center justify-center">
                     <span className="material-symbols-outlined">health_and_safety</span>
@@ -253,7 +270,7 @@ export function HealthOverview({ child }: ProfileComponentProps) {
 
 export function RecentDocuments() {
     return (
-        <div className="rounded-3xl bg-white dark:bg-surface-dark p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
+        <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark p-4 md:p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
                     <div className="size-10 rounded-2xl bg-purple-500/10 text-purple-500 flex items-center justify-center">
@@ -284,7 +301,7 @@ export function RecentDocuments() {
 
 export function QuickNote() {
     return (
-        <div className="rounded-3xl bg-yellow-50 dark:bg-yellow-900/10 p-8 shadow-xl shadow-yellow-500/5 ring-1 ring-yellow-400/20 dark:ring-yellow-500/20">
+        <div className="rounded-2xl md:rounded-3xl bg-yellow-50 dark:bg-yellow-900/10 p-4 md:p-8 shadow-xl shadow-yellow-500/5 ring-1 ring-yellow-400/20 dark:ring-yellow-500/20">
             <div className="flex items-center gap-3 mb-4">
                 <div className="size-10 rounded-2xl bg-yellow-400/20 text-yellow-700 dark:text-yellow-400 flex items-center justify-center">
                     <span className="material-symbols-outlined">push_pin</span>

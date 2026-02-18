@@ -370,21 +370,21 @@ export function ChildHistoryTab({ childId, child }: ChildHistoryTabProps) {
         <div className="space-y-6 animate-in fade-in duration-500">
 
             {/* ════════ PROFILE SCORE CARD ════════ */}
-            <div className="rounded-3xl bg-white dark:bg-surface-dark p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="size-10 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 text-primary flex items-center justify-center">
-                        <span className="material-symbols-outlined">analytics</span>
+            <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark p-4 md:p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
+                <div className="flex items-center gap-3 mb-4 md:mb-6">
+                    <div className="size-8 md:size-10 rounded-xl md:rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 text-primary flex items-center justify-center">
+                        <span className="material-symbols-outlined text-[20px] md:text-[24px]">analytics</span>
                     </div>
                     <div>
-                        <h2 className="text-xl font-black text-text-main dark:text-white font-display tracking-tight">Nota Geral do Perfil</h2>
-                        <p className="text-xs text-text-secondary dark:text-gray-400 font-display">Baseada em todo o histórico da criança</p>
+                        <h2 className="text-lg md:text-xl font-black text-text-main dark:text-white font-display tracking-tight">Nota Geral do Perfil</h2>
+                        <p className="text-[10px] md:text-xs text-text-secondary dark:text-gray-400 font-display">Baseada em todo o histórico da criança</p>
                     </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-8">
+                <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
                     {/* Overall Score Circle */}
                     <div className="relative flex-shrink-0">
-                        <svg className="size-36 -rotate-90" viewBox="0 0 120 120">
+                        <svg className="size-28 md:size-36 -rotate-90" viewBox="0 0 120 120">
                             <circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" className="text-gray-100 dark:text-gray-800" strokeWidth="10" />
                             <circle
                                 cx="60" cy="60" r="52" fill="none"
@@ -397,8 +397,8 @@ export function ChildHistoryTab({ childId, child }: ChildHistoryTabProps) {
                             />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className={`text-3xl font-black font-display ${overallColor.text}`}>{profileScore.overall}</span>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary dark:text-gray-500">{overallColor.label}</span>
+                            <span className={`text-2xl md:text-3xl font-black font-display ${overallColor.text}`}>{profileScore.overall}</span>
+                            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-text-secondary dark:text-gray-500">{overallColor.label}</span>
                         </div>
                     </div>
 
@@ -407,16 +407,16 @@ export function ChildHistoryTab({ childId, child }: ChildHistoryTabProps) {
                         {Object.values(profileScore.scores).map(score => {
                             const color = getScoreColor(score.value);
                             return (
-                                <div key={score.label} className="flex items-center gap-3 p-3 rounded-2xl bg-gray-50/50 dark:bg-gray-800/30 border border-gray-100 dark:border-gray-800">
-                                    <div className={`size-9 rounded-xl flex items-center justify-center ${color.bg}/10`}>
-                                        <span className={`material-symbols-outlined text-lg ${color.text}`}>{score.icon}</span>
+                                <div key={score.label} className="flex items-center gap-2 md:gap-3 p-2.5 md:p-3 rounded-xl md:rounded-2xl bg-gray-50/50 dark:bg-gray-800/30 border border-gray-100 dark:border-gray-800">
+                                    <div className={`size-8 md:size-9 rounded-lg md:rounded-xl flex items-center justify-center ${color.bg}/10`}>
+                                        <span className={`material-symbols-outlined text-[16px] md:text-lg ${color.text}`}>{score.icon}</span>
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between mb-1">
-                                            <span className="text-xs font-bold text-text-main dark:text-white font-display">{score.label}</span>
-                                            <span className={`text-xs font-black font-display ${color.text}`}>{score.value}%</span>
+                                            <span className="text-[10px] md:text-xs font-bold text-text-main dark:text-white font-display">{score.label}</span>
+                                            <span className={`text-[10px] md:text-xs font-black font-display ${color.text}`}>{score.value}%</span>
                                         </div>
-                                        <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                        <div className="h-1 md:h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                                             <div
                                                 className={`h-full rounded-full ${color.bg} transition-all duration-1000 ease-out`}
                                                 style={{ width: `${score.value}%` }}
@@ -446,20 +446,20 @@ export function ChildHistoryTab({ childId, child }: ChildHistoryTabProps) {
             </div>
 
             {/* ════════ FILTER CHIPS ════════ */}
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-1">
                 {filterChips.map(chip => (
                     <button
                         key={chip.key}
                         type="button"
                         onClick={() => setFilter(chip.key)}
-                        className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all font-display ${filter === chip.key
-                                ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                                : 'bg-white dark:bg-surface-dark text-text-secondary dark:text-gray-400 ring-1 ring-border-light dark:ring-gray-800 hover:ring-primary hover:text-primary'
+                        className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all font-display shrink-0 ${filter === chip.key
+                            ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                            : 'bg-white dark:bg-surface-dark text-text-secondary dark:text-gray-400 ring-1 ring-border-light dark:ring-gray-800 hover:ring-primary hover:text-primary'
                             }`}
                     >
-                        <span className="material-symbols-outlined text-base">{chip.icon}</span>
+                        <span className="material-symbols-outlined text-sm md:text-base">{chip.icon}</span>
                         {chip.label}
-                        <span className={`px-1.5 py-0.5 rounded-lg text-[10px] ${filter === chip.key ? 'bg-white/20' : 'bg-gray-100 dark:bg-gray-800'
+                        <span className={`px-1.5 py-0.5 rounded-lg text-[9px] md:text-[10px] ${filter === chip.key ? 'bg-white/20' : 'bg-gray-100 dark:bg-gray-800'
                             }`}>
                             {chip.count}
                         </span>
@@ -468,16 +468,16 @@ export function ChildHistoryTab({ childId, child }: ChildHistoryTabProps) {
             </div>
 
             {/* ════════ TIMELINE ════════ */}
-            <div className="rounded-3xl bg-white dark:bg-surface-dark p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
-                <div className="flex items-center gap-3 mb-8">
-                    <div className="size-10 rounded-2xl bg-orange-500/10 text-orange-500 flex items-center justify-center">
-                        <span className="material-symbols-outlined">timeline</span>
+            <div className="rounded-2xl md:rounded-3xl bg-white dark:bg-surface-dark p-4 md:p-8 shadow-xl shadow-black/5 ring-1 ring-border-light dark:ring-gray-800">
+                <div className="flex items-center gap-3 mb-6 md:mb-8">
+                    <div className="size-8 md:size-10 rounded-xl md:rounded-2xl bg-orange-500/10 text-orange-500 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-lg md:text-[24px]">timeline</span>
                     </div>
                     <div>
-                        <h2 className="text-xl font-black text-text-main dark:text-white font-display tracking-tight">
+                        <h2 className="text-lg md:text-xl font-black text-text-main dark:text-white font-display tracking-tight">
                             Linha do Tempo
                         </h2>
-                        <p className="text-xs text-text-secondary dark:text-gray-400 font-display">
+                        <p className="text-[10px] md:text-xs text-text-secondary dark:text-gray-400 font-display">
                             {filteredTimeline.length} registro(s) encontrado(s)
                         </p>
                     </div>
@@ -494,16 +494,16 @@ export function ChildHistoryTab({ childId, child }: ChildHistoryTabProps) {
                         </p>
                     </div>
                 ) : (
-                    <div className="relative pl-6 border-l-2 border-gray-100 dark:border-gray-800 space-y-6">
+                    <div className="relative pl-4 md:pl-6 border-l-2 border-gray-100 dark:border-gray-800 space-y-4 md:space-y-6">
                         {filteredTimeline.map((event) => {
                             const isExpanded = expandedId === event.id;
                             return (
                                 <div key={event.id} className="relative group">
                                     {/* Timeline Dot */}
-                                    <div className={`absolute -left-[33px] top-3 size-4 rounded-full border-4 border-white dark:border-surface-dark ${event.urgency === 'high' ? 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.5)]'
-                                            : event.source === 'event' && event.status === 'completed' ? 'bg-emerald-400'
-                                                : event.source === 'goal' && event.status === 'completed' ? 'bg-emerald-400'
-                                                    : 'bg-gray-300 dark:bg-gray-600 group-hover:bg-primary'
+                                    <div className={`absolute -left-[27px] md:-left-[33px] top-3 size-3 md:size-4 rounded-full border-[3px] md:border-4 border-white dark:border-surface-dark ${event.urgency === 'high' ? 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.5)]'
+                                        : event.source === 'event' && event.status === 'completed' ? 'bg-emerald-400'
+                                            : event.source === 'goal' && event.status === 'completed' ? 'bg-emerald-400'
+                                                : 'bg-gray-300 dark:bg-gray-600 group-hover:bg-primary'
                                         } transition-colors`}></div>
 
                                     {/* Card */}
@@ -534,16 +534,16 @@ export function ChildHistoryTab({ childId, child }: ChildHistoryTabProps) {
                                                     )}
                                                     {event.urgency && event.urgency !== 'low' && (
                                                         <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-widest ${event.urgency === 'high' ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
-                                                                : 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'
+                                                            : 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'
                                                             }`}>
                                                             {event.urgency === 'high' ? 'Urgente' : 'Média'}
                                                         </span>
                                                     )}
                                                     {event.status && (
                                                         <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-widest ${event.status === 'completed' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400'
-                                                                : event.status === 'cancelled' || event.status === 'missed' ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
-                                                                    : event.status === 'active' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                                                                        : 'bg-gray-100 dark:bg-gray-800 text-gray-500'
+                                                            : event.status === 'cancelled' || event.status === 'missed' ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+                                                                : event.status === 'active' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                                                                    : 'bg-gray-100 dark:bg-gray-800 text-gray-500'
                                                             }`}>
                                                             {event.status === 'completed' ? 'Concluído'
                                                                 : event.status === 'cancelled' ? 'Cancelado'
