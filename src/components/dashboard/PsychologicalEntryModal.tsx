@@ -179,7 +179,7 @@ export function PsychologicalEntryModal({ isOpen, onClose, initialChildId }: Psy
                     </div>
                 )}
 
-                <div className="flex-1 overflow-y-auto p-6">
+                <div className="flex-1 overflow-y-auto no-scrollbar p-6">
                     {step === 1 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
                             <div>

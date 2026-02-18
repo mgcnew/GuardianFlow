@@ -84,7 +84,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
             </div>
 
             {/* Navigation */}
-            <nav className="flex flex-1 flex-col gap-2 p-4 overflow-y-auto overflow-x-hidden">
+            <nav className="flex-1 flex flex-col gap-2 p-4 overflow-y-auto no-scrollbar overflow-x-hidden">
                 {filteredNavItems.map((item) => (
                     <NavLink
                         key={item.to}
