@@ -57,7 +57,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
         <>
             {/* Logo / Brand */}
             <div className={clsx(
-                "flex items-center gap-3 px-6 py-6 border-b border-border-light dark:border-gray-800 transition-all overflow-hidden",
+                "flex items-center gap-3 px-6 py-4 border-b border-border-light dark:border-gray-800 transition-all overflow-hidden",
                 isCollapsed && !isMobileOpen ? "justify-center px-2" : ""
             )}>
                 <div className="flex items-center justify-center bg-primary/10 rounded-full size-10 text-primary shrink-0">
