@@ -500,7 +500,7 @@ export function ChildHistoryTab({ childId, child }: ChildHistoryTabProps) {
                             return (
                                 <div key={event.id} className="relative group">
                                     {/* Timeline Dot */}
-                                    <div className={`absolute -left-[27px] md:-left-[33px] top-3 size-3 md:size-4 rounded-full border-[3px] md:border-4 border-white dark:border-surface-dark ${event.urgency === 'high' ? 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.5)]'
+                                    <div className={`absolute -left-[23px] md:-left-[33px] top-3 size-3 md:size-4 rounded-full border-[3px] md:border-4 border-white dark:border-surface-dark ${event.urgency === 'high' ? 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.5)]'
                                         : event.source === 'event' && event.status === 'completed' ? 'bg-emerald-400'
                                             : event.source === 'goal' && event.status === 'completed' ? 'bg-emerald-400'
                                                 : 'bg-gray-300 dark:bg-gray-600 group-hover:bg-primary'
