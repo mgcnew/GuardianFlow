@@ -154,6 +154,14 @@ export function Header({ onMenuToggle }: HeaderProps) {
                                         <span className="material-symbols-outlined text-[18px]">person</span>
                                         Meu Perfil
                                     </Link>
+                                    <Link
+                                        to="/dashboard/settings"
+                                        className="flex items-center gap-3 px-4 py-2 text-sm text-text-secondary dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                        onClick={() => setDropdownOpen(false)}
+                                    >
+                                        <span className="material-symbols-outlined text-[18px]">settings</span>
+                                        Configurações
+                                    </Link>
                                     <button
                                         onClick={handleSignOut}
                                         className="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"

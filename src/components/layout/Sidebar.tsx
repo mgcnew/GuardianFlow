@@ -11,7 +11,6 @@ const navItems = [
     { icon: 'school', label: 'Pedagogia', to: '/dashboard/pedagogy' },
     { icon: 'diversity_3', label: 'Assis. Social', to: '/dashboard/social' },
     { icon: 'inventory_2', label: 'Estoque', to: '/dashboard/inventory' },
-    { icon: 'settings', label: 'Configurações', to: '/dashboard/settings' },
 ];
 
 interface SidebarProps {
