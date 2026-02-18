@@ -19,8 +19,10 @@ export function UserProfile() {
         ? {
             saas_admin: 'Super Admin',
             org_admin: 'Administrador',
+            admin: 'Administrador',
             pedagogue: 'Pedagogo(a)',
             technician: 'Técnico(a)',
+            technical: 'Técnico(a)',
             educator: 'Educador(a)',
             operational: 'Operacional',
         }[profile.role] || profile.role

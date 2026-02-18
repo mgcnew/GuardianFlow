@@ -114,14 +114,7 @@ export function Schedule() {
         other: 'Outro',
     };
 
-    const eventTypeIcons: Record<string, string> = {
-        medical: 'local_hospital',
-        vaccine: 'vaccines',
-        school: 'school',
-        outing: 'park',
-        meeting: 'groups',
-        other: 'event',
-    };
+
 
     const priorityDots: Record<string, string> = {
         low: 'bg-gray-400',

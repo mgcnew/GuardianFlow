@@ -9,13 +9,12 @@ interface ActivityItemProps {
     time: string;
     description: React.ReactNode;
     user: string;
-    userImage?: string;
     tag: string;
     tagColor: string;
     isLast?: boolean;
 }
 
-function ActivityItem({ icon, iconColor, iconBg, title, time, description, user, userImage, tag, tagColor, isLast }: ActivityItemProps) {
+function ActivityItem({ icon, iconColor, iconBg, title, time, description, user, tag, tagColor, isLast }: ActivityItemProps) {
     return (
         <div className="flex gap-4 relative pb-8 group">
             {!isLast && <div className="absolute left-[19px] top-8 bottom-0 w-[2px] bg-gray-100 dark:bg-gray-800 group-last:hidden"></div>}

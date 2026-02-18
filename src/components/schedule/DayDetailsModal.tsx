@@ -1,7 +1,6 @@
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import clsx from 'clsx';
-import { useAuth } from '../../contexts/AuthContext';
 
 interface DayDetailsModalProps {
     isOpen: boolean;

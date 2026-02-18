@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import { format, parseISO, isSameDay, startOfDay, endOfDay } from 'date-fns';
+import { format, parseISO, isSameDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 export function StaffList({ staff }: { staff: any[] }) {
