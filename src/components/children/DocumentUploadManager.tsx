@@ -408,17 +408,17 @@ export function DocumentUploadManager({ childId, pendingFiles = [], onAddPending
 
             {/* Document Viewer Modal */}
             {viewDoc && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-white dark:bg-surface-dark w-full max-w-5xl h-[90vh] rounded-3xl shadow-2xl border border-border-light dark:border-gray-800 overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-white dark:bg-surface-dark w-full max-w-5xl h-[95vh] sm:h-[90vh] rounded-2xl sm:rounded-3xl shadow-2xl border border-border-light dark:border-gray-800 overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
                         {/* Header */}
-                        <div className="px-8 py-4 border-b border-border-light dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800/50">
-                            <div className="min-w-0">
-                                <h3 className="text-lg font-black text-text-main dark:text-white truncate font-display tracking-tight">{viewDoc.name}</h3>
-                                <p className="text-xs text-text-secondary dark:text-gray-400 font-bold uppercase tracking-widest">{getTypeLabel(viewDoc.type)}</p>
+                        <div className="px-5 sm:px-8 py-3 sm:py-4 border-b border-border-light dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800/50">
+                            <div className="min-w-0 pr-4">
+                                <h3 className="text-sm sm:text-lg font-black text-text-main dark:text-white truncate font-display tracking-tight">{viewDoc.name}</h3>
+                                <p className="text-[10px] text-text-secondary dark:text-gray-400 font-bold uppercase tracking-widest">{getTypeLabel(viewDoc.type)}</p>
                             </div>
                             <button
                                 onClick={() => setViewDoc(null)}
-                                className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors shrink-0"
+                                className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors shrink-0 active:scale-90"
                             >
                                 <span className="material-symbols-outlined text-text-secondary dark:text-gray-400">close</span>
                             </button>
@@ -442,20 +442,20 @@ export function DocumentUploadManager({ childId, pendingFiles = [], onAddPending
                         </div>
 
                         {/* Footer */}
-                        <div className="px-8 py-4 border-t border-border-light dark:border-gray-800 flex justify-end gap-3 bg-gray-50/50 dark:bg-gray-800/50">
+                        <div className="px-5 sm:px-8 py-3.5 sm:py-4 border-t border-border-light dark:border-gray-800 flex flex-col sm:flex-row justify-end gap-3 bg-gray-50/50 dark:bg-gray-800/50">
                             <a
                                 href={viewDoc.url}
                                 download
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="px-6 py-2.5 bg-white dark:bg-gray-800 border border-border-light dark:border-gray-700 rounded-xl font-black text-[10px] text-text-secondary dark:text-gray-400 uppercase tracking-widest hover:border-primary hover:text-primary transition-all flex items-center gap-2"
+                                className="w-full sm:w-auto px-6 py-3.5 sm:py-2.5 bg-white dark:bg-gray-800 border border-border-light dark:border-gray-700 rounded-xl font-black text-[10px] text-text-secondary dark:text-gray-400 uppercase tracking-widest hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2 active:scale-95"
                             >
                                 <span className="material-symbols-outlined text-base">download</span>
                                 Baixar Arquivo
                             </a>
                             <button
                                 onClick={() => setViewDoc(null)}
-                                className="px-8 py-2.5 bg-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all"
+                                className="w-full sm:w-auto px-8 py-3.5 sm:py-2.5 bg-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all active:scale-95"
                             >
                                 Fechar
                             </button>

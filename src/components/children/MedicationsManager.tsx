@@ -155,24 +155,24 @@ export function MedicationsManager({ childId }: MedicationsManagerProps) {
         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
             {/* Header / Add Button */}
             {!isFormOpen && (
-                <div className="flex justify-between items-center bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl border border-blue-100 dark:border-blue-800">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-blue-50 dark:bg-blue-900/20 p-4 sm:p-5 rounded-2xl border border-blue-100 dark:border-blue-800">
                     <div>
                         <h4 className="font-bold text-blue-900 dark:text-blue-100">Controle de Medicação</h4>
                         <p className="text-xs text-blue-700 dark:text-blue-300">Gerencie medicamentos ativos e histórico.</p>
                     </div>
                     <button
                         onClick={() => { resetForm(); setIsFormOpen(true); }}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 dark:shadow-none"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 dark:shadow-none active:scale-95"
                     >
                         <span className="material-symbols-outlined text-[20px]">add_circle</span>
-                        Adicionar
+                        Adicionar Novo
                     </button>
                 </div>
             )}
 
             {isFormOpen ? (
-                <form onSubmit={handleSubmit} className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-4">
-                    <h5 className="font-bold text-lg text-text-main dark:text-white mb-4">
+                <form onSubmit={handleSubmit} className="bg-gray-50 dark:bg-gray-800/50 p-5 sm:p-6 rounded-2xl border border-gray-200 dark:border-gray-700 space-y-4">
+                    <h5 className="font-black text-lg text-text-main dark:text-white mb-4 uppercase tracking-tight">
                         {editingMedication ? 'Editar Medicamento' : 'Novo Medicamento'}
                     </h5>
 
@@ -233,10 +233,10 @@ export function MedicationsManager({ childId }: MedicationsManagerProps) {
                         </div>
                     </div>
 
-                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                        <button type="button" onClick={() => setIsFormOpen(false)} className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-xl font-bold text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white">Cancelar</button>
-                        <button type="submit" className="px-6 py-2 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 shadow-lg shadow-primary/20">
-                            {editingMedication ? 'Atualizar' : 'Salvar Medicamento'}
+                    <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <button type="button" onClick={() => setIsFormOpen(false)} className="px-6 py-3.5 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-xl font-bold text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white active:scale-95 text-xs sm:text-sm uppercase sm:normal-case tracking-widest sm:tracking-normal">Cancelar</button>
+                        <button type="submit" className="px-6 py-3.5 sm:py-2 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 shadow-lg shadow-primary/20 active:scale-95 text-xs sm:text-sm uppercase sm:normal-case tracking-widest sm:tracking-normal">
+                            {editingMedication ? 'Atualizar Dados' : 'Salvar Medicamento'}
                         </button>
                     </div>
                 </form>
@@ -254,11 +254,11 @@ export function MedicationsManager({ childId }: MedicationsManagerProps) {
                     ) : (
                         medications?.map(med => (
                             <div key={med.id} className="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow relative group">
-                                <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button onClick={() => handleEdit(med)} className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100" title="Editar">
+                                <div className="absolute top-4 right-4 flex gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                    <button onClick={() => handleEdit(med)} className="p-2 sm:p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 transition-all active:scale-90" title="Editar">
                                         <span className="material-symbols-outlined text-[18px]">edit</span>
                                     </button>
-                                    <button onClick={() => handleDelete(med.id)} className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100" title="Excluir">
+                                    <button onClick={() => handleDelete(med.id)} className="p-2 sm:p-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 transition-all active:scale-90" title="Excluir">
                                         <span className="material-symbols-outlined text-[18px]">delete</span>
                                     </button>
                                 </div>
