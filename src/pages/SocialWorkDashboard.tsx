@@ -129,9 +129,9 @@ export function SocialWorkDashboard() {
                                                 <span className="font-bold text-text-main dark:text-white uppercase text-xs">{entry.children?.full_name}</span>
                                                 <span className={clsx(
                                                     "px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider",
-                                                    entry.urgency === 'high' ? "bg-red-100 text-red-700" :
-                                                        entry.urgency === 'medium' ? "bg-orange-100 text-orange-700" :
-                                                            "bg-blue-100 text-blue-700"
+                                                    entry.urgency === 'high' ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400" :
+                                                        entry.urgency === 'medium' ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400" :
+                                                            "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
                                                 )}>
                                                     {entry.urgency === 'high' ? 'Urgente' : entry.urgency === 'medium' ? 'Atenção' : 'Normal'}
                                                 </span>
@@ -162,7 +162,7 @@ export function SocialWorkDashboard() {
                         </h2>
                     </div>
                     <div className="p-6">
-                        <p className="text-sm text-text-secondary mb-4">Mantenha aqui lembretes sobre prazos judiciais ou visitas de rede.</p>
+                        <p className="text-sm text-text-secondary dark:text-gray-400 mb-4">Mantenha aqui lembretes sobre prazos judiciais ou visitas de rede.</p>
                         <div className="space-y-3">
                             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-900/30">
                                 <p className="text-xs font-bold text-blue-800 dark:text-blue-400 uppercase mb-1">Dica</p>

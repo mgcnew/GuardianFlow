@@ -62,7 +62,7 @@ export function ChildProfile() {
 
     if (isError || !child) {
         return (
-            <div className="p-8 bg-white dark:bg-surface-dark rounded-2xl border border-red-100 text-center shadow-sm">
+            <div className="p-8 bg-white dark:bg-surface-dark rounded-2xl border border-red-100 dark:border-red-900/30 text-center shadow-sm">
                 <span className="material-symbols-outlined text-red-500 text-5xl mb-4">person_off</span>
                 <h3 className="text-xl font-bold text-text-main dark:text-white mb-2 font-display">Acolhido não encontrado</h3>
                 <p className="text-text-secondary dark:text-gray-400 mb-6 font-display">O registro solicitado não existe ou foi removido.</p>
@@ -103,7 +103,7 @@ export function ChildProfile() {
 
                 <div className="space-y-4 sm:space-y-6">
                     <QuickNote />
-                    <div className="p-6 bg-primary/5 rounded-3xl border border-primary/10">
+                    <div className="p-6 bg-primary/5 dark:bg-primary/10 rounded-3xl border border-primary/10 dark:border-primary/20">
                         <h4 className="text-xs font-black text-primary uppercase tracking-widest mb-2">Resumo de Acesso</h4>
                         <p className="text-xs text-text-secondary dark:text-gray-400 leading-relaxed font-display">
                             Você está visualizando as informações técnicas de acolhimento. Acesso restrito a profissionais autorizados.

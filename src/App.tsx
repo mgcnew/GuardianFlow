@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { MainLayout } from './components/layout/MainLayout';
 import { Dashboard } from './pages/Dashboard';
 import { ChildrenList } from './pages/ChildrenList';
@@ -62,40 +63,42 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login />} />
+      <ThemeProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<Login />} />
 
-            <Route path="/admin" element={
-              <AdminProtectedRoute>
-                <SuperAdmin />
-              </AdminProtectedRoute>
-            } />
+              <Route path="/admin" element={
+                <AdminProtectedRoute>
+                  <SuperAdmin />
+                </AdminProtectedRoute>
+              } />
 
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <MainLayout />
-              </ProtectedRoute>
-            }>
-              <Route index element={<Dashboard />} />
-              <Route path="children" element={<ChildrenList />} />
-              <Route path="children/:id" element={<ChildProfile />} />
-              <Route path="agenda" element={<Schedule />} />
-              <Route path="logbook" element={<EducatorLogbook />} />
-              <Route path="settings" element={<UnitSettings />} />
-              <Route path="psychology" element={<PsychologistDashboard />} />
-              <Route path="pedagogy" element={<PedagogueDashboard />} />
-              <Route path="social" element={<SocialWorkDashboard />} />
-              <Route path="profile" element={<UserProfile />} />
-              <Route path="*" element={<div>Not Found</div>} />
-            </Route>
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <MainLayout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<Dashboard />} />
+                <Route path="children" element={<ChildrenList />} />
+                <Route path="children/:id" element={<ChildProfile />} />
+                <Route path="agenda" element={<Schedule />} />
+                <Route path="logbook" element={<EducatorLogbook />} />
+                <Route path="settings" element={<UnitSettings />} />
+                <Route path="psychology" element={<PsychologistDashboard />} />
+                <Route path="pedagogy" element={<PedagogueDashboard />} />
+                <Route path="social" element={<SocialWorkDashboard />} />
+                <Route path="profile" element={<UserProfile />} />
+                <Route path="*" element={<div>Not Found</div>} />
+              </Route>
 
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

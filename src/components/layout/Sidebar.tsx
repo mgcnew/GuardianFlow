@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import clsx from 'clsx';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const navItems = [
     { icon: 'dashboard', label: 'Dashboard', to: '/dashboard' },
@@ -22,6 +23,7 @@ interface SidebarProps {
 
 export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile }: SidebarProps) {
     const { profile, organization } = useAuth();
+    const { toggleTheme, isDark } = useTheme();
 
     const filteredNavItems = navItems.filter(item => {
         if (!profile) return false;
@@ -137,11 +139,34 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
             </nav>
 
 
-            {/* Collapse Toggle - desktop only */}
-            <div className="p-4 border-t border-border-light dark:border-gray-800 hidden lg:block">
+            {/* Bottom Actions */}
+            <div className="p-4 border-t border-border-light dark:border-gray-800 space-y-2">
+                {/* Theme Toggle */}
+                <button
+                    onClick={toggleTheme}
+                    className={clsx(
+                        "flex w-full cursor-pointer items-center gap-3 rounded-lg h-10 text-text-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-text-main dark:hover:text-white text-sm font-bold transition-all overflow-hidden active:scale-95",
+                        isCollapsed && !isMobileOpen ? "justify-center px-0" : "px-3"
+                    )}
+                    title={isDark ? 'Modo claro' : 'Modo escuro'}
+                >
+                    <span className={clsx(
+                        "material-symbols-outlined text-[18px] shrink-0 transition-transform duration-300",
+                        isDark ? "rotate-0" : "rotate-180"
+                    )}>
+                        {isDark ? 'light_mode' : 'dark_mode'}
+                    </span>
+                    <span className={clsx("transition-all duration-300 whitespace-nowrap", isCollapsed && !isMobileOpen ? "w-0 opacity-0 hidden" : "w-auto opacity-100")}>
+                        {isDark ? 'Modo Claro' : 'Modo Escuro'}
+                    </span>
+                </button>
+
+                {/* Collapse Toggle - desktop only */}
                 <button
                     onClick={toggleSidebar}
-                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg h-10 bg-gray-50 dark:bg-gray-800 text-text-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-text-main dark:hover:text-white text-sm font-bold transition-colors overflow-hidden"
+                    className={clsx(
+                        "w-full cursor-pointer items-center justify-center gap-2 rounded-lg h-10 bg-gray-50 dark:bg-gray-800 text-text-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-text-main dark:hover:text-white text-sm font-bold transition-colors overflow-hidden hidden lg:flex"
+                    )}
                     title={isCollapsed ? "Expandir" : "Recolher"}
                 >
                     <span className="material-symbols-outlined text-[18px]">

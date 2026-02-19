@@ -3,8 +3,34 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    color-scheme: light;
+    transition: color-scheme 0.3s;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
   body {
-    @apply font-body bg-background-light text-text-main;
+    @apply font-body bg-background-light text-text-main transition-colors duration-300;
+  }
+
+  html.dark body {
+    @apply bg-background-dark text-white;
+  }
+
+  /* Smooth transitions for theme switch on key structural elements */
+  body,
+  header,
+  aside,
+  main,
+  nav,
+  section,
+  div[class*="bg-"] {
+    transition-property: background-color, border-color, color;
+    transition-duration: 200ms;
+    transition-timing-function: ease;
   }
 }
 

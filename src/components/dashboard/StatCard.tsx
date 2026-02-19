@@ -12,23 +12,23 @@ export function StatCard({ icon, title, value, subValue, variant = 'default' }: 
     const styles = {
         default: {
             border: 'border-l-4 border-l-transparent',
-            bgIcon: 'bg-primary-light text-primary',
-            badge: 'bg-green-50 text-green-600',
+            bgIcon: 'bg-primary-light dark:bg-primary/20 text-primary dark:text-primary',
+            badge: 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400',
         },
         warning: {
             border: 'border-l-4 border-l-orange-400',
-            bgIcon: 'bg-orange-50 text-orange-500',
-            badge: 'bg-orange-50 text-orange-600',
+            bgIcon: 'bg-orange-50 dark:bg-orange-500/20 text-orange-500 dark:text-orange-400',
+            badge: 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400',
         },
         danger: {
             border: 'border-l-4 border-l-red-500',
-            bgIcon: 'bg-red-50 text-red-500',
-            badge: 'bg-red-50 text-red-600',
+            bgIcon: 'bg-red-50 dark:bg-red-500/20 text-red-500 dark:text-red-400',
+            badge: 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400',
         },
         success: {
-            border: 'border-l-4 border-l-green-500', // hypothetical
-            bgIcon: 'bg-green-50 text-green-600',
-            badge: 'bg-green-50 text-green-600',
+            border: 'border-l-4 border-l-green-500',
+            bgIcon: 'bg-green-50 dark:bg-green-500/20 text-green-600 dark:text-green-400',
+            badge: 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400',
         }
     };
 

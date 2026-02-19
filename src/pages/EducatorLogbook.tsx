@@ -155,7 +155,7 @@ export function EducatorLogbook() {
                         </div>
                     </div>
                     <div className="bg-white dark:bg-surface-dark p-5 rounded-2xl border border-border-light dark:border-gray-800 shadow-sm flex items-center gap-4">
-                        <div className="size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                        <div className="size-12 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary flex items-center justify-center">
                             <span className="material-symbols-outlined text-2xl">assignment</span>
                         </div>
                         <div>
@@ -196,7 +196,7 @@ export function EducatorLogbook() {
                                 onClick={() => { setActiveModal('shift'); setShowActionMenu(false); }}
                                 className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors text-left group"
                             >
-                                <div className="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                                <div className="size-10 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
                                     <span className="material-symbols-outlined text-xl">clinical_notes</span>
                                 </div>
                                 <div>
@@ -244,7 +244,7 @@ export function EducatorLogbook() {
                             <div className="flex items-center gap-3">
                                 <div className={clsx(
                                     "size-9 rounded-xl flex items-center justify-center",
-                                    activeModal === 'individual' ? "bg-orange-50 dark:bg-orange-900/20 text-orange-600" : "bg-primary/10 text-primary"
+                                    activeModal === 'individual' ? "bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400" : "bg-primary/10 dark:bg-primary/20 text-primary"
                                 )}>
                                     <span className="material-symbols-outlined text-xl">{activeModal === 'individual' ? 'person_add' : 'clinical_notes'}</span>
                                 </div>

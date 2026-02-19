@@ -173,9 +173,9 @@ export function PsychologistDashboard() {
                                                         <span className="font-bold text-text-main dark:text-white uppercase text-xs">{entry.children?.full_name}</span>
                                                         <span className={clsx(
                                                             "px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider",
-                                                            entry.urgency === 'high' ? "bg-red-100 text-red-700" :
-                                                                entry.urgency === 'medium' ? "bg-orange-100 text-orange-700" :
-                                                                    "bg-blue-100 text-blue-700"
+                                                            entry.urgency === 'high' ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400" :
+                                                                entry.urgency === 'medium' ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400" :
+                                                                    "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
                                                         )}>
                                                             {entry.urgency === 'high' ? 'Crítico' : entry.urgency === 'medium' ? 'Atenção' : 'Normal'}
                                                         </span>
@@ -207,7 +207,7 @@ export function PsychologistDashboard() {
                                     ) : (
                                         psychData?.appointments.map((app: any) => (
                                             <div key={app.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors border border-transparent">
-                                                <div className="size-10 rounded-lg bg-primary/10 text-primary flex flex-col items-center justify-center shrink-0">
+                                                <div className="size-10 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary flex flex-col items-center justify-center shrink-0">
                                                     <span className="text-[10px] font-bold uppercase">{format(new Date(app.start_time), 'MMM', { locale: ptBR })}</span>
                                                     <span className="text-sm font-extrabold leading-none">{format(new Date(app.start_time), 'dd')}</span>
                                                 </div>
@@ -270,7 +270,7 @@ export function PsychologistDashboard() {
                         {filteredChildren?.map((child: any) => (
                             <div key={child.id} className="bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 rounded-3xl p-5 hover:border-primary/50 transition-all group cursor-pointer shadow-sm hover:shadow-lg">
                                 <div className="flex items-center gap-4 mb-4">
-                                    <div className="size-14 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl ring-2 ring-primary/5">
+                                    <div className="size-14 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary dark:text-primary font-bold text-xl ring-2 ring-primary/5 dark:ring-primary/10">
                                         {child.full_name[0]}
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -283,8 +283,8 @@ export function PsychologistDashboard() {
                                         <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">Status Psicológico</span>
                                         <span className={clsx(
                                             "text-[10px] font-black uppercase px-2 py-0.5 rounded-full",
-                                            child.psychological_status?.toLowerCase().includes('urgente') ? "bg-red-100 text-red-700" :
-                                                child.psychological_status?.toLowerCase().includes('atenção') ? "bg-orange-100 text-orange-700" : "bg-green-100 text-green-700"
+                                            child.psychological_status?.toLowerCase().includes('urgente') ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400" :
+                                                child.psychological_status?.toLowerCase().includes('atenção') ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400" : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                                         )}>
                                             {child.psychological_status || 'Estável'}
                                         </span>
@@ -331,8 +331,8 @@ export function PsychologistDashboard() {
                                     </span>
                                     <span className={clsx(
                                         "px-2 py-0.5 rounded-full text-[10px] font-black uppercase border",
-                                        entry.urgency === 'high' ? "bg-red-50 border-red-100 text-red-600" :
-                                            entry.urgency === 'medium' ? "bg-orange-50 border-orange-100 text-orange-600" : "bg-blue-50 border-blue-100 text-blue-600"
+                                        entry.urgency === 'high' ? "bg-red-50 dark:bg-red-950/20 border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400" :
+                                            entry.urgency === 'medium' ? "bg-orange-50 dark:bg-orange-950/20 border-orange-100 dark:border-orange-900/30 text-orange-600 dark:text-orange-400" : "bg-blue-50 dark:bg-blue-950/20 border-blue-100 dark:border-blue-900/30 text-blue-600 dark:text-blue-400"
                                     )}>
                                         {entry.urgency}
                                     </span>
@@ -395,7 +395,7 @@ export function PsychologistDashboard() {
                             ].map((indicator, idx) => (
                                 <div key={idx}>
                                     <div className="flex items-center justify-between mb-1.5 px-1">
-                                        <span className="text-xs font-bold text-text-secondary uppercase">{indicator.label}</span>
+                                        <span className="text-xs font-bold text-text-secondary dark:text-gray-400 uppercase">{indicator.label}</span>
                                         <span className="text-xs font-bold text-text-main dark:text-white">{indicator.value}</span>
                                     </div>
                                     <div className="h-2 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">

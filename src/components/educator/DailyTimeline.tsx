@@ -26,12 +26,12 @@ interface DailyTimelineProps {
 }
 
 const categoryConfig: Record<string, { icon: string, color: string, bg: string }> = {
-    behavior: { icon: 'psychology', color: 'text-orange-600', bg: 'bg-orange-100' },
-    health: { icon: 'medical_services', color: 'text-blue-600', bg: 'bg-blue-100' },
-    education: { icon: 'school', color: 'text-indigo-600', bg: 'bg-indigo-100' },
-    meal: { icon: 'restaurant', color: 'text-green-600', bg: 'bg-green-100' },
-    incident: { icon: 'warning', color: 'text-red-600', bg: 'bg-red-100' },
-    default: { icon: 'article', color: 'text-gray-600', bg: 'bg-gray-100' },
+    behavior: { icon: 'psychology', color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-100 dark:bg-orange-900/30' },
+    health: { icon: 'medical_services', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-100 dark:bg-blue-900/30' },
+    education: { icon: 'school', color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-100 dark:bg-indigo-900/30' },
+    meal: { icon: 'restaurant', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-100 dark:bg-green-900/30' },
+    incident: { icon: 'warning', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-100 dark:bg-red-900/30' },
+    default: { icon: 'article', color: 'text-gray-600 dark:text-gray-400', bg: 'bg-gray-100 dark:bg-gray-800' },
 };
 
 const moodConfig: Record<string, string> = {
@@ -94,8 +94,8 @@ export function DailyTimeline({ items, loading }: DailyTimelineProps) {
                 } else {
                     // Report
                     icon = item.shift === 'night' ? 'dark_mode' : item.shift === 'afternoon' ? 'wb_twilight' : 'wb_sunny';
-                    iconBg = item.shift === 'night' ? 'bg-indigo-100' : item.shift === 'afternoon' ? 'bg-orange-100' : 'bg-amber-100';
-                    iconColor = item.shift === 'night' ? 'text-indigo-600' : item.shift === 'afternoon' ? 'text-orange-600' : 'text-amber-600';
+                    iconBg = item.shift === 'night' ? 'bg-indigo-100 dark:bg-indigo-900/30' : item.shift === 'afternoon' ? 'bg-orange-100 dark:bg-orange-900/30' : 'bg-amber-100 dark:bg-amber-900/30';
+                    iconColor = item.shift === 'night' ? 'text-indigo-600 dark:text-indigo-400' : item.shift === 'afternoon' ? 'text-orange-600 dark:text-orange-400' : 'text-amber-600 dark:text-amber-400';
                 }
 
                 return (

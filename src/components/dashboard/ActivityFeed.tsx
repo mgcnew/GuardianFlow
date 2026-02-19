@@ -32,14 +32,14 @@ function ActivityItem({ icon, iconColor, iconBg, title, time, description, user,
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <div className="flex items-center gap-1.5 min-w-0">
                         <div
-                            className="bg-primary/10 rounded-full h-5 w-5 flex items-center justify-center text-[10px] text-primary font-bold shrink-0"
+                            className="bg-primary/10 dark:bg-primary/20 rounded-full h-5 w-5 flex items-center justify-center text-[10px] text-primary dark:text-primary font-bold shrink-0"
                         >
                             {user.charAt(0)}
                         </div>
                         <span className="text-[11px] text-text-secondary dark:text-gray-400 font-medium truncate">{user}</span>
                     </div>
-                    <span className="hidden sm:block w-1 h-1 bg-gray-300 rounded-full"></span>
-                    <span className={`text-[10px] font-bold ${tagColor} px-2 py-0.5 rounded-full bg-opacity-10 whitespace-nowrap`}>{tag}</span>
+                    <span className="hidden sm:block w-1 h-1 bg-gray-300 dark:bg-gray-700 rounded-full"></span>
+                    <span className={`text-[10px] font-bold ${tagColor} px-2 py-0.5 rounded-full whitespace-nowrap`}>{tag}</span>
                 </div>
             </div>
         </div>
@@ -47,11 +47,11 @@ function ActivityItem({ icon, iconColor, iconBg, title, time, description, user,
 }
 
 const CATEGORY_MAP: Record<string, any> = {
-    behavior: { icon: 'psychology', color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20', tag: '#Comportamental', tagColor: 'text-orange-600 bg-orange-50' },
-    health: { icon: 'medication_liquid', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20', tag: '#Saúde', tagColor: 'text-blue-600 bg-blue-50' },
-    education: { icon: 'school', color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/20', tag: '#Escolar', tagColor: 'text-purple-600 bg-purple-50' },
-    meal: { icon: 'restaurant', color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-900/20', tag: '#Alimentação', tagColor: 'text-green-600 bg-green-50' },
-    incident: { icon: 'warning', color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/20', tag: '#Ocorrência', tagColor: 'text-red-600 bg-red-50' },
+    behavior: { icon: 'psychology', color: 'text-orange-500 dark:text-orange-400', bg: 'bg-orange-50 dark:bg-orange-900/30', tag: '#Comportamental', tagColor: 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30' },
+    health: { icon: 'medication_liquid', color: 'text-blue-500 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/30', tag: '#Saúde', tagColor: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30' },
+    education: { icon: 'school', color: 'text-purple-500 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-900/30', tag: '#Escolar', tagColor: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30' },
+    meal: { icon: 'restaurant', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-50 dark:bg-green-900/30', tag: '#Alimentação', tagColor: 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30' },
+    incident: { icon: 'warning', color: 'text-red-500 dark:text-red-400', bg: 'bg-red-50 dark:bg-red-900/30', tag: '#Ocorrência', tagColor: 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30' },
 };
 
 export function ActivityFeed({ logs }: { logs: any[] }) {

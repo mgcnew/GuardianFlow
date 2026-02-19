@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 
@@ -9,6 +10,7 @@ interface HeaderProps {
 
 export function Header({ onMenuToggle }: HeaderProps) {
     const { user, profile, organization, signOut, switchRole } = useAuth();
+    const { toggleTheme, isDark } = useTheme();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [searchExpanded, setSearchExpanded] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -91,6 +93,20 @@ export function Header({ onMenuToggle }: HeaderProps) {
                 </div>
 
                 <div className={clsx("flex items-center gap-2 md:gap-3", searchExpanded && "hidden md:flex")}>
+                    {/* Theme Toggle */}
+                    <button
+                        onClick={toggleTheme}
+                        className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-text-secondary dark:text-gray-400 transition-all active:scale-90"
+                        title={isDark ? 'Modo claro' : 'Modo escuro'}
+                    >
+                        <span className={clsx(
+                            "material-symbols-outlined transition-transform duration-300",
+                            isDark ? "rotate-0" : "rotate-180"
+                        )}>
+                            {isDark ? 'light_mode' : 'dark_mode'}
+                        </span>
+                    </button>
+
                     <button className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-text-secondary dark:text-gray-400 transition-colors relative">
                         <span className="material-symbols-outlined">notifications</span>
                         <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-surface-dark"></span>

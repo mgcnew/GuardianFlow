@@ -135,13 +135,13 @@ export function ChildrenList() {
             {/* Stats Row */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                    { label: 'Total', value: stats.total, color: 'text-text-main', icon: 'groups', bg: 'bg-gray-100' },
-                    { label: 'Urgentes', value: stats.urgent, color: 'text-red-600', icon: 'emergency', bg: 'bg-red-50' },
-                    { label: 'Ativos', value: stats.active, color: 'text-green-600', icon: 'check_circle', bg: 'bg-green-50' },
-                    { label: 'Pendentes', value: stats.pending, color: 'text-amber-600', icon: 'pending', bg: 'bg-amber-50' },
+                    { label: 'Total', value: stats.total, color: 'text-text-main dark:text-white', icon: 'groups', bg: 'bg-gray-100 dark:bg-gray-800' },
+                    { label: 'Urgentes', value: stats.urgent, color: 'text-red-600 dark:text-red-400', icon: 'emergency', bg: 'bg-red-50 dark:bg-red-900/20' },
+                    { label: 'Ativos', value: stats.active, color: 'text-green-600 dark:text-green-400', icon: 'check_circle', bg: 'bg-green-50 dark:bg-green-900/20' },
+                    { label: 'Pendentes', value: stats.pending, color: 'text-amber-600 dark:text-amber-400', icon: 'pending', bg: 'bg-amber-50 dark:bg-amber-900/20' },
                 ].map((stat) => (
                     <div key={stat.label} className="bg-white dark:bg-surface-dark p-4 rounded-xl border border-border-light dark:border-gray-800 shadow-sm flex items-center gap-4">
-                        <div className={`p-2 rounded-lg ${stat.bg} ${stat.color} dark:bg-gray-800`}>
+                        <div className={`p-2 rounded-lg ${stat.bg} ${stat.color}`}>
                             <span className="material-symbols-outlined">{stat.icon}</span>
                         </div>
                         <div>

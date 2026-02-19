@@ -166,7 +166,7 @@ export function PedagogueDashboard() {
                                                 <div className="flex justify-between items-start mb-2">
                                                     <div className="flex items-center gap-2">
                                                         <span className="font-bold text-text-main dark:text-white uppercase text-xs">{entry.children?.full_name}</span>
-                                                        <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-primary/10 text-primary">
+                                                        <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary">
                                                             {entry.metadata?.category === 'tutoring' ? 'Reforço' :
                                                                 entry.metadata?.category === 'school_visit' ? 'Escola' :
                                                                     entry.metadata?.category === 'evaluation' ? 'Avaliação' : 'Lúdico'}
@@ -265,7 +265,7 @@ export function PedagogueDashboard() {
                         {filteredChildren?.map((child: any) => (
                             <div key={child.id} className="bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 rounded-3xl p-5 hover:border-primary/50 transition-all group cursor-pointer shadow-sm hover:shadow-lg">
                                 <div className="flex items-center gap-4 mb-4">
-                                    <div className="size-14 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 flex items-center justify-center text-xl font-bold ring-2 ring-green-50">
+                                    <div className="size-14 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 flex items-center justify-center text-xl font-bold ring-2 ring-green-50 dark:ring-green-900/20">
                                         {child.full_name[0]}
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -278,7 +278,7 @@ export function PedagogueDashboard() {
                                         <span className="text-[10px] font-bold text-text-secondary uppercase">Acompanhamento</span>
                                         <span className={clsx(
                                             "px-2 py-0.5 rounded-full text-[9px] font-black uppercase",
-                                            child.pedagogue_indications ? "bg-amber-100 text-amber-700" : "bg-green-100 text-green-700"
+                                            child.pedagogue_indications ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400" : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                                         )}>
                                             {child.pedagogue_indications ? 'Atenção' : 'Regular'}
                                         </span>
@@ -312,10 +312,10 @@ export function PedagogueDashboard() {
                                     <span className="px-3 py-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-full text-[10px] font-black uppercase">
                                         {entry.children?.full_name}
                                     </span>
-                                    <span className="text-xs font-bold text-text-secondary">
+                                    <span className="text-xs font-bold text-text-secondary dark:text-gray-400">
                                         {format(new Date(entry.created_at), "eeee, dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
                                     </span>
-                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-gray-100 dark:bg-gray-800 text-text-secondary">
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-gray-100 dark:bg-gray-800 text-text-secondary dark:text-gray-400">
                                         {entry.metadata?.category === 'tutoring' ? 'Reforço' :
                                             entry.metadata?.category === 'school_visit' ? 'Escola' :
                                                 entry.metadata?.category === 'evaluation' ? 'Avaliação' :
