@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
+import { EmergencyModal } from './EmergencyModal';
 
 interface HeaderProps {
     onMenuToggle?: () => void;
@@ -13,6 +14,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
     const { toggleTheme, isDark } = useTheme();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [searchExpanded, setSearchExpanded] = useState(false);
+    const [emergencyModalOpen, setEmergencyModalOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLDivElement>(null);
 
@@ -95,6 +97,16 @@ export function Header({ onMenuToggle }: HeaderProps) {
                 </div>
 
                 <div className={clsx("flex items-center gap-2 md:gap-3", searchExpanded && "hidden md:flex")}>
+                    {/* Emergency Button */}
+                    <button
+                        onClick={() => setEmergencyModalOpen(true)}
+                        className="flex items-center gap-2 px-3 py-2 bg-red-100 hover:bg-red-200 dark:bg-red-950/40 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 rounded-xl transition-all active:scale-95 group"
+                        title="Emergência / Alerta"
+                    >
+                        <span className="material-symbols-outlined text-[20px] animate-pulse">emergency</span>
+                        <span className="text-[10px] font-black uppercase tracking-tighter hidden sm:block">Alerta</span>
+                    </button>
+
                     {/* Theme Toggle */}
                     <button
                         onClick={toggleTheme}
@@ -193,6 +205,10 @@ export function Header({ onMenuToggle }: HeaderProps) {
                     </div>
                 </div>
             </div>
+            <EmergencyModal
+                isOpen={emergencyModalOpen}
+                onClose={() => setEmergencyModalOpen(false)}
+            />
         </header>
     );
 }
