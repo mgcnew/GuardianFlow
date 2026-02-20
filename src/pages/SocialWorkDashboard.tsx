@@ -2,16 +2,47 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { StatCard } from '../components/dashboard/StatCard';
 import { SocialWorkEntryModal } from '../components/dashboard/SocialWorkEntryModal';
-import { format, differenceInYears, parseISO } from 'date-fns';
+import { HearingModal } from '../components/social/HearingModal';
+import { FamilyVisitModal } from '../components/social/FamilyVisitModal';
+import { format, differenceInYears, differenceInDays, parseISO, isAfter, isBefore, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import clsx from 'clsx';
 import { Link } from 'react-router-dom';
 
+type DashboardTab = 'overview' | 'cases' | 'hearings' | 'visits' | 'adoption';
+
+const LEGAL_STATUS_MAP: Record<string, { label: string; color: string; darkColor: string }> = {
+    destituicao_familiar: { label: 'Destituição', color: 'bg-red-100 text-red-700', darkColor: 'dark:bg-red-900/30 dark:text-red-400' },
+    acolhimento_provisorio: { label: 'Acolhimento', color: 'bg-purple-100 text-purple-700', darkColor: 'dark:bg-purple-900/30 dark:text-purple-400' },
+    reintegracao_familiar: { label: 'Reintegração', color: 'bg-emerald-100 text-emerald-700', darkColor: 'dark:bg-emerald-900/30 dark:text-emerald-400' },
+    disponivel_adocao: { label: 'Disp. Adoção', color: 'bg-pink-100 text-pink-700', darkColor: 'dark:bg-pink-900/30 dark:text-pink-400' },
+    em_processo_adocao: { label: 'Em Adoção', color: 'bg-blue-100 text-blue-700', darkColor: 'dark:bg-blue-900/30 dark:text-blue-400' },
+};
+
+const HEARING_TYPE_MAP: Record<string, string> = {
+    reavaliacao: 'Reavaliação', destituicao: 'Destituição', adocao: 'Adoção',
+    guarda: 'Guarda', tutela: 'Tutela', other: 'Outra',
+};
+
+const REACTION_MAP: Record<string, { label: string; icon: string; color: string }> = {
+    positive: { label: 'Positiva', icon: 'sentiment_satisfied', color: 'text-green-500' },
+    neutral: { label: 'Neutra', icon: 'sentiment_neutral', color: 'text-gray-400' },
+    anxious: { label: 'Ansiosa', icon: 'psychology_alt', color: 'text-amber-500' },
+    negative: { label: 'Negativa', icon: 'sentiment_dissatisfied', color: 'text-orange-500' },
+    aggressive: { label: 'Agressiva', icon: 'sentiment_very_dissatisfied', color: 'text-red-500' },
+};
+
+const RELATIONSHIP_MAP: Record<string, string> = {
+    mother: 'Mãe', father: 'Pai', sibling: 'Irmão(ã)', grandparent: 'Avô(ó)', uncle_aunt: 'Tio(a)', godparent: 'Padrinho/Madrinha', other: 'Outro',
+};
+
 export function SocialWorkDashboard() {
     const { profile } = useAuth();
+    const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
     const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
+    const [isHearingModalOpen, setIsHearingModalOpen] = useState(false);
+    const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
     const [selectedChildId, setSelectedChildId] = useState<string | undefined>();
     const [childSearch, setChildSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -20,56 +51,50 @@ export function SocialWorkDashboard() {
         queryKey: ['socialWorkDashboard', profile?.organization_id],
         queryFn: async () => {
             if (!profile?.organization_id) return null;
+            const orgId = profile.organization_id;
 
-            // 1. Fetch all children with relevant details
-            const { data: children } = await supabase
-                .from('children')
-                .select('id, full_name, photo_url, date_of_birth, status, legal_status, judicial_process, origin_type, admission_date')
-                .eq('organization_id', profile.organization_id)
-                .order('full_name');
+            const [childrenRes, entriesRes, hearingsRes, visitsRes, adoptionRes] = await Promise.all([
+                supabase.from('children').select('id, full_name, photo_url, date_of_birth, status, legal_status, judicial_process, origin_type, origin_reason, admission_date, reason_for_admission, mother_name, father_name').eq('organization_id', orgId).order('full_name'),
+                supabase.from('child_entries').select('*, children(full_name, photo_url)').eq('organization_id', orgId).eq('type', 'social_work').order('created_at', { ascending: false }).limit(10),
+                supabase.from('judicial_hearings').select('*, children(full_name, photo_url)').eq('organization_id', orgId).order('hearing_date', { ascending: true }),
+                supabase.from('family_visits').select('*, children(full_name, photo_url)').eq('organization_id', orgId).order('visit_date', { ascending: false }).limit(20),
+                supabase.from('adoption_processes').select('*, children(full_name, photo_url)').eq('organization_id', orgId).order('created_at', { ascending: false }),
+            ]);
 
-            // 2. Fetch recent social work entries
-            const { data: recentEntries } = await supabase
-                .from('child_entries')
-                .select('*, children(full_name, photo_url)')
-                .eq('organization_id', profile.organization_id)
-                .eq('type', 'social_work')
-                .order('created_at', { ascending: false })
-                .limit(5);
+            const children = childrenRes.data || [];
+            const entries = entriesRes.data || [];
+            const hearings = hearingsRes.data || [];
+            const visits = visitsRes.data || [];
+            const adoptions = adoptionRes.data || [];
 
-            // 3. Fetch upcoming appointments/deadlines
-            const { data: futureEntries } = await supabase
-                .from('child_entries')
-                .select('*, children(full_name)')
-                .eq('organization_id', profile.organization_id)
-                .eq('type', 'social_work')
-                .not('next_appointment', 'is', null)
-                .gte('next_appointment', new Date().toISOString())
-                .order('next_appointment', { ascending: true })
-                .limit(5);
-
-            const totalChildren = children?.length || 0;
-            const urgentCases = children?.filter(c => c.status === 'urgent' || c.legal_status === 'destituicao_familiar' || c.legal_status === 'acolhimento_provisorio').length || 0;
-            const activeDeadlines = futureEntries?.length || 0;
+            const now = new Date();
+            const upcomingHearings = hearings.filter((h: any) => isAfter(parseISO(h.hearing_date), now));
+            const urgentHearings = upcomingHearings.filter((h: any) => isBefore(parseISO(h.hearing_date), addDays(now, 7)));
+            const adoptionActive = children.filter(c => c.legal_status === 'disponivel_adocao' || c.legal_status === 'em_processo_adocao');
+            const longStay = children.filter(c => c.admission_date && differenceInDays(now, parseISO(c.admission_date)) > 365);
 
             return {
+                children,
+                entries,
+                hearings,
+                visits,
+                adoptions,
                 stats: {
-                    totalChildren,
-                    urgentCases,
-                    recentEntriesCount: recentEntries?.length || 0,
-                    activeDeadlines
-                },
-                recentEntries: recentEntries || [],
-                allChildren: children || [],
-                upcomingAppointments: futureEntries || []
+                    totalChildren: children.length,
+                    upcomingHearings: upcomingHearings.length,
+                    urgentHearings: urgentHearings.length,
+                    totalVisits: visits.length,
+                    adoptionCases: adoptionActive.length,
+                    longStay: longStay.length,
+                    totalEntries: entries.length,
+                }
             };
         },
         enabled: !!profile?.organization_id
     });
 
-    const filteredChildren = dashboardData?.allChildren.filter(child => {
-        const matchesSearch = child.full_name.toLowerCase().includes(childSearch.toLowerCase()) ||
-            child.judicial_process?.toLowerCase().includes(childSearch.toLowerCase());
+    const filteredChildren = dashboardData?.children.filter((child: any) => {
+        const matchesSearch = child.full_name.toLowerCase().includes(childSearch.toLowerCase()) || child.judicial_process?.toLowerCase().includes(childSearch.toLowerCase());
         const matchesStatus = statusFilter === 'all' || child.legal_status === statusFilter;
         return matchesSearch && matchesStatus;
     }) || [];
@@ -77,297 +102,469 @@ export function SocialWorkDashboard() {
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center py-24">
-                <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+                <div className="size-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4"></div>
                 <p className="text-text-secondary font-medium animate-pulse">Carregando painel social...</p>
             </div>
         );
     }
 
+    const TABS = [
+        { id: 'overview', label: 'Visão Geral', icon: 'dashboard' },
+        { id: 'cases', label: 'Gestão de Casos', icon: 'folder_shared' },
+        { id: 'hearings', label: 'Audiências', icon: 'gavel' },
+        { id: 'visits', label: 'Visitas', icon: 'family_restroom' },
+        { id: 'adoption', label: 'Adoção', icon: 'favorite' },
+    ];
+
     return (
-        <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500">
+        <div className="space-y-6 animate-in fade-in duration-500">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl sm:text-3xl font-black text-text-main dark:text-white tracking-tight flex items-center gap-2">
-                        <span className="material-symbols-outlined text-amber-500 text-3xl">psychology</span>
+                        <span className="material-symbols-outlined text-amber-500 text-3xl">social_leaderboard</span>
                         Serviço Social
                     </h1>
                     <p className="text-sm text-text-secondary dark:text-gray-400 font-medium mt-1">
-                        Gestão de casos, processos judiciais e acompanhamento familiar.
+                        Gestão de casos, audiências, visitas familiares e processos de adoção.
                     </p>
                 </div>
-                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                    <button
-                        onClick={() => alert('Módulo de Relatórios Detalhados em desenvolvimento.\n\nEm breve você poderá gerar relatórios em PDF de:\n- Acompanhamento individual\n- PIA (Plano Individual de Atendimento)\n- Relatórios de Audiência')}
-                        className="flex-1 sm:flex-none px-4 py-2.5 bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 text-text-main dark:text-white text-sm font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
-                        <span className="material-symbols-outlined text-lg">description</span>
-                        <span className="whitespace-nowrap">Relatórios</span>
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                    <button onClick={() => { setSelectedChildId(undefined); setIsVisitModalOpen(true); }}
+                        className="flex-1 sm:flex-none px-3 py-2.5 bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 text-text-main dark:text-white text-xs font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
+                        <span className="material-symbols-outlined text-base text-purple-500">family_restroom</span>Visita
                     </button>
-                    <button
-                        onClick={() => { setSelectedChildId(undefined); setIsEntryModalOpen(true); }}
-                        className="flex-1 sm:flex-none px-4 py-2.5 bg-amber-500 text-white text-sm font-bold rounded-xl hover:bg-amber-600 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 active:scale-95"
-                    >
-                        <span className="material-symbols-outlined text-lg">add</span>
-                        <span className="whitespace-nowrap">Novo Atendimento</span>
+                    <button onClick={() => { setSelectedChildId(undefined); setIsHearingModalOpen(true); }}
+                        className="flex-1 sm:flex-none px-3 py-2.5 bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 text-text-main dark:text-white text-xs font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
+                        <span className="material-symbols-outlined text-base text-red-500">gavel</span>Audiência
+                    </button>
+                    <button onClick={() => { setSelectedChildId(undefined); setIsEntryModalOpen(true); }}
+                        className="flex-1 sm:flex-none px-3 py-2.5 bg-amber-500 text-white text-xs font-bold rounded-xl hover:bg-amber-600 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-amber-500/20 active:scale-95">
+                        <span className="material-symbols-outlined text-base">add</span>Atendimento
                     </button>
                 </div>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <StatCard
-                    icon="diversity_3"
-                    title="Total Acolhidos"
-                    value={dashboardData?.stats.totalChildren || 0}
-                    variant="default"
-                />
-                <StatCard
-                    icon="gavel"
-                    title="Processos Críticos"
-                    value={dashboardData?.stats.urgentCases || 0}
-                    variant={dashboardData?.stats.urgentCases && dashboardData.stats.urgentCases > 0 ? 'danger' : 'default'}
-                />
-                <StatCard
-                    icon="event_note"
-                    title="Prazos / Agendas"
-                    value={dashboardData?.stats.activeDeadlines || 0}
-                    variant="warning"
-                />
-                <StatCard
-                    icon="history"
-                    title="Atendimentos (Mês)"
-                    value={dashboardData?.stats.recentEntriesCount || 0}
-                    variant="default"
-                />
+            {/* Tabs */}
+            <div className="flex gap-1 bg-gray-100 dark:bg-gray-900 rounded-2xl p-1 overflow-x-auto no-scrollbar">
+                {TABS.map(tab => (
+                    <button key={tab.id} onClick={() => setActiveTab(tab.id as DashboardTab)}
+                        className={clsx("flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap",
+                            activeTab === tab.id ? "bg-white dark:bg-surface-dark text-text-main dark:text-white shadow-sm" : "text-text-secondary dark:text-gray-500 hover:text-text-main dark:hover:text-white")}>
+                        <span className="material-symbols-outlined text-base">{tab.icon}</span>{tab.label}
+                    </button>
+                ))}
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                {/* Left Column: Children List / Case Management */}
-                <div className="xl:col-span-2 space-y-6">
-                    <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 shadow-sm overflow-hidden flex flex-col h-full">
-                        <div className="px-6 py-5 border-b border-border-light dark:border-gray-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <h2 className="text-lg font-bold text-text-main dark:text-white flex items-center gap-2">
-                                <span className="material-symbols-outlined text-amber-500">folder_shared</span>
-                                Gestão de Casos
-                            </h2>
+            {/* Tab Content */}
+            {activeTab === 'overview' && <OverviewTab data={dashboardData} onOpenEntry={(id) => { setSelectedChildId(id); setIsEntryModalOpen(true); }} onOpenHearing={(id) => { setSelectedChildId(id); setIsHearingModalOpen(true); }} />}
+            {activeTab === 'cases' && <CasesTab data={dashboardData} search={childSearch} setSearch={setChildSearch} filter={statusFilter} setFilter={setStatusFilter} filtered={filteredChildren} onOpenEntry={(id) => { setSelectedChildId(id); setIsEntryModalOpen(true); }} />}
+            {activeTab === 'hearings' && <HearingsTab data={dashboardData} onNew={() => setIsHearingModalOpen(true)} />}
+            {activeTab === 'visits' && <VisitsTab data={dashboardData} onNew={() => setIsVisitModalOpen(true)} />}
+            {activeTab === 'adoption' && <AdoptionTab data={dashboardData} />}
 
-                            <div className="flex items-center gap-2 w-full sm:w-auto">
-                                <div className="relative flex-1 sm:w-64">
-                                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">search</span>
-                                    <input
-                                        type="text"
-                                        placeholder="Buscar por nome ou processo..."
-                                        className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-medium outline-none focus:border-amber-500/50 focus:bg-white dark:focus:bg-black transition-all"
-                                        value={childSearch}
-                                        onChange={(e) => setChildSearch(e.target.value)}
-                                    />
+            <SocialWorkEntryModal isOpen={isEntryModalOpen} onClose={() => { setIsEntryModalOpen(false); setSelectedChildId(undefined); }} initialChildId={selectedChildId} />
+            <HearingModal isOpen={isHearingModalOpen} onClose={() => { setIsHearingModalOpen(false); setSelectedChildId(undefined); }} initialChildId={selectedChildId} />
+            <FamilyVisitModal isOpen={isVisitModalOpen} onClose={() => { setIsVisitModalOpen(false); setSelectedChildId(undefined); }} initialChildId={selectedChildId} />
+        </div>
+    );
+}
+
+/* ==================== OVERVIEW TAB ==================== */
+function OverviewTab({ data, onOpenEntry, onOpenHearing }: { data: any; onOpenEntry: (id?: string) => void; onOpenHearing: (id?: string) => void }) {
+    if (!data) return null;
+    const now = new Date();
+    const upcomingHearings = (data.hearings || []).filter((h: any) => isAfter(parseISO(h.hearing_date), now)).slice(0, 5);
+
+    return (
+        <div className="space-y-6 animate-in fade-in duration-300">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                {[
+                    { icon: 'diversity_3', label: 'Acolhidos', value: data.stats.totalChildren, color: 'amber' },
+                    { icon: 'gavel', label: 'Audiências Próx.', value: data.stats.upcomingHearings, color: 'red' },
+                    { icon: 'priority_high', label: 'Audiências 7d', value: data.stats.urgentHearings, color: 'rose' },
+                    { icon: 'family_restroom', label: 'Visitas (Total)', value: data.stats.totalVisits, color: 'purple' },
+                    { icon: 'favorite', label: 'Casos Adoção', value: data.stats.adoptionCases, color: 'pink' },
+                    { icon: 'schedule', label: 'Acolhimento +1 ano', value: data.stats.longStay, color: 'blue' },
+                ].map((stat, i) => (
+                    <div key={i} className="bg-white dark:bg-surface-dark rounded-2xl border border-border-light dark:border-gray-800 p-4 shadow-sm">
+                        <div className={`size-9 bg-${stat.color}-50 dark:bg-${stat.color}-900/20 rounded-xl flex items-center justify-center mb-2`}>
+                            <span className={`material-symbols-outlined text-${stat.color}-500 text-xl`}>{stat.icon}</span>
+                        </div>
+                        <p className="text-2xl font-black text-text-main dark:text-white">{stat.value}</p>
+                        <p className="text-[10px] font-bold text-text-secondary dark:text-gray-500 uppercase tracking-wider mt-0.5">{stat.label}</p>
+                    </div>
+                ))}
+            </div>
+
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                {/* Upcoming Hearings */}
+                <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-border-light dark:border-gray-800 flex items-center justify-between">
+                        <h2 className="text-sm font-black text-text-main dark:text-white flex items-center gap-2 uppercase tracking-wide">
+                            <span className="material-symbols-outlined text-red-500">gavel</span>Próximas Audiências
+                        </h2>
+                        <button onClick={() => onOpenHearing()} className="text-[10px] font-bold text-primary uppercase tracking-wider hover:text-primary-dark transition-colors">+ Nova</button>
+                    </div>
+                    <div className="divide-y divide-gray-50 dark:divide-gray-800">
+                        {upcomingHearings.length === 0 ? (
+                            <div className="p-8 text-center">
+                                <span className="material-symbols-outlined text-gray-300 dark:text-gray-600 text-4xl mb-2 block">event_busy</span>
+                                <p className="text-sm text-text-secondary dark:text-gray-500">Nenhuma audiência agendada.</p>
+                            </div>
+                        ) : upcomingHearings.map((h: any) => {
+                            const daysUntil = differenceInDays(parseISO(h.hearing_date), now);
+                            const isUrgent = daysUntil <= 7;
+                            return (
+                                <div key={h.id} className="p-4 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
+                                    <div className="flex items-start gap-3">
+                                        <div className={clsx("flex flex-col items-center justify-center rounded-xl px-2.5 py-1.5 min-w-[3.5rem]", isUrgent ? "bg-red-50 dark:bg-red-900/20 text-red-600" : "bg-gray-50 dark:bg-gray-800 text-text-secondary dark:text-gray-400")}>
+                                            <span className="text-[10px] font-bold uppercase">{format(parseISO(h.hearing_date), 'MMM', { locale: ptBR })}</span>
+                                            <span className="text-lg font-black leading-none">{format(parseISO(h.hearing_date), 'dd')}</span>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 mb-0.5">
+                                                <span className={clsx("px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wide", isUrgent ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400")}>
+                                                    {HEARING_TYPE_MAP[h.hearing_type] || h.hearing_type}
+                                                </span>
+                                                {isUrgent && <span className="text-[9px] font-bold text-red-500 animate-pulse">Em {daysUntil}d</span>}
+                                            </div>
+                                            <p className="text-sm font-bold text-text-main dark:text-white truncate">{h.children?.full_name}</p>
+                                            <p className="text-[10px] text-text-secondary dark:text-gray-500">{h.court || 'Vara não informada'} • {format(parseISO(h.hearing_date), 'HH:mm')}</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <select
-                                    value={statusFilter}
-                                    onChange={(e) => setStatusFilter(e.target.value)}
-                                    className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-medium outline-none focus:border-amber-500/50"
-                                >
-                                    <option value="all">Todos Status</option>
-                                    <option value="acolhimento_provisorio">Acolhimento Provisório</option>
-                                    <option value="destituicao_familiar">Destituição Familiar</option>
-                                    <option value="reintegracao_familiar">Reintegração Familiar</option>
-                                    <option value="disponivel_adocao">Disponível para Adoção</option>
-                                    <option value="em_processo_adocao">Em Processo de Adoção</option>
-                                </select>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Recent Entries */}
+                <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-border-light dark:border-gray-800 flex items-center justify-between">
+                        <h2 className="text-sm font-black text-text-main dark:text-white flex items-center gap-2 uppercase tracking-wide">
+                            <span className="material-symbols-outlined text-blue-500">history</span>Atendimentos Recentes
+                        </h2>
+                        <button onClick={() => onOpenEntry()} className="text-[10px] font-bold text-primary uppercase tracking-wider hover:text-primary-dark transition-colors">+ Novo</button>
+                    </div>
+                    <div className="divide-y divide-gray-50 dark:divide-gray-800">
+                        {(data.entries || []).length === 0 ? (
+                            <div className="p-8 text-center">
+                                <span className="material-symbols-outlined text-gray-300 dark:text-gray-600 text-4xl mb-2 block">note_alt</span>
+                                <p className="text-sm text-text-secondary dark:text-gray-500">Nenhum atendimento registrado.</p>
+                            </div>
+                        ) : (data.entries || []).slice(0, 5).map((entry: any) => (
+                            <div key={entry.id} className="p-4 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
+                                <div className="flex justify-between items-start mb-1">
+                                    <div className="flex items-center gap-2">
+                                        <img src={entry.children?.photo_url || `https://ui-avatars.com/api/?name=${entry.children?.full_name}&background=random`} className="size-6 rounded-full" />
+                                        <span className="text-xs font-bold text-text-main dark:text-white truncate max-w-[150px]">{entry.children?.full_name}</span>
+                                        <span className={clsx("px-1.5 py-0.5 rounded text-[8px] font-black uppercase",
+                                            entry.urgency === 'high' ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" :
+                                                entry.urgency === 'medium' ? "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400" :
+                                                    "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400"
+                                        )}>{entry.urgency === 'high' ? 'Alta' : entry.urgency === 'medium' ? 'Média' : 'Normal'}</span>
+                                    </div>
+                                    <span className="text-[10px] font-medium text-text-secondary dark:text-gray-500">{format(parseISO(entry.created_at), "dd/MM HH:mm")}</span>
+                                </div>
+                                <p className="text-sm font-medium text-text-main dark:text-gray-200 line-clamp-1">{entry.title}</p>
+                                <p className="text-xs text-text-secondary dark:text-gray-400 line-clamp-1 mt-0.5">{entry.content}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Recent Visits Summary */}
+            {(data.visits || []).length > 0 && (
+                <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-border-light dark:border-gray-800">
+                        <h2 className="text-sm font-black text-text-main dark:text-white flex items-center gap-2 uppercase tracking-wide">
+                            <span className="material-symbols-outlined text-purple-500">family_restroom</span>Últimas Visitas Familiares
+                        </h2>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-gray-100 dark:bg-gray-800">
+                        {(data.visits || []).slice(0, 6).map((v: any) => (
+                            <div key={v.id} className="p-4 bg-white dark:bg-surface-dark">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <img src={v.children?.photo_url || `https://ui-avatars.com/api/?name=${v.children?.full_name}&background=random`} className="size-7 rounded-full" />
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs font-bold text-text-main dark:text-white truncate">{v.children?.full_name}</p>
+                                        <p className="text-[10px] text-text-secondary dark:text-gray-500">{format(parseISO(v.visit_date), 'dd/MM/yyyy HH:mm')}</p>
+                                    </div>
+                                    {v.child_reaction && REACTION_MAP[v.child_reaction] && (
+                                        <span className={`material-symbols-outlined text-lg ${REACTION_MAP[v.child_reaction].color}`}>{REACTION_MAP[v.child_reaction].icon}</span>
+                                    )}
+                                </div>
+                                <p className="text-[10px] text-text-secondary dark:text-gray-500">
+                                    <strong>{v.visitor_name}</strong> ({RELATIONSHIP_MAP[v.relationship] || v.relationship}) • {v.duration_minutes}min
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+/* ==================== CASES TAB ==================== */
+function CasesTab({ data, search, setSearch, filter, setFilter, filtered, onOpenEntry }: any) {
+    return (
+        <div className="space-y-4 animate-in fade-in duration-300">
+            <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-border-light dark:border-gray-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <h2 className="text-sm font-black text-text-main dark:text-white flex items-center gap-2 uppercase tracking-wide">
+                        <span className="material-symbols-outlined text-amber-500">folder_shared</span>Todos os Casos ({filtered.length})
+                    </h2>
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <div className="relative flex-1 sm:w-64">
+                            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">search</span>
+                            <input type="text" placeholder="Buscar por nome ou processo..." value={search} onChange={(e) => setSearch(e.target.value)}
+                                className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-medium outline-none focus:border-amber-500/50 transition-all" />
+                        </div>
+                        <select value={filter} onChange={(e) => setFilter(e.target.value)}
+                            className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-medium outline-none focus:border-amber-500/50">
+                            <option value="all">Todos</option>
+                            {Object.entries(LEGAL_STATUS_MAP).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+                        </select>
+                    </div>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="bg-gray-50/50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-800">
+                                <th className="px-6 py-3 text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest">Acolhido</th>
+                                <th className="px-4 py-3 text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest hidden sm:table-cell">Idade</th>
+                                <th className="px-4 py-3 text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest">Status Legal</th>
+                                <th className="px-4 py-3 text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest hidden md:table-cell">Motivo do Acolhimento</th>
+                                <th className="px-4 py-3 text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest hidden lg:table-cell">Tempo Acolhido</th>
+                                <th className="px-4 py-3 text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
+                            {filtered.length === 0 ? (
+                                <tr><td colSpan={6} className="px-6 py-12 text-center text-text-secondary text-sm">Nenhum acolhido encontrado.</td></tr>
+                            ) : filtered.map((child: any) => {
+                                const ageText = child.date_of_birth ? `${differenceInYears(new Date(), parseISO(child.date_of_birth))} anos` : '-';
+                                const daysIn = child.admission_date ? differenceInDays(new Date(), parseISO(child.admission_date)) : 0;
+                                const timeText = daysIn > 365 ? `${Math.floor(daysIn / 365)}a ${Math.floor((daysIn % 365) / 30)}m` : daysIn > 30 ? `${Math.floor(daysIn / 30)} meses` : `${daysIn} dias`;
+                                const status = LEGAL_STATUS_MAP[child.legal_status] || { label: child.legal_status?.replace(/_/g, ' ') || 'Não definido', color: 'bg-gray-100 text-gray-600', darkColor: 'dark:bg-gray-800 dark:text-gray-400' };
+                                return (
+                                    <tr key={child.id} className="group hover:bg-amber-50/30 dark:hover:bg-amber-900/5 transition-colors">
+                                        <td className="px-6 py-3">
+                                            <Link to={`/dashboard/children/${child.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                                                <img src={child.photo_url || `https://ui-avatars.com/api/?name=${child.full_name}&background=random`} className="size-9 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm" />
+                                                <div>
+                                                    <p className="text-sm font-bold text-text-main dark:text-white">{child.full_name}</p>
+                                                    <p className="text-[10px] text-text-secondary dark:text-gray-500">{child.judicial_process || 'S/ Processo'}</p>
+                                                </div>
+                                            </Link>
+                                        </td>
+                                        <td className="px-4 py-3 hidden sm:table-cell"><span className="text-xs font-medium text-text-secondary dark:text-gray-400">{ageText}</span></td>
+                                        <td className="px-4 py-3"><span className={clsx("px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-wide", status.color, status.darkColor)}>{status.label}</span></td>
+                                        <td className="px-4 py-3 hidden md:table-cell"><span className="text-xs text-text-secondary dark:text-gray-400 line-clamp-1 max-w-[200px]">{child.reason_for_admission || child.origin_reason || '-'}</span></td>
+                                        <td className="px-4 py-3 hidden lg:table-cell">
+                                            <span className={clsx("text-xs font-mono font-medium", daysIn > 365 ? "text-red-500" : daysIn > 180 ? "text-amber-500" : "text-text-secondary dark:text-gray-400")}>{timeText}</span>
+                                        </td>
+                                        <td className="px-4 py-3 text-right">
+                                            <button onClick={() => onOpenEntry(child.id)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-amber-500 hover:text-white text-gray-400 transition-all flex items-center justify-center ml-auto" title="Nova Anotação">
+                                                <span className="material-symbols-outlined text-lg">edit_note</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+/* ==================== HEARINGS TAB ==================== */
+function HearingsTab({ data, onNew }: { data: any; onNew: () => void }) {
+    const now = new Date();
+    const upcoming = (data?.hearings || []).filter((h: any) => isAfter(parseISO(h.hearing_date), now));
+    const past = (data?.hearings || []).filter((h: any) => isBefore(parseISO(h.hearing_date), now));
+
+    return (
+        <div className="space-y-6 animate-in fade-in duration-300">
+            <div className="flex items-center justify-between">
+                <h2 className="text-lg font-black text-text-main dark:text-white flex items-center gap-2">
+                    <span className="material-symbols-outlined text-red-500">gavel</span>Audiências Judiciais
+                </h2>
+                <button onClick={onNew} className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-xl hover:bg-red-700 transition-all flex items-center gap-1.5 active:scale-95">
+                    <span className="material-symbols-outlined text-base">add</span>Nova Audiência
+                </button>
+            </div>
+
+            {/* Upcoming */}
+            <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-border-light dark:border-gray-800">
+                    <h3 className="text-xs font-black text-red-500 uppercase tracking-widest">Próximas ({upcoming.length})</h3>
+                </div>
+                <div className="divide-y divide-gray-50 dark:divide-gray-800">
+                    {upcoming.length === 0 ? (
+                        <div className="p-8 text-center"><p className="text-sm text-text-secondary">Nenhuma audiência agendada.</p></div>
+                    ) : upcoming.map((h: any) => {
+                        const daysUntil = differenceInDays(parseISO(h.hearing_date), now);
+                        return (
+                            <div key={h.id} className="p-4 hover:bg-red-50/30 dark:hover:bg-red-900/5 transition-colors">
+                                <div className="flex items-start gap-4">
+                                    <div className={clsx("flex flex-col items-center justify-center rounded-xl px-3 py-2 min-w-[4rem]", daysUntil <= 3 ? "bg-red-100 dark:bg-red-900/30 text-red-600 animate-pulse" : daysUntil <= 7 ? "bg-red-50 dark:bg-red-900/20 text-red-500" : "bg-gray-50 dark:bg-gray-800 text-text-secondary")}>
+                                        <span className="text-[10px] font-bold uppercase">{format(parseISO(h.hearing_date), 'MMM', { locale: ptBR })}</span>
+                                        <span className="text-xl font-black leading-none">{format(parseISO(h.hearing_date), 'dd')}</span>
+                                        <span className="text-[10px] font-medium">{format(parseISO(h.hearing_date), 'HH:mm')}</span>
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded text-[9px] font-black uppercase">{HEARING_TYPE_MAP[h.hearing_type] || h.hearing_type}</span>
+                                            {daysUntil <= 3 && <span className="text-[10px] font-bold text-red-500">⚠ Em {daysUntil}d</span>}
+                                        </div>
+                                        <p className="text-sm font-bold text-text-main dark:text-white">{h.children?.full_name}</p>
+                                        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-[10px] text-text-secondary dark:text-gray-500">
+                                            {h.court && <span className="flex items-center gap-1"><span className="material-symbols-outlined text-xs">account_balance</span>{h.court}</span>}
+                                            {h.judge_name && <span className="flex items-center gap-1"><span className="material-symbols-outlined text-xs">person</span>{h.judge_name}</span>}
+                                            {h.process_number && <span className="flex items-center gap-1"><span className="material-symbols-outlined text-xs">description</span>{h.process_number}</span>}
+                                        </div>
+                                        {h.subject && <p className="text-xs text-text-secondary dark:text-gray-400 mt-1.5 line-clamp-2">{h.subject}</p>}
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* Past */}
+            {past.length > 0 && (
+                <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-border-light dark:border-gray-800">
+                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Realizadas ({past.length})</h3>
+                    </div>
+                    <div className="divide-y divide-gray-50 dark:divide-gray-800">
+                        {past.slice(0, 10).map((h: any) => (
+                            <div key={h.id} className="p-4 opacity-70">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-xs font-mono text-text-secondary dark:text-gray-500">{format(parseISO(h.hearing_date), 'dd/MM/yy')}</span>
+                                    <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[9px] font-black uppercase text-gray-500">{HEARING_TYPE_MAP[h.hearing_type]}</span>
+                                    <span className="text-sm font-bold text-text-main dark:text-white">{h.children?.full_name}</span>
+                                    {h.outcome && h.outcome !== 'pending' && <span className={clsx("px-1.5 py-0.5 rounded text-[8px] font-black uppercase", h.outcome === 'favorable' ? "bg-green-100 text-green-600" : h.outcome === 'unfavorable' ? "bg-red-100 text-red-600" : "bg-gray-100 text-gray-500")}>{h.outcome === 'favorable' ? 'Favorável' : h.outcome === 'unfavorable' ? 'Desfavorável' : h.outcome === 'adjourned' ? 'Adiada' : h.outcome}</span>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+/* ==================== VISITS TAB ==================== */
+function VisitsTab({ data, onNew }: { data: any; onNew: () => void }) {
+    return (
+        <div className="space-y-6 animate-in fade-in duration-300">
+            <div className="flex items-center justify-between">
+                <h2 className="text-lg font-black text-text-main dark:text-white flex items-center gap-2">
+                    <span className="material-symbols-outlined text-purple-500">family_restroom</span>Visitas Familiares
+                </h2>
+                <button onClick={onNew} className="px-4 py-2 bg-purple-600 text-white text-xs font-bold rounded-xl hover:bg-purple-700 transition-all flex items-center gap-1.5 active:scale-95">
+                    <span className="material-symbols-outlined text-base">add</span>Nova Visita
+                </button>
+            </div>
+
+            <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 shadow-sm overflow-hidden">
+                <div className="divide-y divide-gray-50 dark:divide-gray-800">
+                    {(data?.visits || []).length === 0 ? (
+                        <div className="p-12 text-center">
+                            <span className="material-symbols-outlined text-gray-300 dark:text-gray-600 text-5xl mb-3 block">family_restroom</span>
+                            <p className="text-sm text-text-secondary dark:text-gray-500 font-medium">Nenhuma visita registrada ainda.</p>
+                            <button onClick={onNew} className="mt-4 px-4 py-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 text-xs font-bold rounded-xl hover:bg-purple-100 transition-all">Registrar Primeira Visita</button>
+                        </div>
+                    ) : (data?.visits || []).map((v: any) => (
+                        <div key={v.id} className="p-5 hover:bg-purple-50/20 dark:hover:bg-purple-900/5 transition-colors">
+                            <div className="flex items-start gap-4">
+                                <img src={v.children?.photo_url || `https://ui-avatars.com/api/?name=${v.children?.full_name}&background=random`} className="size-10 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm mt-0.5" />
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <p className="text-sm font-bold text-text-main dark:text-white">{v.children?.full_name}</p>
+                                        <span className="text-[10px] font-medium text-text-secondary dark:text-gray-500">{format(parseISO(v.visit_date), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-xs text-text-secondary dark:text-gray-400">
+                                        <span className="flex items-center gap-1"><span className="material-symbols-outlined text-sm">person</span><strong>{v.visitor_name}</strong> ({RELATIONSHIP_MAP[v.relationship] || v.relationship})</span>
+                                        <span className="flex items-center gap-1"><span className="material-symbols-outlined text-sm">schedule</span>{v.duration_minutes}min</span>
+                                        {v.child_reaction && REACTION_MAP[v.child_reaction] && (
+                                            <span className={`flex items-center gap-1 ${REACTION_MAP[v.child_reaction].color}`}>
+                                                <span className="material-symbols-outlined text-sm">{REACTION_MAP[v.child_reaction].icon}</span>{REACTION_MAP[v.child_reaction].label}
+                                            </span>
+                                        )}
+                                    </div>
+                                    {v.observations && <p className="text-xs text-text-secondary dark:text-gray-400 mt-1.5 line-clamp-2">{v.observations}</p>}
+                                </div>
                             </div>
                         </div>
-
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left border-collapse">
-                                <thead>
-                                    <tr className="bg-gray-50/50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-800">
-                                        <th className="px-6 py-4 text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest">Acolhido</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest">Idade</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest">Status Legal</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest">Processo</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest text-right">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-                                    {filteredChildren.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={5} className="px-6 py-12 text-center text-text-secondary dark:text-gray-500 text-sm">
-                                                Nenhum acolhido encontrado.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        filteredChildren.map((child) => (
-                                            <tr key={child.id} className="group hover:bg-amber-50/10 dark:hover:bg-amber-900/5 transition-colors">
-                                                <td className="px-6 py-4">
-                                                    <Link to={`/dashboard/children/${child.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity group/link">
-                                                        <img
-                                                            src={child.photo_url || `https://ui-avatars.com/api/?name=${child.full_name}&background=random`}
-                                                            alt={child.full_name}
-                                                            className="size-10 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm"
-                                                        />
-                                                        <div>
-                                                            <p className="text-sm font-bold text-text-main dark:text-white group-hover/link:text-primary transition-colors">
-                                                                {child.full_name}
-                                                            </p>
-                                                            <p className="text-[10px] text-text-secondary dark:text-gray-500">
-                                                                Desde {child.admission_date ? format(parseISO(child.admission_date), 'dd/MM/yyyy') : '-'}
-                                                            </p>
-                                                        </div>
-                                                    </Link>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <span className="text-sm font-medium text-text-secondary dark:text-gray-400">
-                                                        {child.date_of_birth ? `${differenceInYears(new Date(), parseISO(child.date_of_birth))} anos` : '-'}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <span className={clsx(
-                                                        "px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wide",
-                                                        child.legal_status === 'destituicao_familiar' ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" :
-                                                            child.legal_status === 'acolhimento_provisorio' ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400" :
-                                                                child.legal_status === 'reintegracao_familiar' || child.legal_status === 'disponivel_adocao' ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" :
-                                                                    "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
-                                                    )}>
-                                                        {child.legal_status === 'destituicao_familiar' ? 'Destituição' :
-                                                            child.legal_status === 'acolhimento_provisorio' ? 'Acolhimento' :
-                                                                child.legal_status === 'reintegracao_familiar' ? 'Reintegração' :
-                                                                    child.legal_status === 'disponivel_adocao' ? 'Adoção' :
-                                                                        child.legal_status === 'em_processo_adocao' ? 'Proc. Adoção' :
-                                                                            child.legal_status ? child.legal_status.replace(/_/g, ' ') : 'Não definido'}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="flex items-center gap-1.5 text-text-secondary dark:text-gray-500">
-                                                        <span className="material-symbols-outlined text-base">gavel</span>
-                                                        <span className="text-xs font-mono font-medium">{child.judicial_process || 'S/ Processo'}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 text-right">
-                                                    <div className="flex items-center justify-end gap-2">
-                                                        <button
-                                                            onClick={() => { setSelectedChildId(child.id); setIsEntryModalOpen(true); }}
-                                                            className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-amber-500 hover:text-white text-gray-400 transition-all flex items-center justify-center"
-                                                            title="Nova Anotação"
-                                                        >
-                                                            <span className="material-symbols-outlined text-lg">edit_note</span>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Right Column: Schedule & Activity */}
-                <div className="space-y-6">
-                    {/* Upcoming Deadlines / Appointments */}
-                    <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 shadow-sm overflow-hidden">
-                        <div className="px-6 py-5 border-b border-border-light dark:border-gray-800">
-                            <h2 className="text-lg font-bold text-text-main dark:text-white flex items-center gap-2">
-                                <span className="material-symbols-outlined text-red-500">event_upcoming</span>
-                                Próximos Prazos
-                            </h2>
-                        </div>
-                        <div className="p-2">
-                            {dashboardData?.upcomingAppointments.length === 0 ? (
-                                <div className="p-8 text-center">
-                                    <div className="size-12 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
-                                        <span className="material-symbols-outlined text-gray-400">event_busy</span>
-                                    </div>
-                                    <p className="text-sm text-text-secondary dark:text-gray-500 font-medium">Nenhum prazo ou agendamento próximo.</p>
-                                </div>
-                            ) : (
-                                <div className="space-y-1">
-                                    {dashboardData?.upcomingAppointments.map((event: any) => (
-                                        <div key={event.id} className="p-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-2xl transition-all border border-transparent hover:border-gray-100 dark:hover:border-gray-700 group">
-                                            <div className="flex items-start gap-3">
-                                                <div className="flex-col items-center justify-center bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl px-2.5 py-1.5 hidden sm:flex min-w-[3.5rem]">
-                                                    <span className="text-xs font-bold uppercase">{format(parseISO(event.next_appointment), 'MMM', { locale: ptBR })}</span>
-                                                    <span className="text-lg font-black leading-none">{format(parseISO(event.next_appointment), 'dd')}</span>
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <span className="text-xs font-bold text-text-secondary dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded-md uppercase whitespace-nowrap">
-                                                            Pendente
-                                                        </span>
-                                                        <span className="text-xs font-medium text-text-secondary dark:text-gray-500 truncate">
-                                                            {format(parseISO(event.next_appointment), "EEEE, HH:mm", { locale: ptBR })}
-                                                        </span>
-                                                    </div>
-                                                    <h4 className="text-sm font-bold text-text-main dark:text-white truncate group-hover:text-red-500 transition-colors">
-                                                        {event.title}
-                                                    </h4>
-                                                    <p className="text-xs text-text-secondary dark:text-gray-500 truncate mt-0.5">
-                                                        Referente a: <span className="font-bold">{event.children?.full_name}</span>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                        <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900/50 border-t border-border-light dark:border-gray-800 text-center">
-                            <button className="text-xs font-bold text-primary hover:text-primary-dark uppercase tracking-wider transition-colors">
-                                Ver Calendário Completo
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Recent History */}
-                    <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 shadow-sm overflow-hidden">
-                        <div className="px-6 py-5 border-b border-border-light dark:border-gray-800">
-                            <h2 className="text-lg font-bold text-text-main dark:text-white flex items-center gap-2">
-                                <span className="material-symbols-outlined text-blue-500">history</span>
-                                Histórico Recente
-                            </h2>
-                        </div>
-                        <div className="divide-y divide-border-light dark:divide-gray-800">
-                            {dashboardData?.recentEntries.length === 0 ? (
-                                <p className="text-center text-text-secondary py-8 text-sm">Nenhum histórico recente.</p>
-                            ) : (
-                                dashboardData?.recentEntries.map((entry: any) => (
-                                    <div key={entry.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                        <div className="flex justify-between items-start mb-1.5">
-                                            <div className="flex items-center gap-2">
-                                                <img
-                                                    src={entry.children?.photo_url || `https://ui-avatars.com/api/?name=${entry.children?.full_name}`}
-                                                    className="size-5 rounded-full"
-                                                />
-                                                <span className="text-xs font-bold text-text-main dark:text-white truncate max-w-[120px]">
-                                                    {entry.children?.full_name}
-                                                </span>
-                                            </div>
-                                            <span className="text-[10px] font-medium text-text-secondary dark:text-gray-500">
-                                                {format(parseISO(entry.created_at), "dd/MM HH:mm")}
-                                            </span>
-                                        </div>
-                                        <p className="text-sm font-medium text-text-main dark:text-gray-200 line-clamp-1">{entry.title}</p>
-                                        <p className="text-xs text-text-secondary dark:text-gray-400 line-clamp-2 mt-1">
-                                            {entry.content}
-                                        </p>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                        <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900/50 border-t border-border-light dark:border-gray-800 text-center">
-                            <button className="text-xs font-bold text-primary hover:text-primary-dark uppercase tracking-wider transition-colors">
-                                Ver Todo Histórico
-                            </button>
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </div>
+        </div>
+    );
+}
 
-            <SocialWorkEntryModal
-                isOpen={isEntryModalOpen}
-                onClose={() => { setIsEntryModalOpen(false); setSelectedChildId(undefined); }}
-                initialChildId={selectedChildId}
-            />
+/* ==================== ADOPTION TAB ==================== */
+function AdoptionTab({ data }: { data: any }) {
+    const adoptionChildren = (data?.children || []).filter((c: any) => c.legal_status === 'disponivel_adocao' || c.legal_status === 'em_processo_adocao');
+    const processes = data?.adoptions || [];
+
+    return (
+        <div className="space-y-6 animate-in fade-in duration-300">
+            <div className="flex items-center justify-between">
+                <h2 className="text-lg font-black text-text-main dark:text-white flex items-center gap-2">
+                    <span className="material-symbols-outlined text-pink-500">favorite</span>Processos de Adoção
+                </h2>
+            </div>
+
+            {/* Children available or in process */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {adoptionChildren.length === 0 ? (
+                    <div className="col-span-full">
+                        <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 shadow-sm p-12 text-center">
+                            <span className="material-symbols-outlined text-gray-300 dark:text-gray-600 text-5xl mb-3 block">favorite_border</span>
+                            <p className="text-sm text-text-secondary dark:text-gray-500 font-medium">Nenhum acolhido com status de adoção no momento.</p>
+                            <p className="text-xs text-text-secondary dark:text-gray-500 mt-1">Atualize o status legal dos acolhidos para "Disponível para Adoção" quando aplicável.</p>
+                        </div>
+                    </div>
+                ) : adoptionChildren.map((child: any) => {
+                    const status = LEGAL_STATUS_MAP[child.legal_status];
+                    const process = processes.find((p: any) => p.child_id === child.id);
+                    return (
+                        <div key={child.id} className="bg-white dark:bg-surface-dark rounded-2xl border border-border-light dark:border-gray-800 shadow-sm p-5 hover:shadow-md transition-all">
+                            <div className="flex items-center gap-3 mb-3">
+                                <img src={child.photo_url || `https://ui-avatars.com/api/?name=${child.full_name}&background=random`} className="size-12 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm" />
+                                <div>
+                                    <Link to={`/dashboard/children/${child.id}`} className="text-sm font-bold text-text-main dark:text-white hover:text-primary transition-colors">{child.full_name}</Link>
+                                    <p className="text-[10px] text-text-secondary dark:text-gray-500">{child.date_of_birth ? `${differenceInYears(new Date(), parseISO(child.date_of_birth))} anos` : '-'}</p>
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                {status && <span className={clsx("px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-wide inline-block", status.color, status.darkColor)}>{status.label}</span>}
+                                {process ? (
+                                    <div className="p-3 bg-pink-50/50 dark:bg-pink-900/10 rounded-xl">
+                                        <p className="text-[10px] font-bold text-pink-600 uppercase tracking-wider mb-1">Processo Ativo</p>
+                                        {process.adopter_name && <p className="text-xs text-text-main dark:text-white"><strong>Adotante:</strong> {process.adopter_name}</p>}
+                                        {process.court && <p className="text-[10px] text-text-secondary">{process.court}</p>}
+                                        <p className="text-[10px] text-text-secondary mt-1">Status: <strong>{process.status?.replace(/_/g, ' ')}</strong></p>
+                                    </div>
+                                ) : (
+                                    <p className="text-[10px] text-text-secondary italic">Sem processo de adoção registrado</p>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 }
