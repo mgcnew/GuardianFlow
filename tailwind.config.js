@@ -24,9 +24,12 @@ export default {
         "body": ["Manrope", "sans-serif"],
       },
       borderRadius: {
-        "lg": "0.5rem",
-        "xl": "0.75rem",
-        "2xl": "1rem",
+        "sm": "0.125rem",
+        "md": "0.25rem",
+        "lg": "0.375rem",
+        "xl": "0.5rem",
+        "2xl": "0.75rem",
+        "3xl": "1rem",
       }
     },
   },
