@@ -122,7 +122,7 @@ export function PsychologistSessionModal({ isOpen, onClose, selectedDate, eventT
                 description: data.objective,
                 start_time: startDateTime.toISOString(),
                 end_time: endDateTime.toISOString(),
-                type: 'other', // We use 'other' but tag as clinical via metadata
+                type: 'medical', // Tag as medical for blue styling
                 location: data.location,
                 child_id: data.child_id,
                 professional_id: profile?.id,

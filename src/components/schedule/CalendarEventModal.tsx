@@ -12,6 +12,7 @@ interface CalendarEventModalProps {
     selectedDate?: Date;
     eventToEdit?: any;
     initialProfessionalId?: string;
+    initialType?: string;
 }
 
 // Event types with metadata
@@ -91,7 +92,7 @@ const PRIORITY_OPTIONS = [
     { id: 'urgent', label: 'Urgente', color: 'text-red-600', dot: 'bg-red-500' },
 ];
 
-export function CalendarEventModal({ isOpen, onClose, selectedDate, eventToEdit, initialProfessionalId }: CalendarEventModalProps) {
+export function CalendarEventModal({ isOpen, onClose, selectedDate, eventToEdit, initialProfessionalId, initialType }: CalendarEventModalProps) {
     const { profile } = useAuth();
     const queryClient = useQueryClient();
 
@@ -186,7 +187,7 @@ export function CalendarEventModal({ isOpen, onClose, selectedDate, eventToEdit,
                 start_time: format(start, 'HH:mm'),
                 end_date: format(end, 'yyyy-MM-dd'),
                 end_time: format(end, 'HH:mm'),
-                type: eventToEdit.type || 'other',
+                type: eventToEdit.type || initialType || 'other',
                 location: eventToEdit.location || '',
                 child_id: eventToEdit.child_id || '',
                 professional_id: eventToEdit.professional_id || '',
@@ -223,7 +224,7 @@ export function CalendarEventModal({ isOpen, onClose, selectedDate, eventToEdit,
                 start_time: format(new Date(), 'HH:mm'),
                 end_date: format(selectedDate, 'yyyy-MM-dd'),
                 end_time: format(new Date(Date.now() + 3600000), 'HH:mm'),
-                type: 'other',
+                type: initialType || 'other',
                 location: '',
                 child_id: '',
                 professional_id: initialProfessionalId || '',

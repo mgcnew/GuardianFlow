@@ -138,6 +138,33 @@ export function PsychologistAgenda() {
         return ghostEvents.filter(event => isSameDay(parseISO(event.start_time), day));
     };
 
+    const eventTypeColors: Record<string, string> = {
+        medical: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800',
+        vaccine: 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800',
+        school: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800',
+        outing: 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800',
+        meeting: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-800',
+        other: 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700',
+    };
+
+    const eventTypeBorderColors: Record<string, string> = {
+        medical: 'border-l-blue-500',
+        vaccine: 'border-l-green-500',
+        school: 'border-l-purple-500',
+        outing: 'border-l-yellow-500',
+        meeting: 'border-l-indigo-500',
+        other: 'border-l-gray-500',
+    };
+
+    const eventTypeLabels: Record<string, string> = {
+        medical: 'Médico',
+        vaccine: 'Vacina',
+        school: 'Escola',
+        outing: 'Passeio',
+        meeting: 'Reunião',
+        other: 'Outro',
+    };
+
     return (
         <div className="flex flex-col h-[calc(100vh-theme(spacing.32))] animate-in fade-in duration-400 gap-6">
             {/* Header */}
@@ -279,7 +306,7 @@ export function PsychologistAgenda() {
                                                     {dayEvents.slice(0, 3).map(event => (
                                                         <div
                                                             key={event.id}
-                                                            className="h-1.5 rounded-full w-full bg-primary/40 shrink-0"
+                                                            className={clsx("h-1.5 rounded-full w-full shrink-0", eventTypeColors[event.type]?.split(' ')[0] || 'bg-gray-400')}
                                                             title={event.title}
                                                         />
                                                     ))}
@@ -295,7 +322,7 @@ export function PsychologistAgenda() {
                                                 {/* Mobile View: Dots */}
                                                 <div className="md:hidden flex flex-wrap gap-1 justify-center px-1 pb-1 content-start overflow-hidden">
                                                     {dayEvents.slice(0, 4).map(event => (
-                                                        <div key={event.id} className="size-1 rounded-full bg-primary shrink-0" />
+                                                        <div key={event.id} className={clsx("size-1 rounded-full shrink-0", eventTypeColors[event.type]?.split(' ')[0]?.replace('bg-', 'bg-') || 'bg-gray-400')} />
                                                     ))}
                                                     {showOnlyMine && dayGhosts.length > 0 && (
                                                         <div key="ghost-dots" className="size-1 rounded-full bg-gray-300 shrink-0" />
@@ -343,22 +370,30 @@ export function PsychologistAgenda() {
                                                     <div
                                                         key={event.id}
                                                         onClick={(e) => handleEditEvent(event, e)}
-                                                        className="text-[10px] p-2 rounded-lg border border-l-[3px] border-primary/20 bg-primary/5 border-l-primary cursor-pointer hover:brightness-95 transition-all shadow-sm"
+                                                        className={clsx(
+                                                            "text-[10px] p-2 rounded-lg border border-l-[3px] cursor-pointer hover:brightness-95 transition-all shadow-sm",
+                                                            eventTypeColors[event.type] || eventTypeColors['other'],
+                                                            eventTypeBorderColors[event.type] || eventTypeBorderColors['other']
+                                                        )}
                                                     >
-                                                        <div className="font-bold text-primary truncate mb-0.5">{event.title}</div>
-                                                        <div className="text-primary/70 truncate">{format(parseISO(event.start_time), 'HH:mm')}</div>
+                                                        <div className="font-bold truncate mb-0.5">{event.title}</div>
+                                                        <div className="opacity-75 truncate">{format(parseISO(event.start_time), 'HH:mm')}</div>
                                                     </div>
                                                 ))}
                                                 {showOnlyMine && dayGhosts.map(ghost => (
                                                     <div
                                                         key={ghost.id}
-                                                        className="text-[10px] p-1.5 rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 text-gray-400 opacity-60"
+                                                        className={clsx(
+                                                            "text-[10px] p-2 rounded-lg border border-l-[3px] shadow-sm",
+                                                            eventTypeColors[ghost.type] || eventTypeColors['other'],
+                                                            eventTypeBorderColors[ghost.type] || eventTypeBorderColors['other']
+                                                        )}
                                                     >
-                                                        <div className="truncate mb-0.5 flex items-center gap-1">
-                                                            <span className="material-symbols-outlined text-[12px]">lock</span>
-                                                            {format(parseISO(ghost.start_time), 'HH:mm')}
+                                                        <div className="flex items-center gap-1 mb-0.5 truncate font-bold">
+                                                            <span className="material-symbols-outlined text-[10px]">lock</span>
+                                                            {ghost.title}
                                                         </div>
-                                                        <div className="truncate">{ghost.child?.full_name || 'Outro'}</div>
+                                                        <div className="truncate opacity-75">{format(parseISO(ghost.start_time), 'HH:mm')}</div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -382,16 +417,23 @@ export function PsychologistAgenda() {
                                             <div
                                                 key={event.id}
                                                 onClick={(e) => handleEditEvent(event, e)}
-                                                className="flex gap-4 p-4 rounded-xl border border-primary/10 bg-white dark:bg-gray-800 hover:shadow-md transition-all cursor-pointer border-l-[4px] border-l-primary"
+                                                className={clsx(
+                                                    "flex gap-4 p-4 rounded-xl border bg-white dark:bg-gray-800 hover:shadow-md transition-all cursor-pointer",
+                                                    eventTypeBorderColors[event.type] || eventTypeBorderColors['other'],
+                                                    "border-l-[4px] border-gray-100 dark:border-gray-700"
+                                                )}
                                             >
-                                                <div className="flex flex-col items-center justify-center w-16 shrink-0 border-r border-gray-100 dark:border-gray-700 pr-4 text-primary">
-                                                    <span className="text-lg font-bold">{format(parseISO(event.start_time), 'HH:mm')}</span>
-                                                    <span className="text-xs opacity-70">{format(parseISO(event.end_time), 'HH:mm')}</span>
+                                                <div className="flex flex-col items-center justify-center w-16 shrink-0 border-r border-gray-100 dark:border-gray-700 pr-4">
+                                                    <span className="text-lg font-bold text-text-main dark:text-white">{format(parseISO(event.start_time), 'HH:mm')}</span>
+                                                    <span className="text-xs text-text-secondary dark:text-gray-500">{format(parseISO(event.end_time), 'HH:mm')}</span>
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2 mb-1">
-                                                        <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary">
-                                                            Sessão Clínica
+                                                        <span className={clsx(
+                                                            "text-[10px] uppercase font-bold px-1.5 py-0.5 rounded",
+                                                            eventTypeColors[event.type] || eventTypeColors['other']
+                                                        )}>
+                                                            {eventTypeLabels[event.type] || 'Evento'}
                                                         </span>
                                                         {event.child && (
                                                             <span className="text-xs text-text-secondary dark:text-gray-400 flex items-center gap-1">
@@ -415,24 +457,33 @@ export function PsychologistAgenda() {
                                         {showOnlyMine && getGhostEventsForDay(currentDate).map(ghost => (
                                             <div
                                                 key={ghost.id}
-                                                className="flex gap-4 p-4 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-gray-900/10 opacity-60"
+                                                className={clsx(
+                                                    "flex gap-4 p-4 rounded-xl border bg-white dark:bg-gray-800 hover:shadow-md transition-all",
+                                                    eventTypeBorderColors[ghost.type] || eventTypeBorderColors['other'],
+                                                    "border-l-[4px] border-gray-100 dark:border-gray-700 opacity-80"
+                                                )}
                                             >
-                                                <div className="flex flex-col items-center justify-center w-16 shrink-0 border-r border-gray-100 dark:border-gray-700 pr-4 text-gray-400">
-                                                    <span className="text-lg font-bold">{format(parseISO(ghost.start_time), 'HH:mm')}</span>
+                                                <div className="flex flex-col items-center justify-center w-16 shrink-0 border-r border-gray-100 dark:border-gray-700 pr-4 opacity-70">
+                                                    <span className="text-lg font-bold text-text-main dark:text-white">{format(parseISO(ghost.start_time), 'HH:mm')}</span>
+                                                    <span className="text-xs text-text-secondary dark:text-gray-500">{format(parseISO(ghost.end_time), 'HH:mm')}</span>
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2 mb-1">
-                                                        <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500">
-                                                            Outro Agendamento
+                                                        <span className={clsx(
+                                                            "text-[10px] uppercase font-bold px-1.5 py-0.5 rounded flex items-center gap-1",
+                                                            eventTypeColors[ghost.type] || eventTypeColors['other']
+                                                        )}>
+                                                            <span className="material-symbols-outlined text-[12px]">lock</span>
+                                                            {eventTypeLabels[ghost.type] || 'Ocupado'}
                                                         </span>
                                                         {ghost.child && (
-                                                            <span className="text-xs text-gray-400 flex items-center gap-1">
-                                                                <span className="material-symbols-outlined text-[14px]">lock</span>
+                                                            <span className="text-xs text-text-secondary dark:text-gray-400 flex items-center gap-1">
+                                                                <span className="material-symbols-outlined text-[14px]">child_care</span>
                                                                 {ghost.child.full_name}
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <h3 className="text-base font-medium text-gray-500">{ghost.title}</h3>
+                                                    <h3 className="text-base font-bold text-text-main dark:text-white opacity-80">{ghost.title}</h3>
                                                 </div>
                                             </div>
                                         ))}
@@ -474,14 +525,21 @@ export function PsychologistAgenda() {
                                             <div
                                                 key={event.id}
                                                 onClick={(e) => handleEditEvent(event, e)}
-                                                className="group relative p-3 rounded-xl border border-primary/10 bg-primary/5 hover:border-primary/30 transition-all cursor-pointer border-l-[3px] border-l-primary"
+                                                className={clsx(
+                                                    "group relative p-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/30 hover:border-primary/30 transition-all cursor-pointer",
+                                                    eventTypeBorderColors[event.type] || eventTypeBorderColors['other'],
+                                                    "border-l-[3px]"
+                                                )}
                                             >
                                                 <div className="flex justify-between items-start mb-1">
-                                                    <span className="text-xs font-mono font-bold text-primary">
+                                                    <span className="text-xs font-mono font-bold text-text-secondary dark:text-gray-400">
                                                         {format(parseISO(event.start_time), 'HH:mm')}
                                                     </span>
-                                                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase bg-primary text-white">
-                                                        Sessão
+                                                    <span className={clsx(
+                                                        "text-[9px] font-bold px-1.5 py-0.5 rounded uppercase",
+                                                        eventTypeColors[event.type] || eventTypeColors['other']
+                                                    )}>
+                                                        {eventTypeLabels[event.type] || 'Evento'}
                                                     </span>
                                                 </div>
                                                 <h4 className="text-sm font-bold text-text-main dark:text-white line-clamp-2">{event.title}</h4>
@@ -498,17 +556,21 @@ export function PsychologistAgenda() {
                                         {showOnlyMine && getGhostEventsForDay(selectedDate).map(ghost => (
                                             <div
                                                 key={ghost.id}
-                                                className="p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 opacity-60 flex flex-col gap-1"
+                                                className={clsx(
+                                                    "p-3 rounded-xl border border-l-[3px] shadow-sm opacity-80",
+                                                    eventTypeColors[ghost.type] || eventTypeColors['other'],
+                                                    eventTypeBorderColors[ghost.type] || eventTypeBorderColors['other']
+                                                )}
                                             >
-                                                <div className="flex justify-between items-center text-[10px] font-bold text-gray-400">
+                                                <div className="flex justify-between items-center text-[10px] font-bold mb-1 opacity-80">
                                                     <span>{format(parseISO(ghost.start_time), 'HH:mm')}</span>
                                                     <span className="flex items-center gap-1">
                                                         <span className="material-symbols-outlined text-[12px]">lock</span>
                                                         Ocupado
                                                     </span>
                                                 </div>
-                                                <p className="text-xs text-gray-500 font-medium truncate">{ghost.title}</p>
-                                                <p className="text-[10px] text-gray-400 truncate">{ghost.child?.full_name || 'Geral'}</p>
+                                                <p className="text-xs font-bold truncate opacity-90">{ghost.title}</p>
+                                                <p className="text-[10px] truncate opacity-70">{ghost.child?.full_name || 'Outro'}</p>
                                             </div>
                                         ))}
                                     </>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -14,37 +14,64 @@ import {
     isSameDay,
     addMonths,
     subMonths,
+    addWeeks,
+    subWeeks,
+    addDays,
+    subDays,
     isToday,
-    parseISO
+    parseISO,
+    startOfDay,
+    endOfDay
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import clsx from 'clsx';
+
+type ViewType = 'month' | 'week' | 'day';
 
 export function PedagogicalAgenda() {
     const { profile } = useAuth();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
+    const [view, setView] = useState<ViewType>('month');
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
     const [eventToEdit, setEventToEdit] = useState<any>(null);
+    const [showOnlyMine, setShowOnlyMine] = useState(true);
 
-    const monthStart = startOfMonth(currentDate);
-    const monthEnd = endOfMonth(monthStart);
-    const startDate = startOfWeek(monthStart);
-    const endDate = endOfWeek(monthEnd);
+    // Calculate dynamic date ranges based on view
+    const { startDate, endDate } = useMemo(() => {
+        let start, end;
+        if (view === 'month') {
+            start = startOfWeek(startOfMonth(currentDate));
+            end = endOfWeek(endOfMonth(currentDate));
+        } else if (view === 'week') {
+            start = startOfWeek(currentDate);
+            end = endOfWeek(currentDate);
+        } else {
+            start = startOfDay(currentDate);
+            end = endOfDay(currentDate);
+        }
+        return { startDate: start, endDate: end };
+    }, [currentDate, view]);
 
     const { data: events, isLoading } = useQuery({
-        queryKey: ['pedagogical-calendar-events', currentDate.getMonth(), currentDate.getFullYear()],
+        queryKey: ['pedagogical-calendar-events', startDate.toISOString(), endDate.toISOString(), showOnlyMine],
         queryFn: async () => {
             const fetchStart = new Date(startDate.getTime() - 86400000).toISOString();
             const fetchEnd = new Date(endDate.getTime() + 86400000).toISOString();
 
-            const { data, error } = await supabase
+            let query = supabase
                 .from('calendar_events')
-                .select('*, child:children(id, full_name, photo_url)')
+                .select('*, child:children(id, full_name, photo_url), professional:profiles!calendar_events_professional_id_fkey(id, full_name, specialty)')
                 .eq('organization_id', profile?.organization_id)
                 .eq('type', 'school')
                 .gte('start_time', fetchStart)
                 .lte('end_time', fetchEnd);
+
+            if (showOnlyMine) {
+                query = query.eq('professional_id', profile?.id);
+            }
+
+            const { data, error } = await query.order('start_time', { ascending: true });
 
             if (error) throw error;
             return data || [];
@@ -52,156 +79,527 @@ export function PedagogicalAgenda() {
         enabled: !!profile?.organization_id,
     });
 
-    const calendarDays = eachDayOfInterval({
-        start: startDate,
-        end: endDate,
+    const { data: ghostEvents } = useQuery({
+        queryKey: ['pedagogical-ghost-events', startDate.toISOString(), endDate.toISOString(), showOnlyMine],
+        queryFn: async () => {
+            const fetchStart = new Date(startDate.getTime() - 86400000).toISOString();
+            const fetchEnd = new Date(endDate.getTime() + 86400000).toISOString();
+
+            const { data, error } = await supabase
+                .from('calendar_events')
+                .select('*, child:children(id, full_name)')
+                .eq('organization_id', profile?.organization_id)
+                .gte('start_time', fetchStart)
+                .lte('end_time', fetchEnd);
+
+            if (error) throw error;
+
+            // Filter out events that are ALREADY displayed in the main 'events' list
+            // The main list contains: events where (type === 'school') AND (if showOnlyMine is true, professional_id === me)
+            return data?.filter(event => {
+                const isSchool = event.type === 'school';
+                const isMine = event.professional_id === profile?.id;
+
+                // If it's a school event...
+                if (isSchool) {
+                    // If we are showing only mine, and this is MINE, it's in the main list. So exclude it here.
+                    if (showOnlyMine && isMine) return false;
+                    // If we are showing ALL school events (!showOnlyMine), then ALL school events are in main list. Exclude all.
+                    if (!showOnlyMine) return false;
+                }
+
+                // Otherwise (not school, or school but not covered by main list logic above), include it as ghost.
+                return true;
+            }) || [];
+        },
+        enabled: !!profile?.organization_id,
     });
 
+    const calendarDays = useMemo(() => eachDayOfInterval({ start: startDate, end: endDate }), [startDate, endDate]);
     const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+    const handlePrevious = () => {
+        if (view === 'month') setCurrentDate(subMonths(currentDate, 1));
+        else if (view === 'week') setCurrentDate(subWeeks(currentDate, 1));
+        else setCurrentDate(subDays(currentDate, 1));
+    };
+
+    const handleNext = () => {
+        if (view === 'month') setCurrentDate(addMonths(currentDate, 1));
+        else if (view === 'week') setCurrentDate(addWeeks(currentDate, 1));
+        else setCurrentDate(addDays(currentDate, 1));
+    };
+
+    const handleDayClick = (day: Date) => {
+        setSelectedDate(day);
+    };
+
+    const handleCreateEvent = () => {
+        setEventToEdit(null);
+        setIsEventModalOpen(true);
+    };
+
+    const handleEditEvent = (event: any, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setEventToEdit(event);
+        setIsEventModalOpen(true);
+    };
 
     const getEventsForDay = (day: Date) => {
         if (!events) return [];
         return events.filter(event => isSameDay(parseISO(event.start_time), day));
     };
 
-    return (
-        <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                    <h2 className="text-xl font-bold text-text-main dark:text-white font-display">Agenda Pedagógica</h2>
-                    {isLoading && (
-                        <div className="size-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
-                    )}
-                </div>
-            </div>
+    const getGhostEventsForDay = (day: Date) => {
+        if (!ghostEvents) return [];
+        return ghostEvents.filter(event => isSameDay(parseISO(event.start_time), day));
+    };
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                {/* Mini Calendar / Monthly View */}
-                <div className="lg:col-span-3 bg-white dark:bg-surface-dark rounded-3xl p-6 border border-border-light dark:border-gray-800 shadow-sm">
-                    <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-lg font-bold text-text-main dark:text-white capitalize">
-                            {format(currentDate, 'MMMM yyyy', { locale: ptBR })}
-                        </h3>
-                        <div className="flex items-center gap-2">
-                            <button onClick={() => setCurrentDate(subMonths(currentDate, 1))} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                                <span className="material-symbols-outlined text-text-secondary">chevron_left</span>
-                            </button>
-                            <button onClick={() => setCurrentDate(new Date())} className="px-3 py-1 text-xs font-bold text-primary hover:bg-primary/10 rounded-lg transition-colors">Hoje</button>
-                            <button onClick={() => setCurrentDate(addMonths(currentDate, 1))} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                                <span className="material-symbols-outlined text-text-secondary">chevron_right</span>
-                            </button>
-                        </div>
+    const eventTypeColors: Record<string, string> = {
+        medical: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800',
+        vaccine: 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800',
+        school: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800',
+        outing: 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800',
+        meeting: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-800',
+        other: 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700',
+    };
+
+    const eventTypeBorderColors: Record<string, string> = {
+        medical: 'border-l-blue-500',
+        vaccine: 'border-l-green-500',
+        school: 'border-l-purple-500',
+        outing: 'border-l-yellow-500',
+        meeting: 'border-l-indigo-500',
+        other: 'border-l-gray-500',
+    };
+
+    const eventTypeLabels: Record<string, string> = {
+        medical: 'Médico',
+        vaccine: 'Vacina',
+        school: 'Escola',
+        outing: 'Passeio',
+        meeting: 'Reunião',
+        other: 'Outro',
+    };
+
+    return (
+        <div className="flex flex-col h-[calc(100vh-theme(spacing.32))] animate-in fade-in duration-400 gap-6">
+            {/* Header */}
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 shrink-0">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div className="flex items-center gap-3">
+                        <h1 className="text-2xl font-bold text-text-main dark:text-white font-display whitespace-nowrap">Agenda Pedagógica</h1>
+                        {isLoading && (
+                            <span className="size-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                        )}
                     </div>
 
-                    <div className="grid grid-cols-7 gap-px mb-2 text-center">
-                        {weekDays.map(day => (
-                            <div key={day} className="text-[10px] font-black uppercase text-text-secondary dark:text-gray-500 tracking-widest py-2">
-                                {day}
-                            </div>
+                    <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800/50 p-1 rounded-xl">
+                        <button
+                            onClick={() => setShowOnlyMine(true)}
+                            className={clsx(
+                                "px-3 py-1.5 text-xs font-bold rounded-lg transition-all",
+                                showOnlyMine
+                                    ? "bg-white dark:bg-gray-700 text-primary shadow-sm"
+                                    : "text-text-secondary dark:text-gray-400 hover:text-text-main dark:hover:text-white"
+                            )}
+                        >
+                            Minhas Aulas
+                        </button>
+                        <button
+                            onClick={() => setShowOnlyMine(false)}
+                            className={clsx(
+                                "px-3 py-1.5 text-xs font-bold rounded-lg transition-all",
+                                !showOnlyMine
+                                    ? "bg-white dark:bg-gray-700 text-primary shadow-sm"
+                                    : "text-text-secondary dark:text-gray-400 hover:text-text-main dark:hover:text-white"
+                            )}
+                        >
+                            Agenda Geral
+                        </button>
+                    </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800/50 p-1 rounded-xl">
+                        {(['month', 'week', 'day'] as const).map((v) => (
+                            <button
+                                key={v}
+                                onClick={() => setView(v)}
+                                className={clsx(
+                                    "px-3 py-1.5 text-xs font-bold rounded-lg transition-all capitalize",
+                                    view === v
+                                        ? "bg-white dark:bg-gray-700 text-text-main dark:text-white shadow-sm"
+                                        : "text-text-secondary dark:text-gray-400 hover:text-text-main dark:hover:text-white"
+                                )}
+                            >
+                                {v === 'month' ? 'Mês' : v === 'week' ? 'Semana' : 'Dia'}
+                            </button>
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-7 gap-px bg-gray-100 dark:bg-gray-800 border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-inner">
-                        {calendarDays.map((day) => {
-                            const dayEvents = getEventsForDay(day);
-                            const isSelected = isSameDay(day, selectedDate);
-                            const isCurrentMonth = isSameMonth(day, currentDate);
-                            const isTodayDate = isToday(day);
+                    <button
+                        onClick={handleCreateEvent}
+                        className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95 ml-auto"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">calendar_add_on</span>
+                        <span className="hidden sm:inline">Agendar Atividade</span>
+                        <span className="sm:hidden text-sm">Agendar</span>
+                    </button>
+                </div>
+            </div>
 
-                            return (
-                                <div
-                                    key={day.toString()}
-                                    onClick={() => setSelectedDate(day)}
-                                    className={clsx(
-                                        "min-h-[110px] bg-white dark:bg-surface-dark p-2 cursor-pointer transition-all relative hover:bg-gray-50 dark:hover:bg-gray-800/50",
-                                        !isCurrentMonth && "bg-gray-50/50 dark:bg-gray-900/10 text-gray-300",
-                                        isSelected && "ring-2 ring-primary ring-inset z-10 bg-primary/[0.02]",
-                                    )}
-                                >
-                                    <span className={clsx(
-                                        "text-xs font-bold size-7 flex items-center justify-center rounded-full mb-1",
-                                        isTodayDate
-                                            ? "bg-primary text-white shadow-md shadow-primary/30"
-                                            : isCurrentMonth ? "text-text-main dark:text-white" : "text-gray-300 dark:text-gray-600"
-                                    )}>
-                                        {format(day, 'd')}
-                                    </span>
+            <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {/* Main Calendar View */}
+                <div className={clsx("flex flex-col bg-white dark:bg-surface-dark rounded-3xl shadow-sm border border-border-light dark:border-gray-800 overflow-hidden", view === 'day' ? 'lg:col-span-3 xl:col-span-4' : 'lg:col-span-2 xl:col-span-3')}>
+                    {/* Calendar Controls */}
+                    <div className="flex items-center justify-between p-6 border-b border-border-light dark:border-gray-800 shrink-0">
+                        <h2 className="text-lg font-bold text-text-main dark:text-white font-display capitalize">
+                            {view === 'day'
+                                ? format(currentDate, "d 'de' MMMM, yyyy", { locale: ptBR })
+                                : format(currentDate, 'MMMM yyyy', { locale: ptBR })}
+                        </h2>
+                        <div className="flex items-center gap-2">
+                            <button onClick={handlePrevious} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                                <span className="material-symbols-outlined text-text-secondary dark:text-gray-400">chevron_left</span>
+                            </button>
+                            <button
+                                onClick={() => setCurrentDate(new Date())}
+                                className="px-3 py-1.5 text-xs font-bold text-primary hover:bg-primary/10 rounded-lg transition-colors border border-transparent hover:border-primary/20"
+                            >
+                                Hoje
+                            </button>
+                            <button onClick={handleNext} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                                <span className="material-symbols-outlined text-text-secondary dark:text-gray-400">chevron_right</span>
+                            </button>
+                        </div>
+                    </div>
 
-                                    <div className="space-y-1">
-                                        {dayEvents.map(event => (
+                    {/* Content */}
+                    <div className="flex-1 overflow-auto custom-scrollbar">
+                        {view === 'month' && (
+                            <div className="h-full flex flex-col">
+                                <div className="grid grid-cols-7 border-b border-border-light dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/20">
+                                    {weekDays.map(day => (
+                                        <div key={day} className="py-2 md:py-3 text-center text-[10px] md:text-xs font-semibold text-text-secondary dark:text-gray-400 uppercase tracking-wider">
+                                            {day.slice(0, 3)}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="flex-1 grid grid-cols-7 auto-rows-fr">
+                                    {calendarDays.map((day, i) => {
+                                        const dayEvents = getEventsForDay(day);
+                                        const dayGhosts = getGhostEventsForDay(day);
+                                        const isSelected = isSameDay(day, selectedDate);
+                                        const isCurrentMonth = isSameMonth(day, currentDate);
+
+                                        return (
+                                            <div
+                                                key={day.toString()}
+                                                onClick={() => handleDayClick(day)}
+                                                className={clsx(
+                                                    "flex flex-col border-b border-r border-border-light dark:border-gray-800 relative cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors",
+                                                    !isCurrentMonth && "bg-gray-50/30 dark:bg-gray-900/10",
+                                                    (i + 1) % 7 === 0 && "border-r-0",
+                                                    isSelected && "bg-primary/5 dark:bg-primary/10"
+                                                )}
+                                            >
+                                                <div className="flex justify-center md:justify-between items-center p-1 md:p-2 mb-0 md:mb-1 shrink-0">
+                                                    <span className={clsx(
+                                                        "text-[10px] md:text-xs font-medium w-5 h-5 md:w-6 md:h-6 flex items-center justify-center rounded-full transition-colors",
+                                                        isToday(day)
+                                                            ? "bg-primary text-white"
+                                                            : isCurrentMonth ? "text-text-main dark:text-white" : "text-gray-300 dark:text-gray-600"
+                                                    )}>
+                                                        {format(day, 'd')}
+                                                    </span>
+                                                    <span className="hidden md:block text-[10px] text-text-secondary dark:text-gray-500 font-medium">
+                                                        {dayEvents.length > 0 ? `${dayEvents.length} ativ.` : ''}
+                                                    </span>
+                                                </div>
+
+                                                {/* Desktop View: Bars */}
+                                                <div className="hidden md:flex flex-col gap-1 px-2 pb-1 overflow-hidden">
+                                                    {dayEvents.slice(0, 3).map(event => (
+                                                        <div
+                                                            key={event.id}
+                                                            className="h-1.5 rounded-full w-full bg-green-500/40 shrink-0"
+                                                            title={event.title}
+                                                        />
+                                                    ))}
+                                                    {dayGhosts.length > 0 && (
+                                                        <div className="flex flex-wrap gap-0.5 mt-0.5 opacity-40">
+                                                            {dayGhosts.slice(0, 6).map(g => (
+                                                                <div key={g.id} className="size-1 rounded-full bg-gray-400" />
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Mobile View: Dots */}
+                                                <div className="md:hidden flex flex-wrap gap-1 justify-center px-1 pb-1 content-start overflow-hidden">
+                                                    {dayEvents.slice(0, 4).map(event => (
+                                                        <div key={event.id} className="size-1 rounded-full bg-green-500 shrink-0" />
+                                                    ))}
+                                                    {dayGhosts.length > 0 && (
+                                                        <div key="ghost-dots" className="size-1 rounded-full bg-gray-300 shrink-0" />
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        {view === 'week' && (
+                            <div className="h-full flex flex-col min-w-[600px]">
+                                <div className="grid grid-cols-7 border-b border-border-light dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/20">
+                                    {calendarDays.map((day) => (
+                                        <div key={day.toString()} className={clsx(
+                                            "py-3 text-center border-r border-border-light dark:border-gray-800 last:border-r-0",
+                                            isToday(day) && "bg-primary/5"
+                                        )}>
+                                            <div className="text-xs font-medium text-text-secondary dark:text-gray-400 capitalize mb-1">{format(day, 'EEE', { locale: ptBR })}</div>
+                                            <div className={clsx(
+                                                "w-8 h-8 rounded-full flex items-center justify-center mx-auto text-sm font-bold",
+                                                isToday(day) ? "bg-primary text-white" : "text-text-main dark:text-white"
+                                            )}>
+                                                {format(day, 'd')}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="flex-1 grid grid-cols-7">
+                                    {calendarDays.map((day) => {
+                                        const dayEvents = getEventsForDay(day);
+                                        const dayGhosts = getGhostEventsForDay(day);
+                                        return (
+                                            <div
+                                                key={day.toString()}
+                                                className={clsx(
+                                                    "border-r border-border-light dark:border-gray-800 last:border-r-0 p-2 space-y-2 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors",
+                                                    isSameDay(day, selectedDate) && "bg-primary/5 dark:bg-primary/10"
+                                                )}
+                                                onClick={() => handleDayClick(day)}
+                                            >
+                                                {dayEvents.map(event => (
+                                                    <div
+                                                        key={event.id}
+                                                        onClick={(e) => handleEditEvent(event, e)}
+                                                        className={clsx(
+                                                            "text-[10px] p-2 rounded-lg border border-l-[3px] cursor-pointer hover:brightness-95 transition-all shadow-sm",
+                                                            eventTypeColors[event.type] || eventTypeColors['other'],
+                                                            eventTypeBorderColors[event.type] || eventTypeBorderColors['other']
+                                                        )}
+                                                    >
+                                                        <div className="font-bold truncate mb-0.5">{event.title}</div>
+                                                        <div className="opacity-75 truncate">{format(parseISO(event.start_time), 'HH:mm')}</div>
+                                                    </div>
+                                                ))}
+                                                {dayGhosts.map(ghost => (
+                                                    <div
+                                                        key={ghost.id}
+                                                        className={clsx(
+                                                            "text-[10px] p-2 rounded-lg border border-l-[3px] shadow-sm",
+                                                            eventTypeColors[ghost.type] || eventTypeColors['other'],
+                                                            eventTypeBorderColors[ghost.type] || eventTypeBorderColors['other']
+                                                        )}
+                                                    >
+                                                        <div className="flex items-center gap-1 mb-0.5 truncate font-bold">
+                                                            <span className="material-symbols-outlined text-[10px]">lock</span>
+                                                            {ghost.title}
+                                                        </div>
+                                                        <div className="truncate opacity-75">{format(parseISO(ghost.start_time), 'HH:mm')}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        {view === 'day' && (
+                            <div className="h-full p-6 space-y-4">
+                                {getEventsForDay(currentDate).length === 0 && (!showOnlyMine || getGhostEventsForDay(currentDate).length === 0) ? (
+                                    <div className="h-full flex flex-col items-center justify-center text-text-secondary dark:text-gray-400">
+                                        <span className="material-symbols-outlined text-4xl mb-2 opacity-30">event_busy</span>
+                                        <p>Nenhuma atividade para este dia.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {/* My Events */}
+                                        {getEventsForDay(currentDate).map(event => (
                                             <div
                                                 key={event.id}
-                                                onClick={(e) => { e.stopPropagation(); setEventToEdit(event); setIsEventModalOpen(true); }}
-                                                className="text-[9px] px-1.5 py-0.5 rounded truncate border border-green-200 dark:border-green-900/50 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-bold flex items-center gap-1 hover:brightness-95 transition-all"
+                                                onClick={(e) => handleEditEvent(event, e)}
+                                                className={clsx(
+                                                    "flex gap-4 p-4 rounded-xl border bg-white dark:bg-gray-800 hover:shadow-md transition-all cursor-pointer",
+                                                    eventTypeBorderColors[event.type] || eventTypeBorderColors['other'],
+                                                    "border-l-[4px] border-gray-100 dark:border-gray-700"
+                                                )}
                                             >
-                                                <span className="material-symbols-outlined text-[10px]">school</span>
-                                                {event.title}
+                                                <div className="flex flex-col items-center justify-center w-16 shrink-0 border-r border-gray-100 dark:border-gray-700 pr-4">
+                                                    <span className="text-lg font-bold text-text-main dark:text-white">{format(parseISO(event.start_time), 'HH:mm')}</span>
+                                                    <span className="text-xs text-text-secondary dark:text-gray-500">{format(parseISO(event.end_time), 'HH:mm')}</span>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className={clsx(
+                                                            "text-[10px] uppercase font-bold px-1.5 py-0.5 rounded",
+                                                            eventTypeColors[event.type] || eventTypeColors['other']
+                                                        )}>
+                                                            {eventTypeLabels[event.type] || 'Evento'}
+                                                        </span>
+                                                        {event.child && (
+                                                            <span className="text-xs text-text-secondary dark:text-gray-400 flex items-center gap-1">
+                                                                <span className="material-symbols-outlined text-[14px]">child_care</span>
+                                                                {event.child.full_name}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <h3 className="text-base font-bold text-text-main dark:text-white">{event.title}</h3>
+                                                    {event.location && (
+                                                        <div className="flex items-center gap-1 text-xs text-text-secondary dark:text-gray-500 mt-1">
+                                                            <span className="material-symbols-outlined text-[14px]">location_on</span>
+                                                            {event.location}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+
+                                        {/* Ghost/Conflict Events */}
+                                        {getGhostEventsForDay(currentDate).map(ghost => (
+                                            <div
+                                                key={ghost.id}
+                                                className={clsx(
+                                                    "flex gap-4 p-4 rounded-xl border bg-white dark:bg-gray-800 hover:shadow-md transition-all",
+                                                    eventTypeBorderColors[ghost.type] || eventTypeBorderColors['other'],
+                                                    "border-l-[4px] border-gray-100 dark:border-gray-700 opacity-80"
+                                                )}
+                                            >
+                                                <div className="flex flex-col items-center justify-center w-16 shrink-0 border-r border-gray-100 dark:border-gray-700 pr-4 opacity-70">
+                                                    <span className="text-lg font-bold text-text-main dark:text-white">{format(parseISO(ghost.start_time), 'HH:mm')}</span>
+                                                    <span className="text-xs text-text-secondary dark:text-gray-500">{format(parseISO(ghost.end_time), 'HH:mm')}</span>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className={clsx(
+                                                            "text-[10px] uppercase font-bold px-1.5 py-0.5 rounded flex items-center gap-1",
+                                                            eventTypeColors[ghost.type] || eventTypeColors['other']
+                                                        )}>
+                                                            <span className="material-symbols-outlined text-[12px]">lock</span>
+                                                            {eventTypeLabels[ghost.type] || 'Ocupado'}
+                                                        </span>
+                                                        {ghost.child && (
+                                                            <span className="text-xs text-text-secondary dark:text-gray-400 flex items-center gap-1">
+                                                                <span className="material-symbols-outlined text-[14px]">child_care</span>
+                                                                {ghost.child.full_name}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <h3 className="text-base font-bold text-text-main dark:text-white opacity-80">{ghost.title}</h3>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
-                                </div>
-                            );
-                        })}
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                {/* Day Details */}
-                <div className="space-y-6">
-                    <div className="bg-white dark:bg-surface-dark rounded-3xl p-6 border border-border-light dark:border-gray-800 shadow-sm sticky top-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h4 className="font-bold text-text-main dark:text-white">
-                                {isSameDay(selectedDate, new Date()) ? 'Hoje' : format(selectedDate, "dd 'de' MMM", { locale: ptBR })}
-                            </h4>
-                            <span className="text-[10px] font-black uppercase text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded-full">Escolar</span>
-                        </div>
+                {/* Sidebar - Visible on Month and Week views */}
+                {view !== 'day' && (
+                    <div className="space-y-6 flex flex-col h-full overflow-hidden">
+                        <div className="bg-white dark:bg-surface-dark rounded-3xl p-6 shadow-sm border border-border-light dark:border-gray-800 flex flex-col h-full overflow-hidden">
+                            <div className="flex items-center justify-between mb-4 shrink-0">
+                                <h3 className="text-lg font-bold text-text-main dark:text-white font-display">
+                                    {isSameDay(selectedDate, new Date()) ? 'Hoje' : format(selectedDate, "d 'de' MMMM", { locale: ptBR })}
+                                </h3>
+                            </div>
 
-                        <div className="space-y-3">
-                            {getEventsForDay(selectedDate).length === 0 ? (
-                                <div className="text-center py-8">
-                                    <span className="material-symbols-outlined text-gray-300 text-4xl mb-2">school</span>
-                                    <p className="text-xs text-text-secondary">Sem eventos para este dia.</p>
-                                </div>
-                            ) : (
-                                getEventsForDay(selectedDate).map(event => (
-                                    <div
-                                        key={event.id}
-                                        onClick={() => { setEventToEdit(event); setIsEventModalOpen(true); }}
-                                        className="p-3 bg-green-50/50 dark:bg-green-900/5 border-l-4 border-l-green-500 rounded-xl cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/10 transition-all shadow-sm"
-                                    >
-                                        <p className="text-[10px] font-bold text-green-600 mb-1">
-                                            {format(parseISO(event.start_time), 'HH:mm')} - {format(parseISO(event.end_time), 'HH:mm')}
-                                        </p>
-                                        <h5 className="text-xs font-bold text-text-main dark:text-white truncate">{event.title}</h5>
-                                        {event.child && (
-                                            <p className="text-[10px] text-text-secondary mt-1 flex items-center gap-1">
-                                                <span className="material-symbols-outlined text-[12px]">child_care</span>
-                                                {event.child.full_name}
-                                            </p>
-                                        )}
+                            <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-3">
+                                {getEventsForDay(selectedDate).length === 0 && getGhostEventsForDay(selectedDate).length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center h-40 text-text-secondary dark:text-gray-400">
+                                        <span className="material-symbols-outlined text-4xl mb-2 opacity-20">history_edu</span>
+                                        <p className="text-sm">Sem atividades.</p>
+                                        <button onClick={handleCreateEvent} className="text-xs text-primary font-bold hover:underline mt-1">Agendar Agora</button>
                                     </div>
-                                ))
-                            )}
+                                ) : (
+                                    <>
+                                        {/* My Events */}
+                                        {getEventsForDay(selectedDate).map(event => (
+                                            <div
+                                                key={event.id}
+                                                onClick={(e) => handleEditEvent(event, e)}
+                                                className={clsx(
+                                                    "group relative p-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/30 hover:border-primary/30 transition-all cursor-pointer",
+                                                    eventTypeBorderColors[event.type] || eventTypeBorderColors['other'],
+                                                    "border-l-[3px]"
+                                                )}
+                                            >
+                                                <div className="flex justify-between items-start mb-1">
+                                                    <span className="text-xs font-mono font-bold text-text-secondary dark:text-gray-400">
+                                                        {format(parseISO(event.start_time), 'HH:mm')}
+                                                    </span>
+                                                    <span className={clsx(
+                                                        "text-[9px] font-bold px-1.5 py-0.5 rounded uppercase",
+                                                        eventTypeColors[event.type] || eventTypeColors['other']
+                                                    )}>
+                                                        {eventTypeLabels[event.type] || 'Evento'}
+                                                    </span>
+                                                </div>
+                                                <h4 className="text-sm font-bold text-text-main dark:text-white line-clamp-2">{event.title}</h4>
+                                                {event.child && (
+                                                    <p className="text-xs text-text-secondary dark:text-gray-500 mt-1 flex items-center gap-1">
+                                                        <span className="material-symbols-outlined text-[14px]">child_care</span>
+                                                        {event.child.full_name}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        ))}
+
+                                        {/* Ghost/Conflict Events */}
+                                        {getGhostEventsForDay(selectedDate).map(ghost => (
+                                            <div
+                                                key={ghost.id}
+                                                className={clsx(
+                                                    "p-3 rounded-xl border border-l-[3px] shadow-sm",
+                                                    eventTypeColors[ghost.type] || eventTypeColors['other'],
+                                                    eventTypeBorderColors[ghost.type] || eventTypeBorderColors['other']
+                                                )}
+                                            >
+                                                <div className="flex justify-between items-center text-[10px] font-bold mb-1 opacity-80">
+                                                    <span>{format(parseISO(ghost.start_time), 'HH:mm')}</span>
+                                                    <span className="flex items-center gap-1">
+                                                        <span className="material-symbols-outlined text-[12px]">lock</span>
+                                                        Ocupado
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs font-bold truncate opacity-90">{ghost.title}</p>
+                                                <p className="text-[10px] truncate opacity-70">{ghost.child?.full_name || 'Outro'}</p>
+                                            </div>
+                                        ))}
+                                    </>
+                                )}
+                            </div>
+
                         </div>
 
-                        <button
-                            onClick={() => { setEventToEdit(null); setIsEventModalOpen(true); }}
-                            className="w-full mt-6 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl text-xs font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2 active:scale-95"
-                        >
-                            <span className="material-symbols-outlined text-[16px]">add</span>
-                            Novo Agendamento
-                        </button>
-                    </div>
-
-                    <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-2xl border border-blue-100 dark:border-blue-900/20">
-                        <div className="flex items-center gap-2 mb-2">
-                            <span className="material-symbols-outlined text-blue-600 text-[18px]">info</span>
-                            <p className="text-[10px] font-bold text-blue-800 dark:text-blue-400 uppercase tracking-wider">Acompanhamento de Metas</p>
+                        <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-2xl border border-blue-100 dark:border-blue-900/20 shrink-0">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="material-symbols-outlined text-blue-600 text-[18px]">info</span>
+                                <p className="text-[10px] font-bold text-blue-800 dark:text-blue-400 uppercase tracking-wider">Acompanhamento Escolar</p>
+                            </div>
+                            <p className="text-[11px] text-blue-700 dark:text-blue-500 leading-relaxed">
+                                Utilize a agenda para organizar reuniões escolares, atividades de reforço e acompanhamento pedagógico.
+                            </p>
                         </div>
-                        <p className="text-[11px] text-blue-700 dark:text-blue-500 leading-relaxed">
-                            Organize reuniões com escolas e reforços escolares para garantir o cumprimento do plano pedagógico individual.
-                        </p>
                     </div>
-                </div>
+                )}
             </div>
 
             <CalendarEventModal
@@ -212,7 +610,8 @@ export function PedagogicalAgenda() {
                 }}
                 selectedDate={selectedDate}
                 eventToEdit={eventToEdit}
+                initialType="school"
             />
-        </div>
+        </div >
     );
 }
