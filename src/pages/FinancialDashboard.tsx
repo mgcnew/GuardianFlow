@@ -52,7 +52,7 @@ export function FinancialDashboard() {
     if (isLoading || !financeData) {
         return (
             <div className="flex flex-col items-center justify-center py-24">
-                <div className="size-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
                 <p className="text-text-secondary font-medium animate-pulse">Carregando dados financeiros...</p>
             </div>
         );
@@ -93,7 +93,7 @@ export function FinancialDashboard() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl sm:text-3xl font-black text-text-main dark:text-white tracking-tight flex items-center gap-2">
-                        <span className="material-symbols-outlined text-green-500 text-3xl">account_balance_wallet</span>
+                        <span className="material-symbols-outlined text-primary text-3xl">account_balance_wallet</span>
                         Painel Financeiro
                     </h1>
                     <p className="text-sm text-text-secondary dark:text-gray-400 font-medium mt-1">
@@ -104,7 +104,7 @@ export function FinancialDashboard() {
                     <button onClick={() => handleNewTransaction('expense')} className="flex-1 sm:flex-none px-4 py-2.5 bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 text-text-main dark:text-white text-xs font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
                         <span className="material-symbols-outlined text-base text-red-500">arrow_downward</span>Nova Despesa
                     </button>
-                    <button onClick={() => handleNewTransaction('income')} className="flex-1 sm:flex-none px-4 py-2.5 bg-green-600 text-white text-xs font-bold rounded-xl hover:bg-green-700 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-green-600/20 active:scale-95">
+                    <button onClick={() => handleNewTransaction('income')} className="flex-1 sm:flex-none px-4 py-2.5 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-primary/20 active:scale-95">
                         <span className="material-symbols-outlined text-base">arrow_upward</span>Nova Receita
                     </button>
                 </div>
@@ -167,54 +167,47 @@ function OverviewTab({ data }: { data: any }) {
             {/* Balance Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Total Balance */}
-                <div className="bg-gradient-to-br from-gray-900 to-black dark:from-surface-dark dark:to-black rounded-3xl p-6 shadow-xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-white/10 transition-colors"></div>
-                    <div className="relative z-10 flex flex-col h-full justify-between">
-                        <div>
-                            <p className="text-white/60 text-xs font-bold uppercase tracking-widest flex items-center gap-1.5 mb-1">
-                                <span className="material-symbols-outlined text-sm">account_balance</span>
-                                Saldo Atual (Mês Corrente)
-                            </p>
-                            <h3 className={clsx("text-4xl sm:text-5xl font-black mt-2 tracking-tighter", totalIncome - totalExpense >= 0 ? "text-white" : "text-white")}>
-                                {formatCurrency(totalIncome - totalExpense)}
-                            </h3>
-                        </div>
-                        <div className="mt-8 pt-4 border-t border-white/10 flex justify-between">
-                            <div>
-                                <p className="text-white/40 text-[10px] uppercase font-bold tracking-widest">A Receber</p>
-                                <p className="text-green-400 font-bold text-sm mt-0.5">{formatCurrency(pendingIncome)}</p>
+                <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 p-6 shadow-sm flex items-center gap-4 relative overflow-hidden group">
+                    <div className="size-16 bg-primary/10 rounded-2xl flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-primary text-4xl">account_balance</span>
+                    </div>
+                    <div>
+                        <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest">Saldo Atual do Mês</p>
+                        <h3 className="text-3xl font-black text-text-main dark:text-white mt-1">
+                            {formatCurrency(totalIncome - totalExpense)}
+                        </h3>
+                        <div className="flex items-center gap-3 mt-2">
+                            <div className="flex items-center gap-1">
+                                <span className="size-1.5 rounded-full bg-green-500"></span>
+                                <span className="text-[10px] font-bold text-green-600">{formatCurrency(pendingIncome)}</span>
                             </div>
-                            <div className="text-right">
-                                <p className="text-white/40 text-[10px] uppercase font-bold tracking-widest">A Pagar</p>
-                                <p className="text-red-400 font-bold text-sm mt-0.5">{formatCurrency(pendingExpense)}</p>
+                            <div className="flex items-center gap-1">
+                                <span className="size-1.5 rounded-full bg-red-500"></span>
+                                <span className="text-[10px] font-bold text-red-600">{formatCurrency(pendingExpense)}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="md:col-span-2 grid grid-cols-2 gap-4">
-                    {/* Income Card */}
-                    <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 p-6 flex flex-col justify-center">
-                        <div className="size-10 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center justify-center mb-4">
-                            <span className="material-symbols-outlined text-green-500">arrow_upward</span>
-                        </div>
-                        <p className="text-xs font-bold text-text-secondary dark:text-gray-500 uppercase tracking-widest">Receitas Recebidas</p>
-                        <h3 className="text-2xl sm:text-3xl font-black text-text-main dark:text-white mt-1">{formatCurrency(totalIncome)}</h3>
-                        <p className="text-[10px] font-medium text-green-600 mt-2 flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[12px]">check_circle</span> Inclui doações e repasses fixos
-                        </p>
+                {/* Income Card */}
+                <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 p-6 shadow-sm flex items-center gap-4">
+                    <div className="size-14 bg-green-50 dark:bg-green-900/20 rounded-2xl flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-green-500 text-3xl">arrow_upward</span>
                     </div>
+                    <div>
+                        <p className="text-2xl font-black text-text-main dark:text-white">{formatCurrency(totalIncome)}</p>
+                        <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest mt-1">Receitas Recebidas</p>
+                    </div>
+                </div>
 
-                    {/* Expense Card */}
-                    <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 p-6 flex flex-col justify-center">
-                        <div className="size-10 bg-red-50 dark:bg-red-900/20 rounded-xl flex items-center justify-center mb-4">
-                            <span className="material-symbols-outlined text-red-500">arrow_downward</span>
-                        </div>
-                        <p className="text-xs font-bold text-text-secondary dark:text-gray-500 uppercase tracking-widest">Despesas Pagas</p>
-                        <h3 className="text-2xl sm:text-3xl font-black text-text-main dark:text-white mt-1">{formatCurrency(totalExpense)}</h3>
-                        <p className="text-[10px] font-medium text-red-600 mt-2 flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[12px]">info</span> Folha, utilidades e compras
-                        </p>
+                {/* Expense Card */}
+                <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 p-6 shadow-sm flex items-center gap-4">
+                    <div className="size-14 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-red-500 text-3xl">arrow_downward</span>
+                    </div>
+                    <div>
+                        <p className="text-2xl font-black text-text-main dark:text-white">{formatCurrency(totalExpense)}</p>
+                        <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest mt-1">Despesas Pagas</p>
                     </div>
                 </div>
             </div>

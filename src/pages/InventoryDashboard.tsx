@@ -111,7 +111,7 @@ export function InventoryDashboard() {
                     </button>
                     <button
                         onClick={() => setIsRequestModalOpen(true)}
-                        className="flex-1 sm:flex-none px-4 py-2.5 bg-amber-500 text-white text-xs font-bold rounded-xl hover:bg-amber-600 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-amber-500/20 active:scale-95">
+                        className="flex-1 sm:flex-none px-4 py-2.5 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-primary/20 active:scale-95">
                         <span className="material-symbols-outlined text-base">shopping_cart</span>Fazer Pedido
                     </button>
                 </div>
@@ -168,7 +168,7 @@ function OverviewTab({ data }: { data: any }) {
                     </div>
                     <div>
                         <p className="text-3xl font-black text-text-main dark:text-white">{data.stats.totalItems}</p>
-                        <p className="text-xs font-bold text-text-secondary dark:text-gray-500 uppercase tracking-widest mt-1">Itens no Catálogo</p>
+                        <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest mt-1">Itens no Catálogo</p>
                     </div>
                 </div>
                 <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 p-6 shadow-sm flex items-center gap-4">
@@ -177,16 +177,16 @@ function OverviewTab({ data }: { data: any }) {
                     </div>
                     <div>
                         <p className="text-3xl font-black text-text-main dark:text-white">{data.stats.lowStock}</p>
-                        <p className="text-xs font-bold text-text-secondary dark:text-gray-500 uppercase tracking-widest mt-1">Estoque Crítico</p>
+                        <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest mt-1">Estoque Crítico</p>
                     </div>
                 </div>
                 <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 p-6 shadow-sm flex items-center gap-4">
-                    <div className="size-14 bg-amber-50 dark:bg-amber-900/20 rounded-2xl flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-amber-500 text-3xl">shopping_cart</span>
+                    <div className="size-14 bg-primary/10 rounded-2xl flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-primary text-3xl">shopping_cart</span>
                     </div>
                     <div>
                         <p className="text-3xl font-black text-text-main dark:text-white">{data.stats.pendingRequests}</p>
-                        <p className="text-xs font-bold text-text-secondary dark:text-gray-500 uppercase tracking-widest mt-1">Pedidos Pendentes</p>
+                        <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest mt-1">Pedidos Pendentes</p>
                     </div>
                 </div>
             </div>
@@ -212,15 +212,15 @@ function OverviewTab({ data }: { data: any }) {
                                     <div className="flex justify-between items-start mb-2">
                                         <div>
                                             <p className="text-sm font-bold text-text-main dark:text-white">{item.name}</p>
-                                            <p className="text-[10px] font-medium text-text-secondary dark:text-gray-500">{item.category}</p>
+                                            <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest">{item.category}</p>
                                         </div>
                                         <div className="text-right">
                                             <p className="text-sm font-black text-red-500">{item.quantity} <span className="text-[10px]">{item.unit}</span></p>
-                                            <p className="text-[10px] text-text-secondary dark:text-gray-400">Min: {item.min_quantity}</p>
+                                            <p className="text-[10px] text-text-secondary dark:text-gray-400 font-bold">Mín: {item.min_quantity}</p>
                                         </div>
                                     </div>
                                     <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                                        <div className={clsx("h-full rounded-full transition-all", percent < 30 ? "bg-red-500" : "bg-amber-500")} style={{ width: `${percent || 5}%` }}></div>
+                                        <div className={clsx("h-full rounded-full transition-all", percent < 30 ? "bg-red-500" : "bg-primary")} style={{ width: `${percent || 5}%` }}></div>
                                     </div>
                                 </div>
                             );
@@ -251,9 +251,9 @@ function OverviewTab({ data }: { data: any }) {
                                                 "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400"
                                         )}>{req.priority === 'high' ? 'Urgente' : 'Normal'}</span>
                                     </div>
-                                    <span className="text-[10px] font-medium text-text-secondary dark:text-gray-500">{format(parseISO(req.created_at), "dd/MM HH:mm")}</span>
+                                    <span className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest">{format(parseISO(req.created_at), "dd/MM HH:mm")}</span>
                                 </div>
-                                <p className="text-sm font-medium text-text-main dark:text-gray-200">
+                                <p className="text-sm font-bold text-text-main dark:text-white">
                                     {req.quantity} {req.unit} de {req.item_name}
                                 </p>
                                 {req.notes && <p className="text-xs text-text-secondary dark:text-gray-400 truncate mt-0.5 italic">"{req.notes}"</p>}
@@ -382,7 +382,7 @@ function MovementsTab({ data }: { data: any }) {
                                 <tr key={mov.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-900/50 transition-colors">
                                     <td className="px-6 py-4">
                                         <p className="text-xs font-bold text-text-main dark:text-white">{format(parseISO(mov.created_at), 'dd/MM/yy')}</p>
-                                        <p className="text-[10px] text-text-secondary dark:text-gray-500">{format(parseISO(mov.created_at), 'HH:mm')}</p>
+                                        <p className="text-[10px] font-bold text-text-secondary dark:text-gray-500">{format(parseISO(mov.created_at), 'HH:mm')}</p>
                                     </td>
                                     <td className="px-4 py-4 text-center">
                                         <span className={clsx("px-2 py-1 rounded text-[9px] font-black uppercase inline-flex items-center justify-center min-w-[60px]", mov.type === 'in' ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400")}>
@@ -399,7 +399,7 @@ function MovementsTab({ data }: { data: any }) {
                                             <div className="size-6 rounded-full bg-primary/10 flex items-center justify-center text-primary text-[10px] font-bold">
                                                 {mov.profiles?.full_name?.charAt(0) || 'U'}
                                             </div>
-                                            <span className="text-xs font-medium text-text-secondary dark:text-gray-400">{mov.profiles?.full_name || 'Sistema'}</span>
+                                            <span className="text-xs font-bold text-text-secondary dark:text-gray-400">{mov.profiles?.full_name || 'Sistema'}</span>
                                         </div>
                                     </td>
                                     <td className="px-4 py-4 hidden sm:table-cell">
@@ -422,7 +422,7 @@ function RequestsTab({ data, onResolve }: { data: any; onResolve: (id: string, s
             <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-border-light dark:border-gray-800 flex items-center justify-between">
                     <h2 className="text-sm font-black text-text-main dark:text-white flex items-center gap-2 uppercase tracking-wide">
-                        <span className="material-symbols-outlined text-amber-500">list_alt</span>Pedidos de Compras/Reposição
+                        <span className="material-symbols-outlined text-primary">list_alt</span>Pedidos de Compras/Reposição
                     </h2>
                 </div>
                 <div className="divide-y divide-gray-50 dark:divide-gray-800">
@@ -443,7 +443,7 @@ function RequestsTab({ data, onResolve }: { data: any; onResolve: (id: string, s
                                         {req.status === 'pending' ? 'Pendente' : req.status === 'approved' ? 'Atendido' : 'Cancelado'}
                                     </span>
                                     {req.priority === 'high' && <span className="text-[10px] font-bold text-red-500 flex items-center gap-0.5"><span className="material-symbols-outlined text-[14px]">priority_high</span>Urgente</span>}
-                                    <span className="text-[10px] font-medium text-text-secondary dark:text-gray-500 ml-auto md:ml-2">
+                                    <span className="text-[10px] font-black text-text-secondary dark:text-gray-500 ml-auto md:ml-2 uppercase tracking-tight">
                                         {format(parseISO(req.created_at), "dd/MM 'às' HH:mm")}
                                     </span>
                                 </div>
@@ -455,7 +455,7 @@ function RequestsTab({ data, onResolve }: { data: any; onResolve: (id: string, s
                                 </p>
                                 {req.notes && (
                                     <div className="mt-2 text-xs text-text-main dark:text-gray-300 bg-gray-50 dark:bg-gray-800 p-2.5 rounded-xl border border-gray-100 dark:border-gray-700">
-                                        <p className="font-bold text-[10px] text-gray-400 uppercase mb-0.5">Observação</p>
+                                        <p className="font-black text-[10px] text-gray-400 uppercase mb-0.5 tracking-widest">Observação</p>
                                         {req.notes}
                                     </div>
                                 )}

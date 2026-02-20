@@ -132,7 +132,7 @@ export function SocialWorkDashboard() {
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center py-24">
-                <div className="size-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
                 <p className="text-text-secondary font-medium animate-pulse">Carregando painel social...</p>
             </div>
         );
@@ -152,7 +152,7 @@ export function SocialWorkDashboard() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl sm:text-3xl font-black text-text-main dark:text-white tracking-tight flex items-center gap-2">
-                        <span className="material-symbols-outlined text-amber-500 text-3xl">social_leaderboard</span>
+                        <span className="material-symbols-outlined text-primary text-3xl">social_leaderboard</span>
                         Serviço Social
                     </h1>
                     <p className="text-sm text-text-secondary dark:text-gray-400 font-medium mt-1">
@@ -169,8 +169,8 @@ export function SocialWorkDashboard() {
                         <span className="material-symbols-outlined text-base text-red-500">gavel</span>Audiência
                     </button>
                     <button onClick={() => { setSelectedChildId(undefined); setIsEntryModalOpen(true); }}
-                        className="flex-1 sm:flex-none px-3 py-2.5 bg-amber-500 text-white text-xs font-bold rounded-xl hover:bg-amber-600 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-amber-500/20 active:scale-95">
-                        <span className="material-symbols-outlined text-base">add</span>Atendimento
+                        className="flex-1 sm:flex-none px-3 py-2.5 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-primary/20 active:scale-95">
+                        <span className="material-symbols-outlined text-base">add</span>Novo Atendimento
                     </button>
                 </div>
             </div>
@@ -235,12 +235,12 @@ function OverviewTab({ data, onOpenEntry, onOpenHearing }: { data: any; onOpenEn
             {/* Stats Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 {[
-                    { icon: 'diversity_3', label: 'Acolhidos', value: data.stats.totalChildren, color: 'amber' },
+                    { icon: 'diversity_3', label: 'Acolhidos', value: data.stats.totalChildren, color: 'blue' },
                     { icon: 'gavel', label: 'Audiências Próx.', value: data.stats.upcomingHearings, color: 'red' },
                     { icon: 'priority_high', label: 'Audiências 7d', value: data.stats.urgentHearings, color: 'rose' },
                     { icon: 'family_restroom', label: 'Visitas (Total)', value: data.stats.totalVisits, color: 'purple' },
                     { icon: 'favorite', label: 'Casos Adoção', value: data.stats.adoptionCases, color: 'pink' },
-                    { icon: 'schedule', label: 'Acolhimento +1 ano', value: data.stats.longStay, color: 'blue' },
+                    { icon: 'schedule', label: 'Acolhimento +1 ano', value: data.stats.longStay, color: 'primary' },
                 ].map((stat, i) => (
                     <div key={i} className="bg-white dark:bg-surface-dark rounded-2xl border border-border-light dark:border-gray-800 p-4 shadow-sm">
                         <div className={`size-9 bg-${stat.color}-50 dark:bg-${stat.color}-900/20 rounded-xl flex items-center justify-center mb-2`}>
@@ -370,16 +370,16 @@ function CasesTab({ search, setSearch, filter, setFilter, filtered, onOpenEntry,
             <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-border-light dark:border-gray-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <h2 className="text-sm font-black text-text-main dark:text-white flex items-center gap-2 uppercase tracking-wide">
-                        <span className="material-symbols-outlined text-amber-500">folder_shared</span>Todos os Casos ({filtered.length})
+                        <span className="material-symbols-outlined text-primary">folder_shared</span>Todos os Casos ({filtered.length})
                     </h2>
                     <div className="flex items-center gap-2 w-full sm:w-auto">
                         <div className="relative flex-1 sm:w-64">
                             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">search</span>
                             <input type="text" placeholder="Buscar por nome ou processo..." value={search} onChange={(e) => setSearch(e.target.value)}
-                                className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-medium outline-none focus:border-amber-500/50 transition-all" />
+                                className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-medium outline-none focus:border-primary/50 transition-all" />
                         </div>
                         <select value={filter} onChange={(e) => setFilter(e.target.value)}
-                            className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-medium outline-none focus:border-amber-500/50">
+                            className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-medium outline-none focus:border-primary/50">
                             <option value="all">Todos</option>
                             {Object.entries(LEGAL_STATUS_MAP).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
                         </select>
@@ -406,7 +406,7 @@ function CasesTab({ search, setSearch, filter, setFilter, filtered, onOpenEntry,
                                 const timeText = daysIn > 365 ? `${Math.floor(daysIn / 365)}a ${Math.floor((daysIn % 365) / 30)}m` : daysIn > 30 ? `${Math.floor(daysIn / 30)} meses` : `${daysIn} dias`;
                                 const status = LEGAL_STATUS_MAP[child.legal_status] || { label: child.legal_status?.replace(/_/g, ' ') || 'Não definido', color: 'bg-gray-100 text-gray-600', darkColor: 'dark:bg-gray-800 dark:text-gray-400' };
                                 return (
-                                    <tr key={child.id} className="group hover:bg-amber-50/30 dark:hover:bg-amber-900/5 transition-colors">
+                                    <tr key={child.id} className="group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                         <td className="px-6 py-3">
                                             <Link to={`/dashboard/children/${child.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                                                 <img src={child.photo_url || `https://ui-avatars.com/api/?name=${child.full_name}&background=random`} className="size-9 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm" />
@@ -427,13 +427,13 @@ function CasesTab({ search, setSearch, filter, setFilter, filtered, onOpenEntry,
                                                 <button onClick={() => onPrint(child)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-500 hover:text-white text-gray-400 transition-all flex items-center justify-center" title="Imprimir PIA">
                                                     <span className="material-symbols-outlined text-lg">print</span>
                                                 </button>
-                                                <button onClick={() => onOpenPIA(child.id, child.full_name)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-blue-500 hover:text-white text-gray-400 transition-all flex items-center justify-center" title="Gerenciar PIA">
+                                                <button onClick={() => onOpenPIA(child.id, child.full_name)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-primary hover:text-white text-gray-400 transition-all flex items-center justify-center" title="Gerenciar PIA">
                                                     <span className="material-symbols-outlined text-lg">assignment</span>
                                                 </button>
-                                                <button onClick={() => onOpenFamily(child.id, child.full_name)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-teal-500 hover:text-white text-gray-400 transition-all flex items-center justify-center" title="Referências Familiares">
+                                                <button onClick={() => onOpenFamily(child.id, child.full_name)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-primary hover:text-white text-gray-400 transition-all flex items-center justify-center" title="Referências Familiares">
                                                     <span className="material-symbols-outlined text-lg">family_restroom</span>
                                                 </button>
-                                                <button onClick={() => onOpenEntry(child.id)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-amber-500 hover:text-white text-gray-400 transition-all flex items-center justify-center" title="Nova Anotação">
+                                                <button onClick={() => onOpenEntry(child.id)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-primary hover:text-white text-gray-400 transition-all flex items-center justify-center" title="Nova Anotação">
                                                     <span className="material-symbols-outlined text-lg">edit_note</span>
                                                 </button>
                                             </div>

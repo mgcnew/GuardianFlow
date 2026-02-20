@@ -146,7 +146,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
                 <button
                     onClick={toggleTheme}
                     className={clsx(
-                        "flex w-full cursor-pointer items-center gap-3 rounded-lg h-10 text-text-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-text-main dark:hover:text-white text-sm font-bold transition-all overflow-hidden active:scale-95",
+                        "flex lg:hidden w-full cursor-pointer items-center gap-3 rounded-lg h-10 text-text-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-text-main dark:hover:text-white text-sm font-bold transition-all overflow-hidden active:scale-95",
                         isCollapsed && !isMobileOpen ? "justify-center px-0" : "px-3"
                     )}
                     title={isDark ? 'Modo claro' : 'Modo escuro'}
