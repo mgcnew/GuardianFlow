@@ -1,12 +1,16 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { StatCard } from '../components/dashboard/StatCard';
 import { ActivityFeed } from '../components/dashboard/ActivityFeed';
 import { StaffList, AgendaWidget } from '../components/dashboard/Widgets';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { createPortal } from 'react-dom';
 
 export function Dashboard() {
     const { user, profile, signOut } = useAuth();
+    const [showMedSummary, setShowMedSummary] = useState(false);
+    const [showJudicialSummary, setShowJudicialSummary] = useState(false);
 
     const { data: dashboardData, isLoading, isError, error } = useQuery({
         queryKey: ['dashboardData', user?.id, profile?.organization_id],
@@ -19,15 +23,23 @@ export function Dashboard() {
             console.log('QueryFn: Starting fetch for org:', profile.organization_id);
 
             try {
-                // Fetch stats - EXPLICITLY filter by organization_id
+                // Fetch children with full fields for stats
                 const { data: children, error: cErr } = await supabase
                     .from('children')
-                    .select('status')
+                    .select('id, full_name, status, judicial_process')
                     .eq('organization_id', profile.organization_id);
 
                 if (cErr) throw cErr;
 
-                // Fetch logs - EXPLICITLY filter by organization_id
+                // Fetch all active medications for the organization
+                const { data: meds, error: mErr } = await supabase
+                    .from('medications')
+                    .select('*, children(full_name)')
+                    .eq('organization_id', profile.organization_id);
+
+                if (mErr) throw mErr;
+
+                // Fetch logs
                 const { data: logs, error: lErr } = await supabase
                     .from('logs')
                     .select('*, children(full_name), profiles(full_name)')
@@ -37,7 +49,7 @@ export function Dashboard() {
 
                 if (lErr) throw lErr;
 
-                // Fetch staff - EXPLICITLY filter by organization_id
+                // Fetch staff
                 const { data: profiles, error: pErr } = await supabase
                     .from('profiles')
                     .select('*')
@@ -46,13 +58,20 @@ export function Dashboard() {
 
                 if (pErr) throw pErr;
 
+                const activeMeds = meds?.filter(m => !m.end_date || new Date(m.end_date) >= new Date()) || [];
+                const judicialOrders = children?.filter(c => c.judicial_process && c.judicial_process.trim() !== '') || [];
+
                 return {
                     stats: {
                         totalChildren: children?.length || 0,
                         activeChildren: children?.filter(c => c.status === 'active').length || 0,
                         urgentChildren: children?.filter(c => c.status === 'urgent').length || 0,
+                        judicialCount: judicialOrders.length,
+                        medsCount: activeMeds.length,
                         capacity: 16
                     },
+                    activeMeds,
+                    judicialOrders,
                     logs: logs || [],
                     staff: profiles || []
                 };
@@ -62,7 +81,7 @@ export function Dashboard() {
             }
         },
         enabled: !!user,
-        retry: false, // Don't retry so we see the error immediately
+        retry: false,
         staleTime: 1000 * 60,
     });
 
@@ -130,7 +149,7 @@ export function Dashboard() {
 
     if (!dashboardData) return null;
 
-    const { stats, logs, staff } = dashboardData;
+    const { stats, logs, staff, activeMeds, judicialOrders } = dashboardData;
 
     return (
         <div className="space-y-4 sm:space-y-6">
@@ -140,28 +159,30 @@ export function Dashboard() {
                     title="Total de Acolhidos"
                     value={stats.totalChildren}
                     subValue={`Ativos: ${stats.activeChildren}`}
-                    variant="default"
+                    variant="info"
                 />
                 <StatCard
                     icon="pill"
-                    title="Medicamentos Próximos"
-                    value="0"
-                    subValue="Nenhum para agora"
+                    title="Medicamentos Ativos"
+                    value={stats.medsCount}
+                    subValue={stats.medsCount > 0 ? `${activeMeds[0].name}${stats.medsCount > 1 ? ' e outros' : ''}` : "Nenhum para agora"}
                     variant="warning"
+                    onInfoClick={() => setShowMedSummary(true)}
                 />
                 <StatCard
                     icon="gavel"
-                    title="Alertas Judiciais"
-                    value={stats.urgentChildren}
-                    subValue={`${stats.urgentChildren} Casos urgentes`}
-                    variant={stats.urgentChildren > 0 ? 'danger' : 'default'}
+                    title="Ordens Judiciais"
+                    value={stats.judicialCount}
+                    subValue={`${stats.judicialCount} Processos ativos`}
+                    variant="danger"
+                    onInfoClick={() => setShowJudicialSummary(true)}
                 />
                 <StatCard
                     icon="bed"
                     title="Vagas Disponíveis"
                     value={Math.max(0, stats.capacity - stats.totalChildren)}
                     subValue={`Capacidade: ${stats.capacity}`}
-                    variant="default"
+                    variant="purple"
                 />
             </div>
 
@@ -172,6 +193,78 @@ export function Dashboard() {
                     <AgendaWidget />
                 </div>
             </div>
+
+            {/* Modals Summary */}
+            {showMedSummary && createPortal(
+                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setShowMedSummary(false)} />
+                    <div className="relative w-full max-w-lg bg-white dark:bg-surface-dark rounded-3xl shadow-2xl border border-white/20 overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-primary/5">
+                            <h3 className="font-black text-primary dark:text-blue-400 uppercase tracking-widest text-xs flex items-center gap-2">
+                                <span className="material-symbols-outlined text-lg">pill</span>
+                                Resumo de Medicamentos
+                            </h3>
+                            <button onClick={() => setShowMedSummary(false)} className="size-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                <span className="material-symbols-outlined text-lg">close</span>
+                            </button>
+                        </div>
+                        <div className="max-h-[60vh] overflow-y-auto p-4 space-y-3">
+                            {activeMeds.length === 0 ? (
+                                <p className="text-center py-8 text-text-secondary dark:text-gray-500 font-medium">Nenhum medicamento ativo registrado.</p>
+                            ) : (
+                                activeMeds.map((m: any) => (
+                                    <div key={m.id} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700">
+                                        <p className="text-xs font-black text-text-main dark:text-white mb-1 uppercase tracking-tight">{m.children?.full_name}</p>
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-sm font-bold text-primary dark:text-blue-400">{m.name}</p>
+                                            <span className="text-[10px] font-black uppercase bg-white dark:bg-gray-800 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700 text-gray-400">{m.frequency}</span>
+                                        </div>
+                                        {m.instructions && <p className="text-[10px] text-text-secondary dark:text-gray-400 mt-1 italic">{m.instructions}</p>}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {showJudicialSummary && createPortal(
+                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setShowJudicialSummary(false)} />
+                    <div className="relative w-full max-w-lg bg-white dark:bg-surface-dark rounded-3xl shadow-2xl border border-white/20 overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-red-500/5">
+                            <h3 className="font-black text-red-600 dark:text-red-400 uppercase tracking-widest text-xs flex items-center gap-2">
+                                <span className="material-symbols-outlined text-lg">gavel</span>
+                                Ordens Judiciais Ativas
+                            </h3>
+                            <button onClick={() => setShowJudicialSummary(false)} className="size-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                <span className="material-symbols-outlined text-lg">close</span>
+                            </button>
+                        </div>
+                        <div className="max-h-[60vh] overflow-y-auto p-4 space-y-3">
+                            {judicialOrders.length === 0 ? (
+                                <p className="text-center py-8 text-text-secondary dark:text-gray-500 font-medium">Nenhuma ordem judicial ativa registrada.</p>
+                            ) : (
+                                judicialOrders.map((c: any) => (
+                                    <div key={c.id} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm font-black text-text-main dark:text-white uppercase tracking-tight">{c.full_name}</p>
+                                            <p className="text-xs font-mono text-primary/70 dark:text-blue-400/70">{c.judicial_process}</p>
+                                        </div>
+                                        {c.status === 'urgent' && (
+                                            <span className="flex items-center gap-1 text-[10px] font-black uppercase text-red-600 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded-full">
+                                                <span className="material-symbols-outlined text-sm">priority_high</span> Urgente
+                                            </span>
+                                        )}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
         </div>
     );
 }

@@ -146,22 +146,22 @@ export function EducatorLogbook() {
 
                 {/* Stats */}
                 <div className="flex-1 grid grid-cols-2 gap-4">
-                    <div className="bg-white dark:bg-surface-dark p-5 rounded-2xl border border-border-light dark:border-gray-800 shadow-sm flex items-center gap-4">
-                        <div className="size-12 rounded-xl bg-orange-50 dark:bg-orange-900/20 text-orange-600 flex items-center justify-center">
+                    <div className="bg-amber-50/50 dark:bg-surface-dark p-5 rounded-2xl border border-amber-100 dark:border-gray-800 shadow-sm flex items-center gap-4 transition-all hover:shadow-md">
+                        <div className="size-12 rounded-xl bg-amber-100 dark:bg-amber-900/20 text-amber-600 flex items-center justify-center shrink-0">
                             <span className="material-symbols-outlined text-2xl">event_note</span>
                         </div>
                         <div>
-                            <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest">Ocorrências</p>
-                            <p className="text-2xl font-black text-text-main dark:text-white leading-none mt-1">{stats.logs}</p>
+                            <p className="text-3xl font-black text-text-main dark:text-white leading-none">{stats.logs}</p>
+                            <p className="text-[10px] font-black text-amber-600/70 dark:text-gray-500 uppercase tracking-widest mt-1.5">Ocorrências</p>
                         </div>
                     </div>
-                    <div className="bg-white dark:bg-surface-dark p-5 rounded-2xl border border-border-light dark:border-gray-800 shadow-sm flex items-center gap-4">
-                        <div className="size-12 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary flex items-center justify-center">
+                    <div className="bg-blue-50/50 dark:bg-surface-dark p-5 rounded-2xl border border-blue-100 dark:border-gray-800 shadow-sm flex items-center gap-4 transition-all hover:shadow-md">
+                        <div className="size-12 rounded-xl bg-blue-100 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center shrink-0">
                             <span className="material-symbols-outlined text-2xl">assignment</span>
                         </div>
                         <div>
-                            <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest">Relatórios</p>
-                            <p className="text-2xl font-black text-text-main dark:text-white leading-none mt-1">{stats.reports}</p>
+                            <p className="text-3xl font-black text-text-main dark:text-white leading-none">{stats.reports}</p>
+                            <p className="text-[10px] font-black text-blue-600/70 dark:text-gray-500 uppercase tracking-widest mt-1.5">Relatórios</p>
                         </div>
                     </div>
                 </div>

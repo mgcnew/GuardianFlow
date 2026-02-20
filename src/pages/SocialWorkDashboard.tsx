@@ -240,11 +240,27 @@ function OverviewTab({ data, onOpenEntry, onOpenHearing }: { data: any; onOpenEn
                     { icon: 'priority_high', label: 'Audiências 7d', value: data.stats.urgentHearings, color: 'rose' },
                     { icon: 'family_restroom', label: 'Visitas (Total)', value: data.stats.totalVisits, color: 'purple' },
                     { icon: 'favorite', label: 'Casos Adoção', value: data.stats.adoptionCases, color: 'pink' },
-                    { icon: 'schedule', label: 'Acolhimento +1 ano', value: data.stats.longStay, color: 'primary' },
+                    { icon: 'schedule', label: 'Acolhimento +1 ano', value: data.stats.longStay, color: 'amber' },
                 ].map((stat, i) => (
-                    <div key={i} className="bg-white dark:bg-surface-dark rounded-2xl border border-border-light dark:border-gray-800 p-4 shadow-sm">
-                        <div className={`size-9 bg-${stat.color}-50 dark:bg-${stat.color}-900/20 rounded-xl flex items-center justify-center mb-2`}>
-                            <span className={`material-symbols-outlined text-${stat.color}-500 text-xl`}>{stat.icon}</span>
+                    <div key={i} className={clsx(
+                        "rounded-2xl border p-4 shadow-sm transition-all hover:shadow-md",
+                        stat.color === 'blue' && "bg-blue-50/50 border-blue-100 dark:bg-surface-dark dark:border-gray-800",
+                        stat.color === 'red' && "bg-red-50/50 border-red-100 dark:bg-surface-dark dark:border-gray-800",
+                        stat.color === 'rose' && "bg-rose-50/50 border-rose-100 dark:bg-surface-dark dark:border-gray-800",
+                        stat.color === 'purple' && "bg-purple-50/50 border-purple-100 dark:bg-surface-dark dark:border-gray-800",
+                        stat.color === 'pink' && "bg-pink-50/50 border-pink-100 dark:bg-surface-dark dark:border-gray-800",
+                        stat.color === 'amber' && "bg-amber-50/50 border-amber-100 dark:bg-surface-dark dark:border-gray-800"
+                    )}>
+                        <div className={clsx(
+                            "size-9 rounded-xl flex items-center justify-center mb-2",
+                            stat.color === 'blue' && "bg-blue-100 dark:bg-blue-900/30 text-blue-600",
+                            stat.color === 'red' && "bg-red-100 dark:bg-red-900/30 text-red-600",
+                            stat.color === 'rose' && "bg-rose-100 dark:bg-rose-900/30 text-rose-600",
+                            stat.color === 'purple' && "bg-purple-100 dark:bg-purple-900/30 text-purple-600",
+                            stat.color === 'pink' && "bg-pink-100 dark:bg-pink-900/30 text-pink-600",
+                            stat.color === 'amber' && "bg-amber-100 dark:bg-amber-900/30 text-amber-600"
+                        )}>
+                            <span className="material-symbols-outlined text-xl">{stat.icon}</span>
                         </div>
                         <p className="text-2xl font-black text-text-main dark:text-white">{stat.value}</p>
                         <p className="text-[10px] font-bold text-text-secondary dark:text-gray-500 uppercase tracking-wider mt-0.5">{stat.label}</p>

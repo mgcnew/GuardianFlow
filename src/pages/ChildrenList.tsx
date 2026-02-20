@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import clsx from 'clsx';
 import { ChildCard } from '../components/children/ChildCard';
 import { AddChildModal } from '../components/children/AddChildModal';
 import { EditChildModal } from '../components/children/EditChildModal';
@@ -135,18 +136,38 @@ export function ChildrenList() {
             {/* Stats Row */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                    { label: 'Total', value: stats.total, color: 'text-text-main dark:text-white', icon: 'groups', bg: 'bg-gray-100 dark:bg-gray-800' },
-                    { label: 'Urgentes', value: stats.urgent, color: 'text-red-600 dark:text-red-400', icon: 'emergency', bg: 'bg-red-50 dark:bg-red-900/20' },
-                    { label: 'Ativos', value: stats.active, color: 'text-green-600 dark:text-green-400', icon: 'check_circle', bg: 'bg-green-50 dark:bg-green-900/20' },
-                    { label: 'Pendentes', value: stats.pending, color: 'text-amber-600 dark:text-amber-400', icon: 'pending', bg: 'bg-amber-50 dark:bg-amber-900/20' },
+                    { label: 'Total', value: stats.total, icon: 'groups', color: 'blue' },
+                    { label: 'Urgentes', value: stats.urgent, icon: 'emergency', color: 'red' },
+                    { label: 'Ativos', value: stats.active, icon: 'check_circle', color: 'emerald' },
+                    { label: 'Pendentes', value: stats.pending, icon: 'pending', color: 'amber' },
                 ].map((stat) => (
-                    <div key={stat.label} className="bg-white dark:bg-surface-dark p-4 rounded-xl border border-border-light dark:border-gray-800 shadow-sm flex items-center gap-4">
-                        <div className={`p-2 rounded-lg ${stat.bg} ${stat.color}`}>
-                            <span className="material-symbols-outlined">{stat.icon}</span>
+                    <div key={stat.label} className={clsx(
+                        "rounded-3xl border p-5 shadow-sm flex items-center gap-4 transition-all hover:shadow-md",
+                        stat.color === 'blue' && "bg-blue-50/50 border-blue-100 dark:bg-surface-dark dark:border-gray-800 text-blue-600",
+                        stat.color === 'red' && "bg-red-50/50 border-red-100 dark:bg-surface-dark dark:border-gray-800 text-red-600",
+                        stat.color === 'emerald' && "bg-emerald-50/50 border-emerald-100 dark:bg-surface-dark dark:border-gray-800 text-emerald-600",
+                        stat.color === 'amber' && "bg-amber-50/50 border-amber-100 dark:bg-surface-dark dark:border-gray-800 text-amber-600"
+                    )}>
+                        <div className={clsx(
+                            "size-12 rounded-2xl flex items-center justify-center shrink-0",
+                            stat.color === 'blue' && "bg-blue-100 dark:bg-blue-900/30",
+                            stat.color === 'red' && "bg-red-100 dark:bg-red-900/30",
+                            stat.color === 'emerald' && "bg-emerald-100 dark:bg-emerald-900/30",
+                            stat.color === 'amber' && "bg-amber-100 dark:bg-amber-900/30"
+                        )}>
+                            <span className="material-symbols-outlined text-2xl">{stat.icon}</span>
                         </div>
                         <div>
-                            <p className="text-xl font-bold text-text-main dark:text-white">{stat.value}</p>
-                            <p className="text-xs text-text-secondary dark:text-gray-400 font-medium">{stat.label}</p>
+                            <p className="text-3xl font-black text-text-main dark:text-white leading-none">{stat.value}</p>
+                            <p className={clsx(
+                                "text-[10px] font-black uppercase tracking-widest mt-1.5",
+                                stat.color === 'blue' && "text-blue-600/70 dark:text-gray-500",
+                                stat.color === 'red' && "text-red-600/70 dark:text-gray-500",
+                                stat.color === 'emerald' && "text-emerald-600/70 dark:text-gray-500",
+                                stat.color === 'amber' && "text-amber-600/70 dark:text-gray-500"
+                            )}>
+                                {stat.label}
+                            </p>
                         </div>
                     </div>
                 ))}

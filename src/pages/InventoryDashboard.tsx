@@ -162,31 +162,31 @@ function OverviewTab({ data }: { data: any }) {
         <div className="space-y-6 animate-in fade-in duration-300">
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 p-6 shadow-sm flex items-center gap-4">
-                    <div className="size-14 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-blue-500 text-3xl">inventory_2</span>
+                <div className="bg-blue-50/50 dark:bg-surface-dark rounded-3xl border border-blue-100 dark:border-gray-800 p-6 shadow-sm flex items-center gap-4">
+                    <div className="size-14 bg-blue-100 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-blue-600 text-3xl">inventory_2</span>
                     </div>
                     <div>
                         <p className="text-3xl font-black text-text-main dark:text-white">{data.stats.totalItems}</p>
-                        <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest mt-1">Itens no Catálogo</p>
+                        <p className="text-[10px] font-black text-blue-600 dark:text-gray-500 uppercase tracking-widest mt-1">Itens no Catálogo</p>
                     </div>
                 </div>
-                <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 p-6 shadow-sm flex items-center gap-4">
-                    <div className="size-14 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-red-500 text-3xl">warning</span>
+                <div className="bg-red-50/50 dark:bg-surface-dark rounded-3xl border border-red-100 dark:border-gray-800 p-6 shadow-sm flex items-center gap-4">
+                    <div className="size-14 bg-red-100 dark:bg-red-900/20 rounded-2xl flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-red-600 text-3xl">warning</span>
                     </div>
                     <div>
                         <p className="text-3xl font-black text-text-main dark:text-white">{data.stats.lowStock}</p>
-                        <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest mt-1">Estoque Crítico</p>
+                        <p className="text-[10px] font-black text-red-600 dark:text-gray-500 uppercase tracking-widest mt-1">Estoque Crítico</p>
                     </div>
                 </div>
-                <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 p-6 shadow-sm flex items-center gap-4">
-                    <div className="size-14 bg-primary/10 rounded-2xl flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-primary text-3xl">shopping_cart</span>
+                <div className="bg-amber-50/50 dark:bg-surface-dark rounded-3xl border border-amber-100 dark:border-gray-800 p-6 shadow-sm flex items-center gap-4">
+                    <div className="size-14 bg-amber-100 dark:bg-amber-900/20 rounded-2xl flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-amber-600 text-3xl">shopping_cart</span>
                     </div>
                     <div>
                         <p className="text-3xl font-black text-text-main dark:text-white">{data.stats.pendingRequests}</p>
-                        <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest mt-1">Pedidos Pendentes</p>
+                        <p className="text-[10px] font-black text-amber-600 dark:text-gray-500 uppercase tracking-widest mt-1">Pedidos Pendentes</p>
                     </div>
                 </div>
             </div>

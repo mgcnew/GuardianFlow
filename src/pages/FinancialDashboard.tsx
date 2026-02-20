@@ -167,12 +167,12 @@ function OverviewTab({ data }: { data: any }) {
             {/* Balance Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Total Balance */}
-                <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 p-6 shadow-sm flex items-center gap-4 relative overflow-hidden group">
-                    <div className="size-16 bg-primary/10 rounded-2xl flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-primary text-4xl">account_balance</span>
+                <div className="bg-blue-50/50 dark:bg-surface-dark rounded-3xl border border-blue-100 dark:border-gray-800 p-6 shadow-sm flex items-center gap-4 relative overflow-hidden group">
+                    <div className="size-16 bg-blue-100 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-4xl">account_balance</span>
                     </div>
                     <div>
-                        <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest">Saldo Atual do Mês</p>
+                        <p className="text-[10px] font-black text-blue-600 dark:text-gray-500 uppercase tracking-widest">Saldo Atual do Mês</p>
                         <h3 className="text-3xl font-black text-text-main dark:text-white mt-1">
                             {formatCurrency(totalIncome - totalExpense)}
                         </h3>
@@ -190,24 +190,24 @@ function OverviewTab({ data }: { data: any }) {
                 </div>
 
                 {/* Income Card */}
-                <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 p-6 shadow-sm flex items-center gap-4">
-                    <div className="size-14 bg-green-50 dark:bg-green-900/20 rounded-2xl flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-green-500 text-3xl">arrow_upward</span>
+                <div className="bg-emerald-50/50 dark:bg-surface-dark rounded-3xl border border-emerald-100 dark:border-gray-800 p-6 shadow-sm flex items-center gap-4">
+                    <div className="size-14 bg-emerald-100 dark:bg-emerald-900/20 rounded-2xl flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-emerald-600 text-3xl">arrow_upward</span>
                     </div>
                     <div>
                         <p className="text-2xl font-black text-text-main dark:text-white">{formatCurrency(totalIncome)}</p>
-                        <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest mt-1">Receitas Recebidas</p>
+                        <p className="text-[10px] font-black text-emerald-600 dark:text-gray-500 uppercase tracking-widest mt-1">Receitas Recebidas</p>
                     </div>
                 </div>
 
                 {/* Expense Card */}
-                <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 p-6 shadow-sm flex items-center gap-4">
-                    <div className="size-14 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-red-500 text-3xl">arrow_downward</span>
+                <div className="bg-red-50/50 dark:bg-surface-dark rounded-3xl border border-red-100 dark:border-gray-800 p-6 shadow-sm flex items-center gap-4">
+                    <div className="size-14 bg-red-100 dark:bg-red-900/20 rounded-2xl flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-red-600 text-3xl">arrow_downward</span>
                     </div>
                     <div>
                         <p className="text-2xl font-black text-text-main dark:text-white">{formatCurrency(totalExpense)}</p>
-                        <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest mt-1">Despesas Pagas</p>
+                        <p className="text-[10px] font-black text-red-600 dark:text-gray-500 uppercase tracking-widest mt-1">Despesas Pagas</p>
                     </div>
                 </div>
             </div>
