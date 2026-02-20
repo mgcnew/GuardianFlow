@@ -1,35 +1,49 @@
 import clsx from 'clsx';
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { format, parseISO, isSameDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { StaffOnDutyModal } from './StaffOnDutyModal';
+
 
 export function StaffList({ staff }: { staff: any[] }) {
+    const [showModal, setShowModal] = useState(false);
+
     return (
-        <div className="bg-white dark:bg-surface-dark rounded-xl border border-border-light dark:border-gray-800 shadow-sm p-5">
-            <div className="flex items-center justify-between gap-2 mb-4">
-                <h3 className="text-text-main dark:text-white text-base font-bold truncate">Equipe em Plantão</h3>
-                <button className="text-primary text-xs font-bold hover:underline shrink-0">Ver Todos</button>
+        <>
+            <div className="bg-white dark:bg-surface-dark rounded-xl border border-border-light dark:border-gray-800 shadow-sm p-5">
+                <div className="flex items-center justify-between gap-2 mb-4">
+                    <h3 className="text-text-main dark:text-white text-base font-bold truncate">Equipe em Plantão</h3>
+                    <button
+                        onClick={() => setShowModal(true)}
+                        className="text-primary text-xs font-bold hover:underline shrink-0"
+                    >
+                        Ver Todos
+                    </button>
+                </div>
+                <div className="flex flex-col gap-3">
+                    {staff.length === 0 ? (
+                        <p className="text-xs text-text-secondary dark:text-gray-400 italic">Carregando equipe...</p>
+                    ) : (
+                        staff.slice(0, 5).map((member) => (
+                            <StaffMember
+                                key={member.id}
+                                name={member.full_name}
+                                role={member.role === 'pedagogue' ? 'Pedagogo' :
+                                    member.role === 'technician' ? 'Técnico' :
+                                        member.role === 'educator' ? 'Educador' :
+                                            member.role === 'org_admin' ? 'Coordenador' : 'Operacional'}
+                                image={member.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.full_name)}&background=random`}
+                            />
+                        ))
+                    )}
+                </div>
             </div>
-            <div className="flex flex-col gap-3">
-                {staff.length === 0 ? (
-                    <p className="text-xs text-text-secondary dark:text-gray-400 italic">Carregando equipe...</p>
-                ) : (
-                    staff.map((member) => (
-                        <StaffMember
-                            key={member.id}
-                            name={member.full_name}
-                            role={member.role === 'pedagogue' ? 'Pedagogo' :
-                                member.role === 'technician' ? 'Técnico' :
-                                    member.role === 'educator' ? 'Educador' :
-                                        member.role === 'org_admin' ? 'Coordenador' : 'Operacional'}
-                            image={member.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.full_name)}&background=random`}
-                        />
-                    ))
-                )}
-            </div>
-        </div>
+
+            <StaffOnDutyModal isOpen={showModal} onClose={() => setShowModal(false)} />
+        </>
     );
 }
 

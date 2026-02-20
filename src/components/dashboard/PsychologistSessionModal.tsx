@@ -185,7 +185,7 @@ export function PsychologistSessionModal({ isOpen, onClose, selectedDate, eventT
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/30 backdrop-blur-sm animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300">
             <div className="bg-white dark:bg-surface-dark rounded-3xl w-full max-w-xl shadow-xl animate-in zoom-in-95 duration-300 overflow-hidden flex flex-col relative">
 
                 {/* Header with Stepper Dots */}
@@ -195,7 +195,7 @@ export function PsychologistSessionModal({ isOpen, onClose, selectedDate, eventT
                             <span className="material-symbols-outlined text-primary text-2xl">psychology</span>
                         </div>
                         <div>
-                            <h2 className="text-sm font-black text-text-main dark:text-white uppercase tracking-tight">Atendimento Clínico</h2>
+                            <h2 className="text-sm font-black text-text-main dark:text-white uppercase tracking-tight">Agendamento Clínico</h2>
                             <p className="text-[10px] text-text-secondary uppercase tracking-widest font-medium">Passo {step} de 3</p>
                         </div>
                     </div>

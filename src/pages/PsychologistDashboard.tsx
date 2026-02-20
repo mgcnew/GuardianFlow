@@ -115,8 +115,8 @@ export function PsychologistDashboard() {
                         onClick={() => { setSelectedChildId(undefined); setIsEntryModalOpen(true); }}
                         className="flex-1 sm:flex-none px-4 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95"
                     >
-                        <span className="material-symbols-outlined text-lg">medical_information</span>
-                        <span className="whitespace-nowrap">Nova Sessão</span>
+                        <span className="material-symbols-outlined text-lg">clinical_notes</span>
+                        <span className="whitespace-nowrap">Registrar Evolução</span>
                     </button>
                 </div>
             </div>
@@ -294,7 +294,7 @@ export function PsychologistDashboard() {
                                             onClick={() => { setSelectedChildId(child.id); setIsEntryModalOpen(true); }}
                                             className="py-2.5 bg-primary/5 text-primary text-[10px] font-black uppercase rounded-xl hover:bg-primary transition-all hover:text-white"
                                         >
-                                            Registrar Sessão
+                                            Registrar Evolução
                                         </button>
                                         <button
                                             onClick={() => { setSelectedChildId(child.id); setActiveTab('analysis'); }}

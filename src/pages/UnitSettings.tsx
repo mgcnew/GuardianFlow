@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import clsx from 'clsx';
@@ -19,7 +20,8 @@ interface OrgData {
 
 export function UnitSettings() {
     const { profile } = useAuth();
-    const [activeTab, setActiveTab] = useState<'unit' | 'team'>('unit');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [activeTab, setActiveTab] = useState<'unit' | 'team'>((searchParams.get('tab') as 'unit' | 'team') || 'unit');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
@@ -184,7 +186,10 @@ export function UnitSettings() {
             {/* Tabs */}
             <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800/50 p-1 rounded-xl w-fit">
                 <button
-                    onClick={() => setActiveTab('unit')}
+                    onClick={() => {
+                        setActiveTab('unit');
+                        setSearchParams({ tab: 'unit' });
+                    }}
                     className={clsx(
                         "px-4 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2",
                         activeTab === 'unit'
@@ -196,7 +201,10 @@ export function UnitSettings() {
                     Unidade
                 </button>
                 <button
-                    onClick={() => setActiveTab('team')}
+                    onClick={() => {
+                        setActiveTab('team');
+                        setSearchParams({ tab: 'team' });
+                    }}
                     className={clsx(
                         "px-4 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2",
                         activeTab === 'team'

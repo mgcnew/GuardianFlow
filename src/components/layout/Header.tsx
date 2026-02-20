@@ -41,7 +41,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
     const userDisplayName = user?.email?.split('@')[0] || 'Usuário';
 
     return (
-        <header className="flex flex-row items-center justify-between gap-2 md:gap-4 border border-border-light dark:border-gray-800 bg-surface-light dark:bg-surface-dark px-4 py-4 md:px-8 md:py-4 z-40 rounded-2xl shadow-sm">
+        <header className="flex flex-row items-center justify-between gap-2 md:gap-4 border border-border-light dark:border-gray-800 bg-surface-light dark:bg-surface-dark px-4 py-4 md:px-8 md:py-4 z-30 rounded-2xl shadow-sm">
             <div className={clsx("flex items-center gap-1 md:gap-2", searchExpanded && "hidden md:flex")}>
                 <button onClick={onMenuToggle} className="lg:hidden p-2 -ml-1 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
                     <span className="material-symbols-outlined text-[22px]">menu</span>
