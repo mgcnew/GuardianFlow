@@ -43,6 +43,16 @@ const RELATIONSHIP_MAP: Record<string, string> = {
     mother: 'Mãe', father: 'Pai', sibling: 'Irmão(ã)', grandparent: 'Avô(ó)', uncle_aunt: 'Tio(a)', godparent: 'Padrinho/Madrinha', other: 'Outro',
 };
 
+const ADOPTION_STATUS_MAP: Record<string, string> = {
+    initial_evaluation: 'Avaliação Inicial',
+    family_search: 'Busca de Família',
+    approximation: 'Aproximação',
+    cohabitation: 'Estágio de Convivência',
+    finalized: 'Finalizado (Sentença)',
+    suspended: 'Suspenso',
+    returned: 'Devolvido/Desistência',
+};
+
 export function SocialWorkDashboard() {
     const { profile } = useAuth();
     const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
@@ -616,7 +626,7 @@ function AdoptionTab({ data, onEdit, onNew }: any) {
                                         <p className="text-[10px] font-bold text-pink-600 uppercase tracking-wider mb-1">Processo Ativo</p>
                                         {process.adopter_name && <p className="text-xs text-text-main dark:text-white"><strong>Adotante:</strong> {process.adopter_name}</p>}
                                         {process.court && <p className="text-[10px] text-text-secondary">{process.court}</p>}
-                                        <p className="text-[10px] text-text-secondary mt-1">Status: <strong>{process.status?.replace(/_/g, ' ')}</strong></p>
+                                        <p className="text-[10px] text-text-secondary mt-1">Status: <strong>{ADOPTION_STATUS_MAP[process.status] || process.status?.replace(/_/g, ' ')}</strong></p>
                                     </div>
                                 ) : (
                                     <p className="text-[10px] text-text-secondary italic">Sem processo de adoção registrado</p>
