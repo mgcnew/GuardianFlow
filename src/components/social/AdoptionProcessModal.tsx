@@ -51,7 +51,6 @@ export function AdoptionProcessModal({ isOpen, onClose, childId, childName, exis
                 .from('children')
                 .select('id, full_name, photo_url, judicial_process')
                 .eq('organization_id', profile?.organization_id)
-                .or('legal_status.eq.disponivel_adocao,legal_status.eq.em_processo_adocao')
                 .order('full_name');
             return data || [];
         },
