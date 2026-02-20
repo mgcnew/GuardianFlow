@@ -129,7 +129,7 @@ export function FamilyVisitModal({ isOpen, onClose, initialChildId }: FamilyVisi
 
     return createPortal(
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-surface-dark rounded-t-[2.5rem] sm:rounded-3xl w-full max-w-xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300 overflow-hidden flex flex-col relative max-h-[95vh] sm:max-h-[92vh]">
+            <div className="bg-white dark:bg-surface-dark rounded-t-[2rem] sm:rounded-3xl w-full max-w-xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300 overflow-hidden flex flex-col relative max-h-[95vh] sm:max-h-[92vh]">
                 {/* Header */}
                 <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
                     <div className="flex items-center gap-3">
@@ -170,7 +170,7 @@ export function FamilyVisitModal({ isOpen, onClose, initialChildId }: FamilyVisi
                     </div>
 
                     {/* Visitor + Relationship */}
-                    <div className="grid grid-cols-5 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
                         <div className="col-span-3">
                             <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1.5 block">Nome do Visitante *</label>
                             {familyRefs && familyRefs.length > 0 ? (
@@ -197,7 +197,7 @@ export function FamilyVisitModal({ isOpen, onClose, initialChildId }: FamilyVisi
                     </div>
 
                     {/* Date, Time, Duration */}
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                             <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1.5 block">Data *</label>
                             <input type="date" value={form.visit_date} onChange={e => setForm(f => ({ ...f, visit_date: e.target.value }))}

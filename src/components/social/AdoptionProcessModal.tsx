@@ -145,7 +145,7 @@ export function AdoptionProcessModal({ isOpen, onClose, childId, childName, exis
 
     return createPortal(
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-surface-dark rounded-t-[2.5rem] sm:rounded-3xl w-full max-w-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300 overflow-hidden flex flex-col relative max-h-[95vh] sm:max-h-[92vh]">
+            <div className="bg-white dark:bg-surface-dark rounded-t-[2rem] sm:rounded-3xl w-full max-w-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300 overflow-hidden flex flex-col relative max-h-[95vh] sm:max-h-[92vh]">
                 {/* Header */}
                 <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
                     <div className="flex items-center gap-3">
@@ -185,7 +185,7 @@ export function AdoptionProcessModal({ isOpen, onClose, childId, childName, exis
                         )}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1.5 block">Status do Processo</label>
                             <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
@@ -200,7 +200,7 @@ export function AdoptionProcessModal({ isOpen, onClose, childId, childName, exis
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1.5 block">Vara / Comarca</label>
                             <input type="text" placeholder="Vara da Infância..." value={form.court} onChange={e => setForm(f => ({ ...f, court: e.target.value }))}
@@ -227,7 +227,7 @@ export function AdoptionProcessModal({ isOpen, onClose, childId, childName, exis
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                             <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1.5 block">Início Aproximação</label>
                             <input type="date" value={form.approximation_start} onChange={e => setForm(f => ({ ...f, approximation_start: e.target.value }))}

@@ -110,7 +110,7 @@ export function HearingModal({ isOpen, onClose, initialChildId }: HearingModalPr
 
     return createPortal(
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-surface-dark rounded-t-[2.5rem] sm:rounded-3xl w-full max-w-xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300 overflow-hidden flex flex-col relative max-h-[95vh] sm:max-h-[92vh]">
+            <div className="bg-white dark:bg-surface-dark rounded-t-[2rem] sm:rounded-3xl w-full max-w-xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300 overflow-hidden flex flex-col relative max-h-[95vh] sm:max-h-[92vh]">
                 {/* Header */}
                 <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
                     <div className="flex items-center gap-3">
@@ -158,7 +158,7 @@ export function HearingModal({ isOpen, onClose, initialChildId }: HearingModalPr
                     {/* Hearing Type */}
                     <div>
                         <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2 block">Tipo de Audiência *</label>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                             {HEARING_TYPES.map(t => (
                                 <button key={t.id} type="button" onClick={() => setForm(f => ({ ...f, hearing_type: t.id }))}
                                     className={clsx("flex flex-col items-center gap-1 p-3 rounded-xl border transition-all text-xs font-bold",
@@ -171,7 +171,7 @@ export function HearingModal({ isOpen, onClose, initialChildId }: HearingModalPr
                     </div>
 
                     {/* Date & Time */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1.5 block">Data *</label>
                             <input type="date" value={form.hearing_date} onChange={e => setForm(f => ({ ...f, hearing_date: e.target.value }))}
@@ -185,7 +185,7 @@ export function HearingModal({ isOpen, onClose, initialChildId }: HearingModalPr
                     </div>
 
                     {/* Court & Judge */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1.5 block">Vara / Tribunal</label>
                             <input type="text" placeholder="Vara da Infância..." value={form.court} onChange={e => setForm(f => ({ ...f, court: e.target.value }))}

@@ -137,7 +137,7 @@ export function FamilyReferenceModal({ isOpen, onClose, childId, childName }: Fa
 
     return createPortal(
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-surface-dark rounded-t-[2.5rem] sm:rounded-3xl w-full max-w-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300 overflow-hidden flex flex-col relative max-h-[95vh] sm:max-h-[92vh]">
+            <div className="bg-white dark:bg-surface-dark rounded-t-[2rem] sm:rounded-3xl w-full max-w-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300 overflow-hidden flex flex-col relative max-h-[95vh] sm:max-h-[92vh]">
                 {/* Header */}
                 <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
                     <div className="flex items-center gap-3">
@@ -236,7 +236,7 @@ export function FamilyReferenceModal({ isOpen, onClose, childId, childName }: Fa
                             </div>
 
                             {/* Relationship + Status */}
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1.5 block">Parentesco *</label>
                                     <select value={form.relationship} onChange={e => setForm(f => ({ ...f, relationship: e.target.value }))}
@@ -254,7 +254,7 @@ export function FamilyReferenceModal({ isOpen, onClose, childId, childName }: Fa
                             </div>
 
                             {/* Phone + City */}
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1.5 block">Telefone</label>
                                     <input type="tel" placeholder="(00) 00000-0000" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}

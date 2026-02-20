@@ -131,8 +131,8 @@ export function PIAManagerModal({ isOpen, onClose, childId, childName }: PIAMana
     if (!isOpen) return null;
 
     return createPortal(
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300 p-4">
-            <div className="bg-white dark:bg-surface-dark rounded-3xl w-full max-w-4xl shadow-2xl animate-in zoom-in-95 duration-300 overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
+            <div className="bg-white dark:bg-surface-dark rounded-t-[2rem] sm:rounded-3xl w-full max-w-4xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300 overflow-hidden flex flex-col relative max-h-[95vh] sm:max-h-[92vh]">
 
                 {/* Header */}
                 <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
@@ -153,12 +153,12 @@ export function PIAManagerModal({ isOpen, onClose, childId, childName }: PIAMana
                 {/* Sub-Header Tabs */}
                 <div className="px-6 py-2 bg-gray-50/50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-800 flex gap-4">
                     <button onClick={() => setActiveSection('assessment')}
-                        className={clsx("text-[10px] font-black uppercase tracking-widest py-2 border-b-2 transition-all",
+                        className={clsx("flex-1 sm:flex-none text-[10px] font-black uppercase tracking-widest py-2 border-b-2 transition-all",
                             activeSection === 'assessment' ? "border-blue-500 text-blue-600" : "border-transparent text-text-secondary hover:text-text-main")}>
                         Parecer Técnico
                     </button>
                     <button onClick={() => setActiveSection('goals')}
-                        className={clsx("text-[10px] font-black uppercase tracking-widest py-2 border-b-2 transition-all",
+                        className={clsx("flex-1 sm:flex-none text-[10px] font-black uppercase tracking-widest py-2 border-b-2 transition-all",
                             activeSection === 'goals' ? "border-blue-500 text-blue-600" : "border-transparent text-text-secondary hover:text-text-main")}>
                         Metas e Objetivos
                     </button>
