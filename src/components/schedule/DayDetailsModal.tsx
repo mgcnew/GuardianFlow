@@ -1,6 +1,7 @@
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import clsx from 'clsx';
+import { createPortal } from 'react-dom';
 
 interface DayDetailsModalProps {
     isOpen: boolean;
@@ -39,7 +40,7 @@ export function DayDetailsModal({ isOpen, onClose, date, events, onEditEvent, on
         urgent: 'bg-red-500',
     };
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white dark:bg-surface-dark rounded-3xl w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden flex flex-col max-h-[85vh] relative">
 
@@ -155,6 +156,7 @@ export function DayDetailsModal({ isOpen, onClose, date, events, onEditEvent, on
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

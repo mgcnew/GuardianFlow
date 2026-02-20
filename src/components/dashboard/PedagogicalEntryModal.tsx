@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -113,8 +114,8 @@ export function PedagogicalEntryModal({ isOpen, onClose, initialChildId }: Pedag
 
     const selectedCategory = CATEGORIES.find(c => c.id === form.category)!;
 
-    return (
-        <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
+    return createPortal(
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
             <div className="bg-white dark:bg-surface-dark rounded-t-[2.5rem] sm:rounded-3xl w-full max-w-xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300 overflow-hidden flex flex-col relative max-h-[95vh] sm:max-h-[92vh]">
 
                 {/* Header */}
@@ -324,6 +325,7 @@ export function PedagogicalEntryModal({ isOpen, onClose, initialChildId }: Pedag
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

@@ -1,4 +1,5 @@
 import { MedicationsManager } from './MedicationsManager';
+import { createPortal } from 'react-dom';
 
 interface MedicationsModalProps {
     isOpen: boolean;
@@ -9,7 +10,7 @@ interface MedicationsModalProps {
 export function MedicationsModal({ isOpen, onClose, child }: MedicationsModalProps) {
     if (!isOpen || !child) return null;
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <div className="bg-white dark:bg-surface-dark w-full max-w-3xl max-h-[90vh] rounded-3xl shadow-2xl border border-border-light dark:border-gray-800 overflow-hidden flex flex-col">
                 {/* Header */}
@@ -33,6 +34,7 @@ export function MedicationsModal({ isOpen, onClose, child }: MedicationsModalPro
                     <button type="button" onClick={onClose} className="px-8 py-3 border border-border-light dark:border-gray-700 rounded-2xl font-black text-text-secondary uppercase text-xs tracking-widest hover:bg-white transition-all">Fechar</button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -184,8 +185,8 @@ export function PsychologistSessionModal({ isOpen, onClose, selectedDate, eventT
 
     if (!isOpen) return null;
 
-    return (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+    return createPortal(
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300">
             <div className="bg-white dark:bg-surface-dark rounded-3xl w-full max-w-xl shadow-xl animate-in zoom-in-95 duration-300 overflow-hidden flex flex-col relative">
 
                 {/* Header with Stepper Dots */}
@@ -458,6 +459,7 @@ export function PsychologistSessionModal({ isOpen, onClose, selectedDate, eventT
                     )}
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

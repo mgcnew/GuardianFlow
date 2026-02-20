@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { type Role } from '../../contexts/AuthContext';
@@ -84,8 +85,8 @@ export function AddProfessionalModal({ isOpen, onClose, onSuccess }: AddProfessi
         { value: 'org_admin', label: 'Administrador da Unidade', icon: 'admin_panel_settings' },
     ];
 
-    return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+    return createPortal(
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white dark:bg-surface-dark w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
                 {/* Header */}
                 <div className="px-8 py-6 border-b border-border-light dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800/30">
@@ -258,6 +259,7 @@ export function AddProfessionalModal({ isOpen, onClose, onSuccess }: AddProfessi
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

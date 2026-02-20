@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import clsx from 'clsx';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
@@ -222,8 +223,8 @@ export function EducatorLogbook() {
             </div>
 
             {/* Modais */}
-            {activeModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-400">
+            {activeModal && createPortal(
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-400">
                     <style>
                         {`
                             .scrollbar-hide::-webkit-scrollbar {
@@ -275,7 +276,8 @@ export function EducatorLogbook() {
                             )}
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );

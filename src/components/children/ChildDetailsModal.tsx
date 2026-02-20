@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '../../lib/supabase';
 import clsx from 'clsx';
 
@@ -54,7 +55,7 @@ export function ChildDetailsModal({ isOpen, onClose, childId }: ChildDetailsModa
         <span className="text-gray-400 italic text-xs">{text}</span>
     );
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
             <style>
                 {`
@@ -196,6 +197,7 @@ export function ChildDetailsModal({ isOpen, onClose, childId }: ChildDetailsModa
                     )}
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

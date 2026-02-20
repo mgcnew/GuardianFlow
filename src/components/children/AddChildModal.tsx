@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
@@ -254,17 +255,17 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
         other: 'Local / Instituição de Origem',
     };
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-surface-dark w-full max-w-4xl max-h-[96vh] sm:max-h-[92vh] rounded-2xl sm:rounded-3xl shadow-2xl border border-border-light dark:border-gray-800 overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
+    return createPortal(
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+            <div className="bg-white dark:bg-surface-dark w-full max-w-4xl h-full sm:h-auto sm:max-h-[92vh] rounded-none sm:rounded-3xl shadow-2xl border-none sm:border sm:border-border-light dark:sm:border-gray-800 overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
 
                 {/* Header */}
-                <div className="flex-shrink-0 px-5 sm:px-8 py-4 sm:py-5 border-b border-border-light dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800/50">
+                <div className="flex-shrink-0 px-4 sm:px-8 py-3 sm:py-5 border-b border-border-light dark:border-gray-800 flex items-center justify-between bg-white/50 dark:bg-gray-800/50 backdrop-blur-md sticky top-0 z-10">
                     <div>
-                        <h3 className="text-lg sm:text-2xl font-black text-text-main dark:text-white font-display tracking-tight">Novo Registro de Acolhimento</h3>
-                        <p className="text-[10px] sm:text-sm text-text-secondary dark:text-gray-400 font-display">Preencha o prontuário completo do acolhido.</p>
+                        <h3 className="text-base sm:text-2xl font-black text-text-main dark:text-white font-display tracking-tight truncate">Novo Acolhimento</h3>
+                        <p className="text-[9px] sm:text-sm text-text-secondary dark:text-gray-400 font-display">Informações completas do prontuário.</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors active:scale-90">
+                    <button onClick={onClose} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors active:scale-95">
                         <span className="material-symbols-outlined text-text-secondary dark:text-gray-400">close</span>
                     </button>
                 </div>
@@ -284,7 +285,7 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
                                 type="button"
                                 onClick={() => setActiveTab(tab.id as TabType)}
                                 className={clsx(
-                                    "flex-1 flex items-center justify-center gap-1.5 whitespace-nowrap py-4 px-4 sm:px-3 text-[10px] font-black transition-all border-b-2 uppercase tracking-[0.15em] font-display active:scale-95",
+                                    "flex-1 flex items-center justify-center gap-1.5 whitespace-nowrap py-3.5 px-3 text-[9px] sm:text-[10px] font-black transition-all border-b-2 uppercase tracking-widest font-display active:scale-95",
                                     activeTab === tab.id
                                         ? "border-primary text-primary"
                                         : "border-transparent text-text-secondary dark:text-gray-500 hover:text-text-main dark:hover:text-white hover:border-gray-200 dark:hover:border-gray-700"
@@ -298,7 +299,7 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 min-h-0 overflow-y-auto p-5 sm:p-8 custom-scrollbar">
+                <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-8 no-scrollbar scroll-smooth">
                     <form id="add-child-form" onSubmit={handleSubmit} className="space-y-8">
 
                         {/* ═══════ TAB: BASIC ═══════ */}
@@ -306,10 +307,10 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
                             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                                 <div className="flex flex-col md:flex-row gap-8 items-start">
                                     {/* Photo */}
-                                    <div className="flex flex-col items-center gap-3">
+                                    <div className="flex flex-col items-center sm:items-start gap-4">
                                         <div
                                             onClick={() => fileInputRef.current?.click()}
-                                            className="w-32 h-32 rounded-3xl border-2 border-dashed border-gray-300 dark:border-gray-700 overflow-hidden flex items-center justify-center bg-gray-50 dark:bg-gray-800 cursor-pointer hover:border-primary transition-all group relative"
+                                            className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl sm:rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center bg-gray-50 dark:bg-gray-800 cursor-pointer hover:border-primary transition-all group relative"
                                         >
                                             {photoPreview ? (
                                                 <img src={photoPreview} className="w-full h-full object-cover" alt="Preview" />
@@ -851,40 +852,67 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
                 </div>
 
                 {/* Footer */}
-                <div className="flex-shrink-0 p-5 sm:p-8 border-t border-border-light dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-[0.2em] w-full sm:w-auto text-center sm:text-left">
-                        * Campos de preenchimento obrigatório
-                    </p>
-                    <div className="flex gap-3 w-full sm:w-auto">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="flex-1 sm:flex-none px-6 sm:px-8 py-3.5 sm:py-3.5 border border-border-light dark:border-gray-700 rounded-2xl font-black text-text-secondary dark:text-gray-400 hover:bg-white dark:hover:bg-gray-700 transition-all font-display uppercase text-[10px] sm:text-xs tracking-widest active:scale-95"
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            form="add-child-form"
-                            type="submit"
-                            disabled={loading}
-                            className="flex-1 sm:flex-none px-8 sm:px-12 py-3.5 sm:py-3.5 bg-primary text-white rounded-2xl font-black hover:bg-primary/90 transition-all shadow-xl shadow-primary/30 disabled:opacity-50 font-display uppercase text-[10px] sm:text-xs tracking-widest flex items-center justify-center gap-2 active:scale-95"
-                        >
-                            {loading ? (
-                                <>
-                                    <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                    <span className="hidden sm:inline">Salvando...</span>
-                                    <span className="sm:hidden">Gravando</span>
-                                </>
-                            ) : (
-                                <>
-                                    <span className="hidden sm:inline">Concluir Cadastro</span>
-                                    <span className="sm:hidden">Concluir</span>
-                                </>
-                            )}
-                        </button>
+                <div className="flex-shrink-0 px-4 sm:px-8 py-4 sm:py-5 border-t border-border-light dark:border-gray-800 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md flex items-center justify-between gap-3">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="px-4 py-3 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-text-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all active:scale-95"
+                    >
+                        Cancelar
+                    </button>
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        {activeTab !== 'basic' && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    const tabs: TabType[] = ['basic', 'origin', 'health', 'docs', 'institutional'];
+                                    const currentIdx = tabs.indexOf(activeTab);
+                                    if (currentIdx > 0) setActiveTab(tabs[currentIdx - 1]);
+                                }}
+                                className="px-4 py-3 bg-gray-100 dark:bg-gray-800 text-text-main dark:text-white text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl transition-all active:scale-95 flex items-center gap-2"
+                            >
+                                <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+                                <span className="hidden sm:inline">Anterior</span>
+                            </button>
+                        )}
+
+                        {activeTab !== 'institutional' ? (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    const tabs: TabType[] = ['basic', 'origin', 'health', 'docs', 'institutional'];
+                                    const currentIdx = tabs.indexOf(activeTab);
+                                    if (currentIdx < tabs.length - 1) setActiveTab(tabs[currentIdx + 1]);
+                                }}
+                                className="px-6 py-3 bg-primary/10 text-primary text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl hover:bg-primary hover:text-white transition-all active:scale-95 flex items-center gap-2"
+                            >
+                                Próximo
+                                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                            </button>
+                        ) : (
+                            <button
+                                form="add-child-form"
+                                type="submit"
+                                disabled={loading}
+                                className="px-8 py-3 bg-primary text-white text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl hover:bg-primary/90 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-primary/20"
+                            >
+                                {loading ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        <span>Salvando...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className="material-symbols-outlined text-[18px]">save</span>
+                                        Concluir
+                                    </>
+                                )}
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

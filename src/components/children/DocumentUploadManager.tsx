@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -407,8 +408,8 @@ export function DocumentUploadManager({ childId, pendingFiles = [], onAddPending
             )}
 
             {/* Document Viewer Modal */}
-            {viewDoc && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+            {viewDoc && createPortal(
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
                     <div className="bg-white dark:bg-surface-dark w-full max-w-5xl h-[95vh] sm:h-[90vh] rounded-2xl sm:rounded-3xl shadow-2xl border border-border-light dark:border-gray-800 overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
                         {/* Header */}
                         <div className="px-5 sm:px-8 py-3 sm:py-4 border-b border-border-light dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800/50">
@@ -461,7 +462,8 @@ export function DocumentUploadManager({ childId, pendingFiles = [], onAddPending
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );

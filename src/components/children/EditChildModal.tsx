@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
@@ -189,7 +190,7 @@ export function EditChildModal({ isOpen, onClose, child, initialTab = 'basic' }:
         council: 'Conselho Tutelar', other: 'Local / Instituição de Origem',
     };
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
             <div className="bg-white dark:bg-surface-dark w-full max-w-4xl max-h-[96vh] sm:max-h-[92vh] rounded-2xl sm:rounded-3xl shadow-2xl border border-border-light dark:border-gray-800 overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
                 {/* Header */}
@@ -743,6 +744,7 @@ export function EditChildModal({ isOpen, onClose, child, initialTab = 'basic' }:
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
