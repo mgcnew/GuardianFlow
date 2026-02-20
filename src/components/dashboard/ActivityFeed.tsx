@@ -1,4 +1,5 @@
 import { formatDistanceToNow } from 'date-fns';
+import { useState } from 'react';
 import { ptBR } from 'date-fns/locale';
 
 interface ActivityItemProps {
@@ -55,24 +56,55 @@ const CATEGORY_MAP: Record<string, any> = {
 };
 
 export function ActivityFeed({ logs }: { logs: any[] }) {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+
+    // Filter logs based on search term
+    const filteredLogs = logs.filter(log =>
+        log.children?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        log.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // Calculate pagination
+    const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentLogs = filteredLogs.slice(startIndex, startIndex + itemsPerPage);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    }
+
     return (
         <div className="lg:col-span-2 flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-surface-dark p-4 rounded-xl border border-border-light dark:border-gray-800 shadow-sm">
                 <h2 className="text-text-main dark:text-white text-xl font-bold leading-tight">Feed de Atividades</h2>
-                <button className="flex items-center justify-center gap-2 bg-primary text-white text-sm font-bold px-4 py-2.5 rounded-lg hover:bg-blue-600 transition-all shadow-sm shadow-blue-200 dark:shadow-none w-full sm:w-auto active:scale-95">
-                    <span className="material-symbols-outlined text-[20px]">add</span>
-                    <span>Nova Entrada</span>
-                </button>
+                <div className="relative w-full sm:w-auto sm:min-w-[300px]">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-[20px]">search</span>
+                    <input
+                        type="text"
+                        placeholder="Buscar por acolhido..."
+                        value={searchTerm}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setCurrentPage(1); // Reset to first page on search
+                        }}
+                        className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border-none rounded-lg text-sm text-text-main dark:text-white placeholder-text-secondary focus:ring-2 focus:ring-primary/50 outline-none transition-all"
+                    />
+                </div>
             </div>
-            <div className="bg-white dark:bg-surface-dark rounded-xl border border-border-light dark:border-gray-800 shadow-sm overflow-hidden min-h-[400px]">
-                <div className="p-6">
-                    {logs.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-12 text-center">
+
+            <div className="bg-white dark:bg-surface-dark rounded-xl border border-border-light dark:border-gray-800 shadow-sm overflow-hidden min-h-[400px] flex flex-col">
+                <div className="p-6 flex-1">
+                    {currentLogs.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-12 text-center h-full">
                             <span className="material-symbols-outlined text-gray-300 text-6xl mb-4">history</span>
-                            <p className="text-text-secondary dark:text-gray-400">Nenhuma atividade registrada hoje.</p>
+                            <p className="text-text-secondary dark:text-gray-400">
+                                {searchTerm ? 'Nenhuma atividade encontrada para esta busca.' : 'Nenhuma atividade registrada.'}
+                            </p>
                         </div>
                     ) : (
-                        logs.map((log, index) => {
+                        currentLogs.map((log, index) => {
                             const config = CATEGORY_MAP[log.category] || CATEGORY_MAP.behavior;
                             return (
                                 <ActivityItem
@@ -89,15 +121,36 @@ export function ActivityFeed({ logs }: { logs: any[] }) {
                                     user={`Registrado por ${log.profiles?.full_name || 'Equipe'}`}
                                     tag={config.tag}
                                     tagColor={config.tagColor}
-                                    isLast={index === logs.length - 1}
+                                    isLast={index === currentLogs.length - 1}
                                 />
                             );
                         })
                     )}
                 </div>
-                {logs.length > 0 && (
-                    <div className="p-4 border-t border-border-light dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 text-center">
-                        <button className="text-primary text-sm font-semibold hover:text-blue-700 transition-colors">Ver Toda a Atividade</button>
+
+                {totalPages > 1 && (
+                    <div className="p-4 border-t border-border-light dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-between">
+                        <button
+                            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                            disabled={currentPage === 1}
+                            className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-text-secondary dark:text-gray-400 hover:text-primary dark:hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                            Anterior
+                        </button>
+
+                        <span className="text-sm text-text-secondary dark:text-gray-400">
+                            Página <span className="font-bold text-text-main dark:text-white">{currentPage}</span> de <span className="font-bold text-text-main dark:text-white">{totalPages}</span>
+                        </span>
+
+                        <button
+                            onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                            disabled={currentPage === totalPages}
+                            className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-text-secondary dark:text-gray-400 hover:text-primary dark:hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            Próxima
+                            <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                        </button>
                     </div>
                 )}
             </div>

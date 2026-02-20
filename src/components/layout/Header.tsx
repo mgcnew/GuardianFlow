@@ -47,15 +47,17 @@ export function Header({ onMenuToggle }: HeaderProps) {
                     <span className="material-symbols-outlined text-[22px]">menu</span>
                 </button>
                 {/* Organization name - Hidden on mobile, visible on desktop */}
-                <div className="hidden md:flex flex-col">
-                    <label className="text-xs text-text-secondary dark:text-gray-400 font-medium uppercase tracking-wider">Unidade Atual</label>
-                    <div className="flex items-center gap-2 cursor-pointer group">
-                        <span className="material-symbols-outlined text-primary text-[20px]">home_work</span>
-                        <h2 className="text-text-main dark:text-white text-lg font-bold leading-tight group-hover:text-primary transition-colors">
+                <div className="hidden md:flex items-center gap-3 cursor-pointer group p-2 pr-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-all duration-200 border border-transparent hover:border-border-light dark:hover:border-gray-700">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shadow-sm">
+                        <span className="material-symbols-outlined text-[20px]">domain</span>
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-[10px] uppercase tracking-wider font-bold text-text-secondary dark:text-gray-400 group-hover:text-primary transition-colors">Unidade Atual</span>
+                        <h2 className="text-sm font-bold text-text-main dark:text-white leading-tight">
                             {organization?.name || 'Carregando...'}
                         </h2>
-                        <span className="material-symbols-outlined text-text-secondary dark:text-gray-400 text-[18px]">expand_more</span>
                     </div>
+                    <span className="material-symbols-outlined text-text-secondary dark:text-gray-400 text-[20px] ml-1 group-hover:translate-y-0.5 transition-transform">expand_more</span>
                 </div>
             </div>
 
