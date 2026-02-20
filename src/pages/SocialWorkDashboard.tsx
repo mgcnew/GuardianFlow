@@ -9,6 +9,12 @@ import { format, differenceInYears, differenceInDays, parseISO, isAfter, isBefor
 import { ptBR } from 'date-fns/locale';
 import clsx from 'clsx';
 import { Link } from 'react-router-dom';
+import { FamilyReferenceModal } from '../components/social/FamilyReferenceModal';
+import { AdoptionProcessModal } from '../components/social/AdoptionProcessModal';
+import { PIAManagerModal } from '../components/social/PIAManagerModal';
+import { PIADocument } from '../components/documents/PIADocument';
+import { useReactToPrint } from 'react-to-print';
+import { useRef } from 'react';
 
 type DashboardTab = 'overview' | 'cases' | 'hearings' | 'visits' | 'adoption';
 
@@ -40,10 +46,24 @@ const RELATIONSHIP_MAP: Record<string, string> = {
 export function SocialWorkDashboard() {
     const { profile } = useAuth();
     const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
+
+    // Print Support
+    const [childToPrint, setChildToPrint] = useState<any>(null);
+    const componentRef = useRef<HTMLDivElement>(null);
+    const handlePrintPIA = useReactToPrint({
+        contentRef: componentRef,
+        documentTitle: `PIA - ${childToPrint?.full_name}`,
+    });
+
     const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
     const [isHearingModalOpen, setIsHearingModalOpen] = useState(false);
     const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
     const [selectedChildId, setSelectedChildId] = useState<string | undefined>();
+    const [isFamilyModalOpen, setIsFamilyModalOpen] = useState(false);
+    const [isAdoptionModalOpen, setIsAdoptionModalOpen] = useState(false);
+    const [selectedAdoptionProcess, setSelectedAdoptionProcess] = useState<any>(null);
+    const [isPIAModalOpen, setIsPIAModalOpen] = useState(false);
+    const [familyChildName, setFamilyChildName] = useState('');
     const [childSearch, setChildSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('all');
 
@@ -157,15 +177,39 @@ export function SocialWorkDashboard() {
             </div>
 
             {/* Tab Content */}
-            {activeTab === 'overview' && <OverviewTab data={dashboardData} onOpenEntry={(id) => { setSelectedChildId(id); setIsEntryModalOpen(true); }} onOpenHearing={(id) => { setSelectedChildId(id); setIsHearingModalOpen(true); }} />}
-            {activeTab === 'cases' && <CasesTab data={dashboardData} search={childSearch} setSearch={setChildSearch} filter={statusFilter} setFilter={setStatusFilter} filtered={filteredChildren} onOpenEntry={(id) => { setSelectedChildId(id); setIsEntryModalOpen(true); }} />}
+            {activeTab === 'overview' && <OverviewTab data={dashboardData} onOpenEntry={(id?: string) => { if (id) setSelectedChildId(id); setIsEntryModalOpen(true); }} onOpenHearing={(id?: string) => { if (id) setSelectedChildId(id); setIsHearingModalOpen(true); }} />}
+            {activeTab === 'cases' && <CasesTab search={childSearch} setSearch={setChildSearch} filter={statusFilter} setFilter={setStatusFilter} filtered={filteredChildren} onOpenEntry={(id: string) => { setSelectedChildId(id); setIsEntryModalOpen(true); }} onOpenFamily={(id: string, name: string) => { setSelectedChildId(id); setFamilyChildName(name); setIsFamilyModalOpen(true); }} onOpenPIA={(id: string, name: string) => { setSelectedChildId(id); setFamilyChildName(name); setIsPIAModalOpen(true); }} onPrint={(child: any) => { setChildToPrint(child); setTimeout(() => handlePrintPIA(), 100); }} />}
             {activeTab === 'hearings' && <HearingsTab data={dashboardData} onNew={() => setIsHearingModalOpen(true)} />}
             {activeTab === 'visits' && <VisitsTab data={dashboardData} onNew={() => setIsVisitModalOpen(true)} />}
-            {activeTab === 'adoption' && <AdoptionTab data={dashboardData} />}
+            {activeTab === 'adoption' && <AdoptionTab data={dashboardData} onEdit={(proc: any) => { setSelectedAdoptionProcess(proc); setIsAdoptionModalOpen(true); }} onNew={() => { setSelectedAdoptionProcess(null); setIsAdoptionModalOpen(true); }} />}
 
             <SocialWorkEntryModal isOpen={isEntryModalOpen} onClose={() => { setIsEntryModalOpen(false); setSelectedChildId(undefined); }} initialChildId={selectedChildId} />
             <HearingModal isOpen={isHearingModalOpen} onClose={() => { setIsHearingModalOpen(false); setSelectedChildId(undefined); }} initialChildId={selectedChildId} />
             <FamilyVisitModal isOpen={isVisitModalOpen} onClose={() => { setIsVisitModalOpen(false); setSelectedChildId(undefined); }} initialChildId={selectedChildId} />
+            <FamilyReferenceModal
+                isOpen={isFamilyModalOpen}
+                onClose={() => setIsFamilyModalOpen(false)}
+                childId={selectedChildId || ''}
+                childName={familyChildName}
+            />
+            <AdoptionProcessModal
+                isOpen={isAdoptionModalOpen}
+                onClose={() => { setIsAdoptionModalOpen(false); setSelectedAdoptionProcess(null); setSelectedChildId(undefined); setFamilyChildName(''); }}
+                childId={selectedChildId}
+                childName={familyChildName}
+                existingProcess={selectedAdoptionProcess}
+            />
+            <PIAManagerModal
+                isOpen={isPIAModalOpen}
+                onClose={() => { setIsPIAModalOpen(false); setSelectedChildId(undefined); setFamilyChildName(''); }}
+                childId={selectedChildId || ''}
+                childName={familyChildName}
+            />
+
+            {/* Hidden component for printing */}
+            <div style={{ display: 'none' }}>
+                {childToPrint && <PIADocument ref={componentRef} child={childToPrint} />}
+            </div>
         </div>
     );
 }
@@ -310,7 +354,7 @@ function OverviewTab({ data, onOpenEntry, onOpenHearing }: { data: any; onOpenEn
 }
 
 /* ==================== CASES TAB ==================== */
-function CasesTab({ data, search, setSearch, filter, setFilter, filtered, onOpenEntry }: any) {
+function CasesTab({ search, setSearch, filter, setFilter, filtered, onOpenEntry, onOpenFamily, onOpenPIA, onPrint }: any) {
     return (
         <div className="space-y-4 animate-in fade-in duration-300">
             <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 shadow-sm overflow-hidden">
@@ -369,9 +413,20 @@ function CasesTab({ data, search, setSearch, filter, setFilter, filtered, onOpen
                                             <span className={clsx("text-xs font-mono font-medium", daysIn > 365 ? "text-red-500" : daysIn > 180 ? "text-amber-500" : "text-text-secondary dark:text-gray-400")}>{timeText}</span>
                                         </td>
                                         <td className="px-4 py-3 text-right">
-                                            <button onClick={() => onOpenEntry(child.id)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-amber-500 hover:text-white text-gray-400 transition-all flex items-center justify-center ml-auto" title="Nova Anotação">
-                                                <span className="material-symbols-outlined text-lg">edit_note</span>
-                                            </button>
+                                            <div className="flex items-center justify-end gap-1">
+                                                <button onClick={() => onPrint(child)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-500 hover:text-white text-gray-400 transition-all flex items-center justify-center" title="Imprimir PIA">
+                                                    <span className="material-symbols-outlined text-lg">print</span>
+                                                </button>
+                                                <button onClick={() => onOpenPIA(child.id, child.full_name)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-blue-500 hover:text-white text-gray-400 transition-all flex items-center justify-center" title="Gerenciar PIA">
+                                                    <span className="material-symbols-outlined text-lg">assignment</span>
+                                                </button>
+                                                <button onClick={() => onOpenFamily(child.id, child.full_name)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-teal-500 hover:text-white text-gray-400 transition-all flex items-center justify-center" title="Referências Familiares">
+                                                    <span className="material-symbols-outlined text-lg">family_restroom</span>
+                                                </button>
+                                                <button onClick={() => onOpenEntry(child.id)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-amber-500 hover:text-white text-gray-400 transition-all flex items-center justify-center" title="Nova Anotação">
+                                                    <span className="material-symbols-outlined text-lg">edit_note</span>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 );
@@ -514,16 +569,22 @@ function VisitsTab({ data, onNew }: { data: any; onNew: () => void }) {
 }
 
 /* ==================== ADOPTION TAB ==================== */
-function AdoptionTab({ data }: { data: any }) {
-    const adoptionChildren = (data?.children || []).filter((c: any) => c.legal_status === 'disponivel_adocao' || c.legal_status === 'em_processo_adocao');
+function AdoptionTab({ data, onEdit, onNew }: any) {
+    const adoptionChildren = data?.children.filter((c: any) =>
+        c.legal_status === 'disponivel_adocao' || c.legal_status === 'em_processo_adocao'
+    ) || [];
     const processes = data?.adoptions || [];
 
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
             <div className="flex items-center justify-between">
-                <h2 className="text-lg font-black text-text-main dark:text-white flex items-center gap-2">
-                    <span className="material-symbols-outlined text-pink-500">favorite</span>Processos de Adoção
-                </h2>
+                <div>
+                    <h3 className="text-sm font-black text-text-main dark:text-white uppercase tracking-tight">Crianças em Adoção</h3>
+                    <p className="text-[10px] text-text-secondary uppercase tracking-widest font-medium">Gestão de Vínculos e Processos</p>
+                </div>
+                <button onClick={onNew} className="px-4 py-2 bg-pink-500 text-white text-[10px] font-black uppercase rounded-xl hover:bg-pink-600 transition-all flex items-center gap-1.5 shadow-lg shadow-pink-500/20">
+                    <span className="material-symbols-outlined text-sm">add</span>Novo Processo
+                </button>
             </div>
 
             {/* Children available or in process */}
@@ -560,6 +621,14 @@ function AdoptionTab({ data }: { data: any }) {
                                 ) : (
                                     <p className="text-[10px] text-text-secondary italic">Sem processo de adoção registrado</p>
                                 )}
+                            </div>
+                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                                {process ? (
+                                    <button onClick={() => onEdit(process)} className="text-[10px] font-black text-pink-600 uppercase hover:underline">Ver Detalhes</button>
+                                ) : (
+                                    <button onClick={() => onEdit({ child_id: child.id })} className="text-[10px] font-black text-text-secondary uppercase hover:text-pink-600 transition-colors">Iniciar Processo</button>
+                                )}
+                                <p className="text-[10px] font-bold text-text-secondary uppercase">{child.judicial_process || 'Sem Nº Processo'}</p>
                             </div>
                         </div>
                     );

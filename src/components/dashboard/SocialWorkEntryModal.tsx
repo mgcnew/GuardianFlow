@@ -5,6 +5,19 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import clsx from 'clsx';
 
+const SOCIAL_CATEGORIES = [
+    { id: 'atendimento', label: 'Atendimento', icon: 'diversity_3' },
+    { id: 'visita_domiciliar', label: 'Visita Domiciliar', icon: 'home' },
+    { id: 'audiencia', label: 'Audiência', icon: 'gavel' },
+    { id: 'relatorio_judicial', label: 'Relatório Judicial', icon: 'description' },
+    { id: 'contato_telefonico', label: 'Contato Telefônico', icon: 'call' },
+    { id: 'estudo_caso', label: 'Estudo de Caso', icon: 'psychology' },
+    { id: 'reuniao_equipe', label: 'Reunião de Equipe', icon: 'groups' },
+    { id: 'encaminhamento', label: 'Encaminhamento', icon: 'send' },
+    { id: 'pia', label: 'PIA', icon: 'assignment' },
+    { id: 'adocao', label: 'Adoção', icon: 'favorite' },
+];
+
 interface SocialWorkEntryModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -25,6 +38,8 @@ export function SocialWorkEntryModal({ isOpen, onClose, initialChildId }: Social
         content: '',
         urgency: 'low' as 'low' | 'medium' | 'high',
         next_appointment: '',
+        category: 'atendimento',
+        referral: '',
     });
 
     const { data: children } = useQuery({
@@ -54,6 +69,8 @@ export function SocialWorkEntryModal({ isOpen, onClose, initialChildId }: Social
             content: '',
             urgency: 'low',
             next_appointment: '',
+            category: 'atendimento',
+            referral: '',
         });
 
         if (initialChildId && children) {
@@ -83,6 +100,8 @@ export function SocialWorkEntryModal({ isOpen, onClose, initialChildId }: Social
                 title: form.title,
                 content: form.content,
                 urgency: form.urgency,
+                category: form.category,
+                referral: form.referral || null,
                 next_appointment: form.next_appointment || null,
             });
 
@@ -204,6 +223,21 @@ export function SocialWorkEntryModal({ isOpen, onClose, initialChildId }: Social
                                 </div>
                             </div>
 
+                            {/* Category Selection */}
+                            <div>
+                                <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-3 block px-1">Tipo de Atendimento</label>
+                                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                                    {SOCIAL_CATEGORIES.map(cat => (
+                                        <button key={cat.id} type="button" onClick={() => setForm({ ...form, category: cat.id })}
+                                            className={clsx("flex flex-col items-center gap-1 p-2.5 rounded-xl border transition-all text-[10px] font-bold",
+                                                form.category === cat.id ? "border-amber-500 bg-amber-50 dark:bg-amber-900/20 text-amber-600" : "border-gray-100 dark:border-gray-700 text-text-secondary hover:border-gray-300")}>
+                                            <span className="material-symbols-outlined text-base">{cat.icon}</span>
+                                            {cat.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
                             <div className="p-4 bg-amber-500/5 rounded-2xl border border-amber-500/10">
                                 <p className="text-[10px] text-amber-700 dark:text-amber-400 font-bold uppercase mb-2">Orientações do Serviço Social</p>
                                 <p className="text-[11px] text-amber-600/80 leading-relaxed italic">
@@ -234,6 +268,18 @@ export function SocialWorkEntryModal({ isOpen, onClose, initialChildId }: Social
                                     className="w-full p-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl outline-none focus:border-amber-500/30 text-sm font-medium resize-none shadow-inner"
                                     value={form.content}
                                     onChange={(e) => setForm({ ...form, content: e.target.value })}
+                                />
+                            </div>
+
+                            {/* Referral / Follow-up */}
+                            <div>
+                                <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2 block px-1">Encaminhamentos / Providências</label>
+                                <textarea
+                                    rows={3}
+                                    placeholder="Encaminhamentos realizados, providências a tomar, articulações necessárias..."
+                                    className="w-full p-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl outline-none focus:border-amber-500/30 text-sm font-medium resize-none"
+                                    value={form.referral}
+                                    onChange={(e) => setForm({ ...form, referral: e.target.value })}
                                 />
                             </div>
 
