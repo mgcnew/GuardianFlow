@@ -209,8 +209,8 @@ export function Schedule() {
                             <div className="h-full flex flex-col">
                                 <div className="grid grid-cols-7 border-b border-border-light dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/20">
                                     {weekDays.map(day => (
-                                        <div key={day} className="py-3 text-center text-xs font-semibold text-text-secondary dark:text-gray-400 uppercase tracking-wider">
-                                            {day}
+                                        <div key={day} className="py-2 md:py-3 text-center text-[10px] md:text-xs font-semibold text-text-secondary dark:text-gray-400 uppercase tracking-wider">
+                                            {day.slice(0, 3)}
                                         </div>
                                     ))}
                                 </div>
@@ -220,33 +220,60 @@ export function Schedule() {
                                         const isSelected = isSameDay(day, selectedDate);
                                         const isCurrentMonth = isSameMonth(day, currentDate);
 
+                                        // Simple dot colors for mobile view
+                                        const getEventColor = (type: string) => {
+                                            switch (type) {
+                                                case 'medical': return 'bg-blue-500';
+                                                case 'vaccine': return 'bg-green-500';
+                                                case 'school': return 'bg-purple-500';
+                                                case 'outing': return 'bg-yellow-500';
+                                                case 'meeting': return 'bg-indigo-500';
+                                                default: return 'bg-gray-500';
+                                            }
+                                        };
+
                                         return (
                                             <div
                                                 key={day.toString()}
                                                 onClick={() => handleDayClick(day)}
                                                 className={clsx(
-                                                    "min-h-[100px] p-2 border-b border-r border-border-light dark:border-gray-800 relative cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors",
+                                                    "flex flex-col border-b border-r border-border-light dark:border-gray-800 relative cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors",
                                                     !isCurrentMonth && "bg-gray-50/30 dark:bg-gray-900/10",
                                                     (i + 1) % 7 === 0 && "border-r-0", // No right border for last column
                                                     isSelected && "bg-primary/5 dark:bg-primary/10"
                                                 )}
                                             >
-                                                <div className="flex justify-between items-center mb-1">
+                                                <div className="flex justify-center md:justify-between items-center p-1 md:p-2 mb-0 md:mb-1 shrink-0">
                                                     <span className={clsx(
-                                                        "text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full transition-colors",
+                                                        "text-[10px] md:text-xs font-medium w-5 h-5 md:w-6 md:h-6 flex items-center justify-center rounded-full transition-colors",
                                                         isToday(day)
                                                             ? "bg-primary text-white"
                                                             : isCurrentMonth ? "text-text-main dark:text-white" : "text-gray-300 dark:text-gray-600"
                                                     )}>
                                                         {format(day, 'd')}
                                                     </span>
+                                                    <span className="hidden md:block text-[10px] text-text-secondary dark:text-gray-500 font-medium">
+                                                        {dayEvents.length > 0 ? `${dayEvents.length} eventos` : ''}
+                                                    </span>
                                                 </div>
-                                                <div className="space-y-1">
+
+                                                {/* Desktop View: Bars */}
+                                                <div className="hidden md:flex flex-col gap-1 px-2 pb-1 overflow-hidden">
                                                     {dayEvents.slice(0, 3).map(event => (
-                                                        <div key={event.id} className={clsx("h-1.5 rounded-full w-full", eventTypeColors[event.type].split(' ')[0])} title={event.title} />
+                                                        <div key={event.id} className={clsx("h-1.5 rounded-full w-full shrink-0", eventTypeColors[event.type].split(' ')[0])} title={event.title} />
                                                     ))}
                                                     {dayEvents.length > 3 && (
-                                                        <span className="text-[10px] text-text-secondary dark:text-gray-500 block text-right">+{dayEvents.length - 3}</span>
+                                                        <span className="text-[9px] text-text-secondary dark:text-gray-500 text-right leading-none">+{dayEvents.length - 3}</span>
+                                                    )}
+                                                </div>
+
+                                                {/* Mobile View: Dots */}
+                                                <div className="md:hidden flex flex-wrap gap-1 justify-center px-1 pb-1 content-start overflow-hidden">
+                                                    {dayEvents.slice(0, 4).map(event => (
+                                                        <div key={event.id} className={clsx("size-1 rounded-full shrink-0", getEventColor(event.type))} />
+                                                    ))}
+                                                    {dayEvents.length > 4 && (
+                                                        <span className="text-[8px] text-text-secondary leading-none">+</span>
                                                     )}
                                                 </div>
                                             </div>
