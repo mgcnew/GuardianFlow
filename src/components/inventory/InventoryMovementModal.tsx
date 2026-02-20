@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
@@ -55,25 +56,31 @@ export function InventoryMovementModal({ isOpen, onClose, items, type }: Invento
         }
     };
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-surface-dark w-full max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-300">
-                <div className={clsx(
-                    "px-6 py-4 border-b border-border-light dark:border-gray-800 flex items-center justify-between",
-                    type === 'in' ? "bg-green-50/50 dark:bg-green-900/10" : "bg-red-50/50 dark:bg-red-900/10"
-                )}>
-                    <h2 className="text-lg font-black text-text-main dark:text-white uppercase tracking-tight flex items-center gap-2">
-                        <span className={clsx("material-symbols-outlined", type === 'in' ? "text-green-500" : "text-red-500")}>
-                            {type === 'in' ? 'add_circle' : 'remove_circle'}
-                        </span>
-                        {type === 'in' ? 'Registrar Entrada' : 'Registrar Saída'}
-                    </h2>
+    return createPortal(
+        <div className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
+            <div className="bg-white dark:bg-surface-dark w-full max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-300 flex flex-col max-h-[95vh]">
+                <div className="px-6 py-4 border-b border-border-light dark:border-gray-800 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className={clsx("size-10 rounded-xl flex items-center justify-center",
+                            type === 'in' ? "bg-green-50 dark:bg-green-900/20" : "bg-red-50 dark:bg-red-900/20"
+                        )}>
+                            <span className={clsx("material-symbols-outlined text-2xl", type === 'in' ? "text-green-500" : "text-red-500")}>
+                                {type === 'in' ? 'add_circle' : 'remove_circle'}
+                            </span>
+                        </div>
+                        <div>
+                            <h2 className="text-sm font-black text-text-main dark:text-white uppercase tracking-tight">
+                                {type === 'in' ? 'Registrar Entrada' : 'Registrar Saída'}
+                            </h2>
+                            <p className="text-[10px] text-text-secondary uppercase tracking-widest font-medium">Movimentação de Estoque</p>
+                        </div>
+                    </div>
                     <button onClick={onClose} className="size-8 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
                         <span className="material-symbols-outlined text-gray-400">close</span>
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto no-scrollbar">
                     <div className="space-y-1">
                         <label className="text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest ml-1">Selecionar Item</label>
                         <select
@@ -151,6 +158,7 @@ export function InventoryMovementModal({ isOpen, onClose, items, type }: Invento
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

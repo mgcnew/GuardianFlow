@@ -12,6 +12,7 @@ const navItems = [
     { icon: 'school', label: 'Pedagogia', to: '/dashboard/pedagogy' },
     { icon: 'diversity_3', label: 'Assis. Social', to: '/dashboard/social' },
     { icon: 'inventory_2', label: 'Estoque', to: '/dashboard/inventory' },
+    { icon: 'account_balance_wallet', label: 'Financeiro', to: '/dashboard/finance' },
 ];
 
 interface SidebarProps {
@@ -48,7 +49,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
         }
 
         if (role === 'operational') {
-            return [...baseItems, 'inventory_2'].includes(item.icon);
+            return [...baseItems, 'inventory_2', 'account_balance_wallet'].includes(item.icon);
         }
 
         // Fallback for 'membro' or any other role: see basic items

@@ -17,6 +17,7 @@ import { PsychologistDashboard } from './pages/PsychologistDashboard';
 import { PedagogueDashboard } from './pages/PedagogueDashboard';
 import { SocialWorkDashboard } from './pages/SocialWorkDashboard';
 import { InventoryDashboard } from './pages/InventoryDashboard';
+import { FinancialDashboard } from './pages/FinancialDashboard';
 import { SuperAdmin } from './pages/admin/SuperAdmin';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LoadingScreen } from './components/shared/LoadingScreen';
@@ -92,6 +93,7 @@ function App() {
                 <Route path="pedagogy" element={<PedagogueDashboard />} />
                 <Route path="social" element={<SocialWorkDashboard />} />
                 <Route path="inventory" element={<InventoryDashboard />} />
+                <Route path="finance" element={<FinancialDashboard />} />
                 <Route path="profile" element={<UserProfile />} />
                 <Route path="*" element={<div>Not Found</div>} />
               </Route>

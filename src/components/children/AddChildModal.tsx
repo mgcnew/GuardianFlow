@@ -256,7 +256,7 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
     };
 
     return createPortal(
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
             <div className="bg-white dark:bg-surface-dark w-full max-w-4xl h-full sm:h-auto sm:max-h-[92vh] rounded-none sm:rounded-3xl shadow-2xl border-none sm:border sm:border-border-light dark:sm:border-gray-800 overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
 
                 {/* Header */}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
@@ -52,14 +53,21 @@ export function InventoryRequestModal({ isOpen, onClose }: InventoryRequestModal
         }
     };
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-surface-dark w-full max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-300">
-                <div className="px-6 py-4 border-b border-border-light dark:border-gray-800 flex items-center justify-between bg-amber-50/50 dark:bg-amber-900/10">
-                    <h2 className="text-lg font-black text-text-main dark:text-white uppercase tracking-tight flex items-center gap-2">
-                        <span className="material-symbols-outlined text-amber-500">shopping_cart</span>
-                        Fazer Pedido de Reposição
-                    </h2>
+    return createPortal(
+        <div className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
+            <div className="bg-white dark:bg-surface-dark w-full max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-300 flex flex-col max-h-[95vh]">
+                <div className="px-6 py-4 border-b border-border-light dark:border-gray-800 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="size-10 bg-amber-50 dark:bg-amber-900/20 rounded-xl flex items-center justify-center">
+                            <span className="material-symbols-outlined text-amber-600 text-2xl">shopping_cart</span>
+                        </div>
+                        <div>
+                            <h2 className="text-sm font-black text-text-main dark:text-white uppercase tracking-tight">
+                                Fazer Pedido de Reposição
+                            </h2>
+                            <p className="text-[10px] text-text-secondary uppercase tracking-widest font-medium">Solicitação de Materiais</p>
+                        </div>
+                    </div>
                     <button onClick={onClose} className="size-8 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
                         <span className="material-symbols-outlined text-gray-400">close</span>
                     </button>
@@ -133,6 +141,7 @@ export function InventoryRequestModal({ isOpen, onClose }: InventoryRequestModal
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
