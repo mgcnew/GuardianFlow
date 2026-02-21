@@ -139,9 +139,13 @@ export function Header({ onMenuToggle }: HeaderProps) {
                             className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full hover:bg-gray-50 dark:hover:bg-gray-800 transition-all border border-transparent hover:border-border-light dark:hover:border-gray-700"
                         >
                             <div
-                                className="bg-primary/10 flex items-center justify-center rounded-full h-8 w-8 ring-2 ring-white dark:ring-gray-700 shadow-sm text-primary font-bold text-xs"
+                                className="bg-primary/10 flex items-center justify-center rounded-full h-8 w-8 ring-2 ring-white dark:ring-gray-700 shadow-sm text-primary font-bold text-xs overflow-hidden"
                             >
-                                {userDisplayName.charAt(0).toUpperCase()}
+                                {(profile as any)?.avatar_url ? (
+                                    <img src={(profile as any).avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    userDisplayName.charAt(0).toUpperCase()
+                                )}
                             </div>
                             <div className="hidden md:flex flex-col items-start mr-1">
                                 <span className="text-xs font-bold text-text-main dark:text-white truncate max-w-[100px]">{profile?.full_name || userDisplayName}</span>
