@@ -39,12 +39,15 @@ export function UserProfile() {
 
         const { error: uploadError } = await supabase.storage
             .from('avatars')
-            .upload(filePath, file, { upsert: true });
+            .upload(`${user.id}/avatar.${fileExt}`, file, { upsert: true });
 
-        if (!uploadError) {
+        if (uploadError) {
+            console.error('Upload error:', uploadError);
+            alert('Erro ao subir foto: ' + uploadError.message);
+        } else {
             const { data: urlData } = supabase.storage
                 .from('avatars')
-                .getPublicUrl(filePath);
+                .getPublicUrl(`${user.id}/avatar.${fileExt}`);
 
             const newPhotoUrl = urlData.publicUrl;
             setPhotoUrl(newPhotoUrl);
