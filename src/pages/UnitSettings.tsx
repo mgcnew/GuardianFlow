@@ -155,7 +155,7 @@ export function UnitSettings() {
     ];
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-400">
+        <div className="space-y-6 animate-in fade-in duration-700">
             {/* Header */}
             <div>
                 <h1 className="text-2xl font-extrabold text-text-main dark:text-white tracking-tight">Configurações da Unidade</h1>
