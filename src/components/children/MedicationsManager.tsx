@@ -11,6 +11,8 @@ interface Medication {
     name: string;
     dosage: string;
     frequency: string;
+    frequency_interval: number | null;
+    last_administration: string | null;
     start_date: string;
     end_date: string | null;
     instructions: string | null;
@@ -34,6 +36,7 @@ export function MedicationsManager({ childId }: MedicationsManagerProps) {
         name: '',
         dosage: '',
         frequency: '',
+        frequency_interval: '' as string | number,
         start_date: new Date().toISOString().split('T')[0],
         end_date: '',
         instructions: '',
@@ -100,10 +103,26 @@ export function MedicationsManager({ childId }: MedicationsManagerProps) {
         },
     });
 
+    const registerDoseMutation = useMutation({
+        mutationFn: async (id: string) => {
+            const { error } = await supabase
+                .from('medications')
+                .update({ last_administration: new Date().toISOString() })
+                .eq('id', id);
+            if (error) throw error;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['medications', childId] });
+            queryClient.invalidateQueries({ queryKey: ['dashboardData'] });
+        },
+    });
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const payload: any = { ...formData };
         if (payload.end_date === '') payload.end_date = null;
+        if (payload.frequency_interval === '') payload.frequency_interval = null;
+        else payload.frequency_interval = Number(payload.frequency_interval);
 
         if (editingMedication) {
             updateMutation.mutate(payload);
@@ -118,6 +137,7 @@ export function MedicationsManager({ childId }: MedicationsManagerProps) {
             name: medication.name,
             dosage: medication.dosage,
             frequency: medication.frequency,
+            frequency_interval: medication.frequency_interval || '',
             start_date: medication.start_date,
             end_date: medication.end_date || '',
             instructions: medication.instructions || '',
@@ -140,6 +160,7 @@ export function MedicationsManager({ childId }: MedicationsManagerProps) {
             name: '',
             dosage: '',
             frequency: '',
+            frequency_interval: '',
             start_date: new Date().toISOString().split('T')[0],
             end_date: '',
             instructions: '',
@@ -187,10 +208,17 @@ export function MedicationsManager({ childId }: MedicationsManagerProps) {
                             <input required type="text" className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary outline-none"
                                 value={formData.dosage} onChange={e => setFormData({ ...formData, dosage: e.target.value })} placeholder="Ex: 500mg ou 20 gotas" />
                         </div>
-                        <div>
-                            <label className="text-xs font-black text-text-secondary uppercase tracking-widest block mb-1">Frequência *</label>
-                            <input required type="text" className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary outline-none"
-                                value={formData.frequency} onChange={e => setFormData({ ...formData, frequency: e.target.value })} placeholder="Ex: 8/8 horas" />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-xs font-black text-text-secondary uppercase tracking-widest block mb-1">Frequência (Texto) *</label>
+                                <input required type="text" className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary outline-none"
+                                    value={formData.frequency} onChange={e => setFormData({ ...formData, frequency: e.target.value })} placeholder="Ex: 8/8 horas" />
+                            </div>
+                            <div>
+                                <label className="text-xs font-black text-text-secondary uppercase tracking-widest block mb-1">Intervalo (Horas)</label>
+                                <input type="number" className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary outline-none"
+                                    value={formData.frequency_interval} onChange={e => setFormData({ ...formData, frequency_interval: e.target.value })} placeholder="Ex: 8" />
+                            </div>
                         </div>
                         <div>
                             <label className="text-xs font-black text-text-secondary uppercase tracking-widest block mb-1">Tipo *</label>
@@ -280,6 +308,29 @@ export function MedicationsManager({ childId }: MedicationsManagerProps) {
                                         </div>
                                         <h3 className="font-bold text-lg text-text-main dark:text-white">{med.name}</h3>
                                         <p className="text-sm font-medium text-text-secondary dark:text-gray-400">{med.dosage} • {med.frequency}</p>
+
+                                        {med.frequency_interval && (
+                                            <div className="mt-3 flex items-center gap-3">
+                                                <div className="flex-1 bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 border border-blue-100 dark:border-blue-800">
+                                                    <p className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">Próxima Dose</p>
+                                                    <p className="text-sm font-black text-blue-900 dark:text-blue-100">
+                                                        {med.last_administration ? (
+                                                            format(new Date(new Date(med.last_administration).getTime() + (med.frequency_interval * 60 * 60 * 1000)), "HH:mm 'de' dd/MM", { locale: ptBR })
+                                                        ) : (
+                                                            'Não registrada'
+                                                        )}
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    onClick={() => registerDoseMutation.mutate(med.id)}
+                                                    disabled={registerDoseMutation.isPending}
+                                                    className="px-4 py-3 bg-blue-600 text-white rounded-xl font-bold text-xs hover:bg-blue-700 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-50"
+                                                >
+                                                    <span className="material-symbols-outlined text-lg">check_circle</span>
+                                                    Registrar Dose
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 

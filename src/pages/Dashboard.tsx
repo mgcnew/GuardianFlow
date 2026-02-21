@@ -6,6 +6,9 @@ import { StaffList, AgendaWidget } from '../components/dashboard/Widgets';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { createPortal } from 'react-dom';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import clsx from 'clsx';
 
 export function Dashboard() {
     const { user, profile, signOut } = useAuth();
@@ -58,7 +61,18 @@ export function Dashboard() {
 
                 if (pErr) throw pErr;
 
-                const activeMeds = meds?.filter(m => !m.end_date || new Date(m.end_date) >= new Date()) || [];
+                const activeMeds = meds?.filter(m => !m.end_date || new Date(m.end_date) >= new Date())
+                    .map(m => ({
+                        ...m,
+                        next_dose: m.last_administration && m.frequency_interval
+                            ? new Date(new Date(m.last_administration).getTime() + (m.frequency_interval * 60 * 60 * 1000))
+                            : null
+                    }))
+                    .sort((a, b) => {
+                        if (!a.next_dose) return 1;
+                        if (!b.next_dose) return -1;
+                        return a.next_dose.getTime() - b.next_dose.getTime();
+                    }) || [];
                 const judicialOrders = children?.filter(c => c.judicial_process && c.judicial_process.trim() !== '') || [];
 
                 return {
@@ -163,9 +177,9 @@ export function Dashboard() {
                 />
                 <StatCard
                     icon="pill"
-                    title="Medicamentos Ativos"
-                    value={stats.medsCount}
-                    subValue={stats.medsCount > 0 ? `${activeMeds[0].name}${stats.medsCount > 1 ? ' e outros' : ''}` : "Nenhum para agora"}
+                    title="Próxima Medicação"
+                    value={stats.medsCount > 0 && activeMeds[0].next_dose ? format(activeMeds[0].next_dose, 'HH:mm') : stats.medsCount}
+                    subValue={stats.medsCount > 0 ? (activeMeds[0].next_dose ? `${activeMeds[0].name} (${activeMeds[0].children?.full_name?.split(' ')[0]})` : `${activeMeds[0].name}`) : "Nenhuma ativa"}
                     variant="warning"
                     onInfoClick={() => setShowMedSummary(true)}
                 />
@@ -214,10 +228,24 @@ export function Dashboard() {
                             ) : (
                                 activeMeds.map((m: any) => (
                                     <div key={m.id} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700">
-                                        <p className="text-xs font-black text-text-main dark:text-white mb-1 uppercase tracking-tight">{m.children?.full_name}</p>
+                                        <div className="flex items-start justify-between mb-1">
+                                            <p className="text-xs font-black text-text-main dark:text-white uppercase tracking-tight">{m.children?.full_name}</p>
+                                            {m.next_dose && (
+                                                <span className={clsx(
+                                                    "text-[10px] font-black px-2 py-0.5 rounded-full uppercase",
+                                                    m.next_dose.getTime() < new Date().getTime() ? "bg-red-100 text-red-600 animate-pulse" : "bg-blue-100 text-blue-600"
+                                                )}>
+                                                    {m.next_dose.getTime() < new Date().getTime() ? 'Atrasado' : 'Próximo'}
+                                                </span>
+                                            )}
+                                        </div>
                                         <div className="flex items-center justify-between">
                                             <p className="text-sm font-bold text-primary dark:text-blue-400">{m.name}</p>
-                                            <span className="text-[10px] font-black uppercase bg-white dark:bg-gray-800 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700 text-gray-400">{m.frequency}</span>
+                                            <div className="text-right">
+                                                <p className="text-[10px] font-black text-text-secondary dark:text-gray-400 uppercase">
+                                                    {m.next_dose ? format(m.next_dose, "HH:mm 'de' dd/MM", { locale: ptBR }) : m.frequency}
+                                                </p>
+                                            </div>
                                         </div>
                                         {m.instructions && <p className="text-[10px] text-text-secondary dark:text-gray-400 mt-1 italic">{m.instructions}</p>}
                                     </div>
