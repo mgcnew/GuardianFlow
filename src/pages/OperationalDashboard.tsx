@@ -19,27 +19,28 @@ export function OperationalDashboard() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState<any>(null);
 
-    const { data: maintenanceData, isLoading } = useQuery({
+    const { data: maintenanceData, isLoading, isFetching } = useQuery({
         queryKey: ['maintenanceTasks', profile?.organization_id],
         queryFn: async () => {
             if (!profile?.organization_id) return null;
-
             const { data, error } = await supabase
                 .from('maintenance_tasks')
                 .select(`
                     *,
-                    photos:maintenance_photos(*)
+                    photos:maintenance_photos(id, photo_url, photo_type)
                 `)
                 .eq('organization_id', profile.organization_id)
                 .order('scheduled_date', { ascending: true });
 
             if (error) throw error;
-            return data || [];
+            return data;
         },
-        enabled: !!profile?.organization_id
+        enabled: !!profile?.organization_id,
+        staleTime: 1000 * 60 * 5, // 5 minutes
+        gcTime: 1000 * 60 * 30,   // 30 minutes
     });
 
-    if (isLoading) {
+    if (isLoading && !maintenanceData) {
         return (
             <div className="flex flex-col items-center justify-center py-24">
                 <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
@@ -70,6 +71,9 @@ export function OperationalDashboard() {
                     <h1 className="text-2xl sm:text-3xl font-black text-text-main dark:text-white tracking-tight flex items-center gap-2 font-display">
                         <span className="material-symbols-outlined text-primary text-3xl">construction</span>
                         Operacional & Manutenção
+                        {isFetching && (
+                            <span className="material-symbols-outlined text-primary text-sm animate-pulse ml-2" title="Sincronizando...">sync</span>
+                        )}
                     </h1>
                     <p className="text-sm text-text-secondary dark:text-gray-400 font-medium mt-1">
                         Cronograma de reparos, manutenções preventivas e controle de infraestrutura.

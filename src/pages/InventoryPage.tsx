@@ -52,7 +52,8 @@ export function InventoryPage() {
                 }
             };
         },
-        enabled: !!profile?.organization_id
+        enabled: !!profile?.organization_id,
+        staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
     // Mutations
@@ -69,7 +70,7 @@ export function InventoryPage() {
         }
     });
 
-    if (isLoading || !dashboardData) {
+    if (isLoading && !dashboardData) {
         return (
             <div className="flex flex-col items-center justify-center py-24">
                 <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
