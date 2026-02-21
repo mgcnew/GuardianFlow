@@ -35,11 +35,11 @@ export function UserProfile() {
 
         setUploading(true);
         const fileExt = file.name.split('.').pop();
-        const filePath = `avatars/${user.id}.${fileExt}`;
+        const path = `${user.id}/avatar.${fileExt}`;
 
         const { error: uploadError } = await supabase.storage
             .from('avatars')
-            .upload(`${user.id}/avatar.${fileExt}`, file, { upsert: true });
+            .upload(path, file, { upsert: true });
 
         if (uploadError) {
             console.error('Upload error:', uploadError);
@@ -47,7 +47,7 @@ export function UserProfile() {
         } else {
             const { data: urlData } = supabase.storage
                 .from('avatars')
-                .getPublicUrl(`${user.id}/avatar.${fileExt}`);
+                .getPublicUrl(path);
 
             const newPhotoUrl = urlData.publicUrl;
             setPhotoUrl(newPhotoUrl);
