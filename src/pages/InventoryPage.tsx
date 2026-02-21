@@ -13,7 +13,7 @@ import { InventoryRequestModal } from '../components/inventory/InventoryRequestM
 
 type DashboardTab = 'overview' | 'stock' | 'movements' | 'requests';
 
-export function InventoryDashboard() {
+export function InventoryPage() {
     const { profile } = useAuth();
     const queryClient = useQueryClient();
     const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
