@@ -50,8 +50,12 @@ export function Header({ onMenuToggle }: HeaderProps) {
                 </button>
                 {/* Organization name - Hidden on mobile, visible on desktop */}
                 <div className="hidden md:flex items-center gap-3 cursor-pointer group p-2 pr-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-all duration-200 border border-transparent hover:border-border-light dark:hover:border-gray-700">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shadow-sm">
-                        <span className="material-symbols-outlined text-[20px]">domain</span>
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shadow-sm overflow-hidden">
+                        {organization?.logo_url ? (
+                            <img src={organization.logo_url} alt="Logo" className="w-full h-full object-cover" />
+                        ) : (
+                            <span className="material-symbols-outlined text-[20px]">domain</span>
+                        )}
                     </div>
                     <div className="flex flex-col">
                         <span className="text-[10px] uppercase tracking-wider font-bold text-text-secondary dark:text-gray-400 group-hover:text-primary transition-colors">Unidade Atual</span>

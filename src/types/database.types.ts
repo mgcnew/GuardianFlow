@@ -173,16 +173,52 @@ export interface Database {
                     id: string
                     name: string
                     created_at: string
+                    phone: string | null
+                    email: string | null
+                    address: string | null
+                    city: string | null
+                    state: string | null
+                    cep: string | null
+                    cnpj: string | null
+                    responsible_name: string | null
+                    capacity: number | null
+                    logo_url: string | null
+                    website: string | null
+                    description: string | null
                 }
                 Insert: {
                     id?: string
                     name: string
                     created_at?: string
+                    phone?: string | null
+                    email?: string | null
+                    address?: string | null
+                    city?: string | null
+                    state?: string | null
+                    cep?: string | null
+                    cnpj?: string | null
+                    responsible_name?: string | null
+                    capacity?: number | null
+                    logo_url?: string | null
+                    website?: string | null
+                    description?: string | null
                 }
                 Update: {
                     id?: string
                     name?: string
                     created_at?: string
+                    phone?: string | null
+                    email?: string | null
+                    address?: string | null
+                    city?: string | null
+                    state?: string | null
+                    cep?: string | null
+                    cnpj?: string | null
+                    responsible_name?: string | null
+                    capacity?: number | null
+                    logo_url?: string | null
+                    website?: string | null
+                    description?: string | null
                 }
             }
             profiles: {

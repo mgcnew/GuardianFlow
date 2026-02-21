@@ -61,6 +61,13 @@ export function Dashboard() {
 
                 if (pErr) throw pErr;
 
+                // Fetch organization details (for capacity etc)
+                const { data: orgData } = await supabase
+                    .from('organizations')
+                    .select('*')
+                    .eq('id', profile.organization_id)
+                    .single();
+
                 const activeMeds = meds?.filter(m => !m.end_date || new Date(m.end_date) >= new Date())
                     .map(m => ({
                         ...m,
@@ -82,7 +89,7 @@ export function Dashboard() {
                         urgentChildren: children?.filter(c => c.status === 'urgent').length || 0,
                         judicialCount: judicialOrders.length,
                         medsCount: activeMeds.length,
-                        capacity: 16
+                        capacity: (orgData as any)?.capacity || 16
                     },
                     activeMeds,
                     judicialOrders,

@@ -16,10 +16,13 @@ interface OrgData {
     cnpj: string;
     responsible_name: string;
     capacity: string;
+    logo_url: string;
+    website: string;
+    description: string;
 }
 
 export function UnitSettings() {
-    const { profile } = useAuth();
+    const { profile, refreshOrganization } = useAuth();
     const [searchParams, setSearchParams] = useSearchParams();
     const [activeTab, setActiveTab] = useState<'unit' | 'team'>((searchParams.get('tab') as 'unit' | 'team') || 'unit');
     const [loading, setLoading] = useState(true);
@@ -37,6 +40,9 @@ export function UnitSettings() {
         cnpj: '',
         responsible_name: '',
         capacity: '',
+        logo_url: '',
+        website: '',
+        description: '',
     });
 
     const [stats, setStats] = useState({ children: 0, staff: 0 });
@@ -66,6 +72,9 @@ export function UnitSettings() {
                 cnpj: (org as any).cnpj || '',
                 responsible_name: (org as any).responsible_name || '',
                 capacity: (org as any).capacity?.toString() || '',
+                logo_url: (org as any).logo_url || '',
+                website: (org as any).website || '',
+                description: (org as any).description || '',
             });
         }
 
@@ -119,12 +128,25 @@ export function UnitSettings() {
             .from('organizations')
             .update({
                 name: form.name,
+                phone: form.phone,
+                email: form.email,
+                address: form.address,
+                city: form.city,
+                state: form.state,
+                cep: form.cep,
+                cnpj: form.cnpj,
+                responsible_name: form.responsible_name,
+                capacity: parseInt(form.capacity) || 0,
+                logo_url: form.logo_url,
+                website: form.website,
+                description: form.description,
             })
             .eq('id', profile.organization_id);
 
         setSaving(false);
         if (!error) {
             setSaved(true);
+            await refreshOrganization();
             setTimeout(() => setSaved(false), 3000);
         }
     };
@@ -143,15 +165,18 @@ export function UnitSettings() {
 
     const fields: { label: string; key: keyof OrgData; type?: string; placeholder: string; span?: number; icon: string }[] = [
         { label: 'Nome da Unidade', key: 'name', placeholder: 'Ex: Casa Lar Esperança', span: 2, icon: 'home' },
+        { label: 'URL da Logomarca', key: 'logo_url', placeholder: 'https://link-da-imagem.com/logo.png', span: 2, icon: 'image' },
         { label: 'Responsável Legal', key: 'responsible_name', placeholder: 'Nome completo', span: 2, icon: 'person' },
         { label: 'CNPJ', key: 'cnpj', placeholder: '00.000.000/0000-00', icon: 'badge' },
         { label: 'Capacidade de Acolhidos', key: 'capacity', type: 'number', placeholder: 'Ex: 20', icon: 'group' },
         { label: 'Telefone', key: 'phone', placeholder: '(00) 00000-0000', icon: 'call' },
         { label: 'E-mail', key: 'email', type: 'email', placeholder: 'contato@unidade.org', icon: 'mail' },
+        { label: 'Website', key: 'website', placeholder: 'https://www.unidade.org', icon: 'language' },
         { label: 'Endereço', key: 'address', placeholder: 'Rua, número, bairro', span: 2, icon: 'location_on' },
         { label: 'Cidade', key: 'city', placeholder: 'Cidade', icon: 'location_city' },
         { label: 'Estado', key: 'state', placeholder: 'UF', icon: 'map' },
         { label: 'CEP', key: 'cep', placeholder: '00000-000', icon: 'pin_drop' },
+        { label: 'Sobre a Instituição', key: 'description', placeholder: 'Breve histórico ou missão da unidade', span: 2, icon: 'info' },
     ];
 
     return (
@@ -224,9 +249,15 @@ export function UnitSettings() {
                         <div className="rounded-2xl bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 overflow-hidden shadow-sm">
                             <div className="px-6 py-5 border-b border-border-light dark:border-gray-800 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="size-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                                        <span className="material-symbols-outlined text-primary text-lg">corporate_fare</span>
-                                    </div>
+                                    {form.logo_url ? (
+                                        <div className="size-10 rounded-lg overflow-hidden border border-border-light dark:border-gray-700 shadow-sm">
+                                            <img src={form.logo_url} alt="Logo" className="w-full h-full object-cover" />
+                                        </div>
+                                    ) : (
+                                        <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                            <span className="material-symbols-outlined text-primary text-xl">corporate_fare</span>
+                                        </div>
+                                    )}
                                     <h2 className="text-base font-bold text-text-main dark:text-white">Dados da Instituição</h2>
                                 </div>
                             </div>
@@ -238,16 +269,29 @@ export function UnitSettings() {
                                             {field.label}
                                         </label>
                                         <div className="relative">
-                                            <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-lg">
+                                            <span className={clsx(
+                                                "material-symbols-outlined absolute left-3.5 text-gray-400 dark:text-gray-500 text-lg",
+                                                field.key === 'description' ? "top-4" : "top-1/2 -translate-y-1/2"
+                                            )}>
                                                 {field.icon}
                                             </span>
-                                            <input
-                                                type={field.type || 'text'}
-                                                value={form[field.key]}
-                                                onChange={(e) => handleChange(field.key, e.target.value)}
-                                                placeholder={field.placeholder}
-                                                className="block w-full rounded-xl border border-border-light dark:border-gray-700 bg-white dark:bg-gray-800 pl-11 pr-4 py-3 text-sm text-text-main dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all font-medium"
-                                            />
+                                            {field.key === 'description' ? (
+                                                <textarea
+                                                    rows={4}
+                                                    value={form[field.key]}
+                                                    onChange={(e) => handleChange(field.key, e.target.value)}
+                                                    placeholder={field.placeholder}
+                                                    className="block w-full rounded-xl border border-border-light dark:border-gray-700 bg-white dark:bg-gray-800 pl-11 pr-4 py-3 text-sm text-text-main dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all font-medium resize-none"
+                                                />
+                                            ) : (
+                                                <input
+                                                    type={field.type || 'text'}
+                                                    value={form[field.key]}
+                                                    onChange={(e) => handleChange(field.key, e.target.value)}
+                                                    placeholder={field.placeholder}
+                                                    className="block w-full rounded-xl border border-border-light dark:border-gray-700 bg-white dark:bg-gray-800 pl-11 pr-4 py-3 text-sm text-text-main dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all font-medium"
+                                                />
+                                            )}
                                         </div>
                                     </div>
                                 ))}
