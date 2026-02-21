@@ -184,7 +184,7 @@ export function UnitSettings() {
             </div>
 
             {/* Tabs */}
-            <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800/50 rounded-2xl w-fit overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800/50 rounded-2xl w-fit max-w-full overflow-x-auto no-scrollbar">
                 <button
                     onClick={() => {
                         setActiveTab('unit');

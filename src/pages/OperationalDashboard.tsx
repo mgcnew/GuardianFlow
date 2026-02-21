@@ -114,7 +114,7 @@ export function OperationalDashboard() {
             </div>
 
             {/* Tabs */}
-            <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800/50 rounded-2xl w-fit overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800/50 rounded-2xl w-fit max-w-full overflow-x-auto no-scrollbar">
                 {[
                     { id: 'agenda', label: 'Cronograma', icon: 'calendar_view_day' },
                     { id: 'tasks', label: 'Todas Tarefas', icon: 'format_list_bulleted' },

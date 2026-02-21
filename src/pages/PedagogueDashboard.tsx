@@ -83,7 +83,7 @@ export function PedagogueDashboard() {
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                    <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800/50 rounded-2xl w-fit overflow-x-auto no-scrollbar">
+                    <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800/50 rounded-2xl w-fit max-w-full overflow-x-auto no-scrollbar">
                         {[
                             { id: 'summary', icon: 'dashboard', label: 'Início' },
                             { id: 'students', icon: 'school', label: 'Alunos' },
