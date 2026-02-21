@@ -148,7 +148,7 @@ export function SocialWorkDashboard() {
     ];
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-700">
+        <div className="space-y-6 animate-in fade-in duration-700 pb-24 md:pb-8">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -160,18 +160,21 @@ export function SocialWorkDashboard() {
                         Gestão de casos, audiências, visitas familiares e processos de adoção.
                     </p>
                 </div>
-                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto order-last sm:order-none">
                     <button onClick={() => { setSelectedChildId(undefined); setIsVisitModalOpen(true); }}
-                        className="flex-1 sm:flex-none px-3 py-2.5 bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 text-text-main dark:text-white text-xs font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
-                        <span className="material-symbols-outlined text-base text-purple-500">family_restroom</span>Visita
+                        className="flex-1 sm:flex-none px-3 py-2.5 bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 text-text-main dark:text-white text-[10px] sm:text-xs font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
+                        <span className="material-symbols-outlined text-[18px] sm:text-base text-purple-500">family_restroom</span>
+                        <span className="hidden xs:inline">Visita</span>
                     </button>
                     <button onClick={() => { setSelectedChildId(undefined); setIsHearingModalOpen(true); }}
-                        className="flex-1 sm:flex-none px-3 py-2.5 bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 text-text-main dark:text-white text-xs font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
-                        <span className="material-symbols-outlined text-base text-red-500">gavel</span>Audiência
+                        className="flex-1 sm:flex-none px-3 py-2.5 bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 text-text-main dark:text-white text-[10px] sm:text-xs font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
+                        <span className="material-symbols-outlined text-[18px] sm:text-base text-red-500">gavel</span>
+                        <span className="hidden xs:inline">Audiência</span>
                     </button>
                     <button onClick={() => { setSelectedChildId(undefined); setIsEntryModalOpen(true); }}
-                        className="flex-1 sm:flex-none px-3 py-2.5 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-primary/20 active:scale-95">
-                        <span className="material-symbols-outlined text-base">add</span>Novo Atendimento
+                        className="flex-[2] sm:flex-none px-3 py-2.5 bg-primary text-white text-[10px] sm:text-xs font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-primary/20 active:scale-95">
+                        <span className="material-symbols-outlined text-[18px] sm:text-base">add</span>
+                        Novo <span className="hidden xs:inline">Atendimento</span>
                     </button>
                 </div>
             </div>
@@ -239,7 +242,7 @@ function OverviewTab({ data, onOpenEntry, onOpenHearing }: { data: any; onOpenEn
     const upcomingHearings = (data.hearings || []).filter((h: any) => isAfter(parseISO(h.hearing_date), now)).slice(0, 5);
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Stats Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 {[
@@ -392,19 +395,19 @@ function CasesTab({ search, setSearch, filter, setFilter, filtered, onOpenEntry,
     return (
         <div className="space-y-4 animate-in fade-in duration-300">
             <div className="bg-white dark:bg-surface-dark rounded-3xl border border-border-light dark:border-gray-800 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-border-light dark:border-gray-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="px-6 py-4 border-b border-border-light dark:border-gray-800 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <h2 className="text-sm font-black text-text-main dark:text-white flex items-center gap-2 uppercase tracking-wide">
                         <span className="material-symbols-outlined text-primary">folder_shared</span>Todos os Casos ({filtered.length})
                     </h2>
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                        <div className="relative flex-1 sm:w-64">
+                    <div className="flex flex-col sm:flex-row items-center gap-2 w-full lg:w-auto">
+                        <div className="relative w-full sm:flex-1 lg:w-80">
                             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">search</span>
                             <input type="text" placeholder="Buscar por nome ou processo..." value={search} onChange={(e) => setSearch(e.target.value)}
-                                className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-medium outline-none focus:border-primary/50 transition-all" />
+                                className="w-full pl-9 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-medium outline-none focus:border-primary/50 transition-all" />
                         </div>
                         <select value={filter} onChange={(e) => setFilter(e.target.value)}
-                            className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-medium outline-none focus:border-primary/50">
-                            <option value="all">Todos</option>
+                            className="w-full sm:w-auto px-3 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-medium outline-none focus:border-primary/50">
+                            <option value="all">Status Legal: Todos</option>
                             {Object.entries(LEGAL_STATUS_MAP).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
                         </select>
                     </div>
@@ -447,17 +450,17 @@ function CasesTab({ search, setSearch, filter, setFilter, filtered, onOpenEntry,
                                             <span className={clsx("text-xs font-mono font-medium", daysIn > 365 ? "text-red-500" : daysIn > 180 ? "text-amber-500" : "text-text-secondary dark:text-gray-400")}>{timeText}</span>
                                         </td>
                                         <td className="px-4 py-3 text-right">
-                                            <div className="flex items-center justify-end gap-1">
-                                                <button onClick={() => onPrint(child)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-500 hover:text-white text-gray-400 transition-all flex items-center justify-center" title="Imprimir PIA">
+                                            <div className="flex items-center justify-end gap-1.5">
+                                                <button onClick={() => onPrint(child)} className="size-9 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-500 hover:text-white text-gray-400 transition-all flex items-center justify-center shrink-0" title="Imprimir PIA">
                                                     <span className="material-symbols-outlined text-lg">print</span>
                                                 </button>
-                                                <button onClick={() => onOpenPIA(child.id, child.full_name)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-primary hover:text-white text-gray-400 transition-all flex items-center justify-center" title="Gerenciar PIA">
+                                                <button onClick={() => onOpenPIA(child.id, child.full_name)} className="size-9 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-primary hover:text-white text-gray-400 transition-all flex items-center justify-center shrink-0" title="Gerenciar PIA">
                                                     <span className="material-symbols-outlined text-lg">assignment</span>
                                                 </button>
-                                                <button onClick={() => onOpenFamily(child.id, child.full_name)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-primary hover:text-white text-gray-400 transition-all flex items-center justify-center" title="Referências Familiares">
+                                                <button onClick={() => onOpenFamily(child.id, child.full_name)} className="size-9 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-primary hover:text-white text-gray-400 transition-all flex items-center justify-center shrink-0" title="Referências Familiares">
                                                     <span className="material-symbols-outlined text-lg">family_restroom</span>
                                                 </button>
-                                                <button onClick={() => onOpenEntry(child.id)} className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-primary hover:text-white text-gray-400 transition-all flex items-center justify-center" title="Nova Anotação">
+                                                <button onClick={() => onOpenEntry(child.id)} className="size-9 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-primary hover:text-white text-gray-400 transition-all flex items-center justify-center shrink-0" title="Nova Anotação">
                                                     <span className="material-symbols-outlined text-lg">edit_note</span>
                                                 </button>
                                             </div>
@@ -502,24 +505,27 @@ function HearingsTab({ data, onNew }: { data: any; onNew: () => void }) {
                         const daysUntil = differenceInDays(parseISO(h.hearing_date), now);
                         return (
                             <div key={h.id} className="p-4 hover:bg-red-50/30 dark:hover:bg-red-900/5 transition-colors">
-                                <div className="flex items-start gap-4">
-                                    <div className={clsx("flex flex-col items-center justify-center rounded-xl px-3 py-2 min-w-[4rem]", daysUntil <= 3 ? "bg-red-100 dark:bg-red-900/30 text-red-600 animate-pulse" : daysUntil <= 7 ? "bg-red-50 dark:bg-red-900/20 text-red-500" : "bg-gray-50 dark:bg-gray-800 text-text-secondary")}>
-                                        <span className="text-[10px] font-bold uppercase">{format(parseISO(h.hearing_date), 'MMM', { locale: ptBR })}</span>
-                                        <span className="text-xl font-black leading-none">{format(parseISO(h.hearing_date), 'dd')}</span>
-                                        <span className="text-[10px] font-medium">{format(parseISO(h.hearing_date), 'HH:mm')}</span>
+                                <div className="flex flex-col xs:flex-row items-start gap-4">
+                                    <div className={clsx("flex xs:flex-col items-center justify-center rounded-xl p-2 xs:px-3 xs:py-2 min-w-full xs:min-w-[4.5rem] gap-2 xs:gap-0", daysUntil <= 3 ? "bg-red-100 dark:bg-red-900/30 text-red-600 animate-pulse" : daysUntil <= 7 ? "bg-red-50 dark:bg-red-900/20 text-red-500" : "bg-gray-50 dark:bg-gray-800 text-text-secondary")}>
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-[9px] xs:text-[10px] font-black uppercase">{format(parseISO(h.hearing_date), 'MMM', { locale: ptBR })}</span>
+                                            <span className="text-lg xs:text-xl font-black leading-none">{format(parseISO(h.hearing_date), 'dd')}</span>
+                                        </div>
+                                        <div className="xs:border-t xs:border-current/10 xs:mt-1 xs:pt-1">
+                                            <span className="text-[10px] font-bold">{format(parseISO(h.hearing_date), 'HH:mm')}</span>
+                                        </div>
                                     </div>
-                                    <div className="flex-1">
+                                    <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded text-[9px] font-black uppercase">{HEARING_TYPE_MAP[h.hearing_type] || h.hearing_type}</span>
-                                            {daysUntil <= 3 && <span className="text-[10px] font-bold text-red-500">⚠ Em {daysUntil}d</span>}
+                                            <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded text-[9px] font-black uppercase tracking-wide">{HEARING_TYPE_MAP[h.hearing_type] || h.hearing_type}</span>
+                                            {daysUntil <= 3 && <span className="text-[10px] font-bold text-red-500 animate-pulse">Em {daysUntil}d</span>}
                                         </div>
-                                        <p className="text-sm font-bold text-text-main dark:text-white">{h.children?.full_name}</p>
+                                        <p className="text-sm font-bold text-text-main dark:text-white truncate">{h.children?.full_name}</p>
                                         <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-[10px] text-text-secondary dark:text-gray-500">
-                                            {h.court && <span className="flex items-center gap-1"><span className="material-symbols-outlined text-xs">account_balance</span>{h.court}</span>}
-                                            {h.judge_name && <span className="flex items-center gap-1"><span className="material-symbols-outlined text-xs">person</span>{h.judge_name}</span>}
-                                            {h.process_number && <span className="flex items-center gap-1"><span className="material-symbols-outlined text-xs">description</span>{h.process_number}</span>}
+                                            {h.court && <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">account_balance</span>{h.court}</span>}
+                                            {h.judge_name && <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">person</span>{h.judge_name}</span>}
                                         </div>
-                                        {h.subject && <p className="text-xs text-text-secondary dark:text-gray-400 mt-1.5 line-clamp-2">{h.subject}</p>}
+                                        {h.subject && <p className="text-xs text-text-secondary dark:text-gray-400 mt-2 line-clamp-2 italic">"{h.subject}"</p>}
                                     </div>
                                 </div>
                             </div>
