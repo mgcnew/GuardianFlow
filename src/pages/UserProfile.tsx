@@ -35,7 +35,8 @@ export function UserProfile() {
 
         setUploading(true);
         const fileExt = file.name.split('.').pop();
-        const path = `${user.id}/avatar.${fileExt}`;
+        const fileName = `avatar_${Date.now()}.${fileExt}`;
+        const path = `${user.id}/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
             .from('avatars')
@@ -52,12 +53,28 @@ export function UserProfile() {
             const newPhotoUrl = urlData.publicUrl;
             setPhotoUrl(newPhotoUrl);
 
-            // Auto-save the avatar URL to profile
+            // Update profile with the new URL
             await supabase
                 .from('profiles')
                 .update({ avatar_url: newPhotoUrl })
                 .eq('id', user.id);
 
+            await refreshProfile();
+        }
+        setUploading(false);
+    };
+
+    const handleRemovePhoto = async () => {
+        if (!user) return;
+        setUploading(true);
+
+        const { error } = await supabase
+            .from('profiles')
+            .update({ avatar_url: null })
+            .eq('id', user.id);
+
+        if (!error) {
+            setPhotoUrl(null);
             await refreshProfile();
         }
         setUploading(false);
@@ -135,15 +152,27 @@ export function UserProfile() {
                         />
                     </div>
 
-                    <div className="text-center sm:text-left">
+                    <div className="text-center sm:text-left flex-1">
                         <h2 className="text-xl font-extrabold text-text-main dark:text-white">
                             {fullName || userEmail.split('@')[0]}
                         </h2>
                         <p className="text-sm text-text-secondary dark:text-gray-400 font-medium mt-0.5">{userEmail}</p>
-                        <span className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">
-                            <span className="material-symbols-outlined text-sm">badge</span>
-                            {displayRole}
-                        </span>
+                        <div className="flex flex-wrap items-center gap-2 mt-3">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">
+                                <span className="material-symbols-outlined text-sm">badge</span>
+                                {displayRole}
+                            </span>
+                            {photoUrl && (
+                                <button
+                                    type="button"
+                                    onClick={handleRemovePhoto}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 text-xs font-bold hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                                >
+                                    <span className="material-symbols-outlined text-sm">delete</span>
+                                    Remover foto
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
 
