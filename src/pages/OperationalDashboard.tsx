@@ -23,8 +23,7 @@ export function OperationalDashboard() {
     const { data: maintenanceData, isLoading, isFetching } = useQuery({
         queryKey: ['maintenanceTasks', profile?.organization_id],
         queryFn: async () => {
-            if (!profile?.organization_id) return null;
-            // Simplified query without photos join for faster initial load
+            if (!profile?.organization_id) return [];
             const { data, error } = await supabase
                 .from('maintenance_tasks')
                 .select('*')
@@ -32,11 +31,10 @@ export function OperationalDashboard() {
                 .order('scheduled_date', { ascending: true });
 
             if (error) throw error;
-            return data;
+            return data || [];
         },
         enabled: !!profile?.organization_id,
-        staleTime: 1000 * 60 * 5, // 5 minutes
-        gcTime: 1000 * 60 * 30,   // 30 minutes
+        staleTime: 1000 * 60 * 5,
     });
 
     const tasks = maintenanceData || [];
@@ -54,7 +52,7 @@ export function OperationalDashboard() {
     };
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-700 pb-20">
+        <div className="space-y-6 animate-in fade-in duration-500 pb-20">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -87,28 +85,32 @@ export function OperationalDashboard() {
                     variant="info"
                     icon="event_upcoming"
                     title="Para Hoje"
-                    value={isLoading ? '-' : stats.forToday}
+                    value={isLoading ? 0 : stats.forToday}
+                    isLoading={isLoading}
                     subValue="Tarefas agendadas"
                 />
                 <StatCard
                     variant="warning"
                     icon="pending_actions"
                     title="Pendentes"
-                    value={isLoading ? '-' : stats.pending}
+                    value={isLoading ? 0 : stats.pending}
+                    isLoading={isLoading}
                     subValue="Total em aberto"
                 />
                 <StatCard
                     variant="danger"
                     icon="build_circle"
                     title="Corretivas"
-                    value={isLoading ? '-' : stats.corrective}
+                    value={isLoading ? 0 : stats.corrective}
+                    isLoading={isLoading}
                     subValue="Reparos urgentes"
                 />
                 <StatCard
                     variant="success"
                     icon="task_alt"
                     title="Concluídas"
-                    value={isLoading ? '-' : stats.completed}
+                    value={isLoading ? 0 : stats.completed}
+                    isLoading={isLoading}
                     subValue="Histórico total"
                 />
             </div>

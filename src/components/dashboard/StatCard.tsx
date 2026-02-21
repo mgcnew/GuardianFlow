@@ -6,10 +6,11 @@ interface StatCardProps {
     value: string | number;
     subValue?: React.ReactNode;
     variant?: 'default' | 'warning' | 'danger' | 'success' | 'info' | 'purple';
+    isLoading?: boolean;
     onInfoClick?: () => void;
 }
 
-export function StatCard({ icon, title, value, subValue, variant = 'default', onInfoClick }: StatCardProps) {
+export function StatCard({ icon, title, value, subValue, variant = 'default', isLoading, onInfoClick }: StatCardProps) {
     const styles = {
         default: {
             container: 'bg-white dark:bg-surface-dark border-border-light dark:border-gray-800',
@@ -86,7 +87,10 @@ export function StatCard({ icon, title, value, subValue, variant = 'default', on
             <div>
                 <h3 className="text-text-secondary dark:text-gray-400 text-sm font-medium">{title}</h3>
                 <div className="flex items-baseline gap-2">
-                    <p className="text-text-main dark:text-white text-2xl font-bold">{value}</p>
+                    <p className={clsx(
+                        "text-text-main dark:text-white text-2xl font-bold",
+                        isLoading && "animate-pulse opacity-50"
+                    )}>{isLoading ? '...' : value}</p>
                     {subValue && typeof subValue === 'string' && !subValue.includes('+') && (
                         <p className={clsx("text-[10px] font-black uppercase tracking-widest", variant === 'danger' ? 'text-red-500' : 'text-text-secondary dark:text-gray-500')}>
                             {subValue}
