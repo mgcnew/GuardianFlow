@@ -3,7 +3,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { format, parseISO } from 'date-fns';
-import clsx from 'clsx';
 import { createPortal } from 'react-dom';
 
 interface MaintenanceTaskModalProps {
