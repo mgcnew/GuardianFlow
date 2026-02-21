@@ -147,7 +147,7 @@ export function SocialWorkDashboard() {
     ];
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500">
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -231,7 +231,7 @@ function OverviewTab({ data, onOpenEntry, onOpenHearing }: { data: any; onOpenEn
     const upcomingHearings = (data.hearings || []).filter((h: any) => isAfter(parseISO(h.hearing_date), now)).slice(0, 5);
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-300">
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
             {/* Stats Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 {[
