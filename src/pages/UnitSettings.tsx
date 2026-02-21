@@ -144,7 +144,10 @@ export function UnitSettings() {
             .eq('id', profile.organization_id);
 
         setSaving(false);
-        if (!error) {
+        if (error) {
+            console.error('Error updating organization:', error);
+            alert('Erro ao salvar: ' + error.message);
+        } else {
             setSaved(true);
             await refreshOrganization();
             setTimeout(() => setSaved(false), 3000);

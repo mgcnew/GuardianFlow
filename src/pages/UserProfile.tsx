@@ -3,14 +3,15 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 
 export function UserProfile() {
-    const { user, profile } = useAuth();
+    const { user, profile, refreshProfile } = useAuth();
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
     const [uploading, setUploading] = useState(false);
 
     const [fullName, setFullName] = useState(profile?.full_name || '');
-    const [nickname, setNickname] = useState('');
-    const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+    const [nickname, setNickname] = useState((profile as any)?.nickname || '');
+    const [phone, setPhone] = useState(profile?.phone || '');
+    const [photoUrl, setPhotoUrl] = useState<string | null>((profile as any)?.avatar_url || null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const userEmail = user?.email || '';
@@ -45,7 +46,16 @@ export function UserProfile() {
                 .from('avatars')
                 .getPublicUrl(filePath);
 
-            setPhotoUrl(urlData.publicUrl);
+            const newPhotoUrl = urlData.publicUrl;
+            setPhotoUrl(newPhotoUrl);
+
+            // Auto-save the avatar URL to profile
+            await supabase
+                .from('profiles')
+                .update({ avatar_url: newPhotoUrl })
+                .eq('id', user.id);
+
+            await refreshProfile();
         }
         setUploading(false);
     };
@@ -61,12 +71,17 @@ export function UserProfile() {
             .from('profiles')
             .update({
                 full_name: fullName || null,
+                nickname: nickname || null,
+                phone: phone || null,
             })
             .eq('id', user.id);
 
         setSaving(false);
-        if (!error) {
+        if (error) {
+            alert('Erro ao salvar: ' + error.message);
+        } else {
             setSaved(true);
+            await refreshProfile();
             setTimeout(() => setSaved(false), 3000);
         }
     };
@@ -153,12 +168,28 @@ export function UserProfile() {
                                 Apelido
                             </label>
                             <div className="relative">
-                                <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-lg">edit</span>
+                                <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-lg">edit_note</span>
                                 <input
                                     type="text"
                                     value={nickname}
                                     onChange={(e) => setNickname(e.target.value)}
-                                    placeholder="Como prefere ser chamado?"
+                                    placeholder="Ex: Rick"
+                                    className="block w-full rounded-xl border border-border-light dark:border-gray-700 bg-white dark:bg-gray-800 pl-11 pr-4 py-3 text-sm text-text-main dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all font-medium"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-text-main dark:text-gray-200 mb-1.5">
+                                Telefone
+                            </label>
+                            <div className="relative">
+                                <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-lg">call</span>
+                                <input
+                                    type="text"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    placeholder="(00) 00000-0000"
                                     className="block w-full rounded-xl border border-border-light dark:border-gray-700 bg-white dark:bg-gray-800 pl-11 pr-4 py-3 text-sm text-text-main dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all font-medium"
                                 />
                             </div>

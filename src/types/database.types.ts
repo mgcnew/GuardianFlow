@@ -228,6 +228,9 @@ export interface Database {
                     role: 'saas_admin' | 'org_admin' | 'pedagogue' | 'technician' | 'educator' | 'operational' | null
                     organization_id: string | null
                     created_at: string
+                    avatar_url: string | null
+                    nickname: string | null
+                    phone: string | null
                 }
                 Insert: {
                     id: string
@@ -235,6 +238,9 @@ export interface Database {
                     role?: 'saas_admin' | 'org_admin' | 'pedagogue' | 'technician' | 'educator' | 'operational' | null
                     organization_id?: string | null
                     created_at?: string
+                    avatar_url?: string | null
+                    nickname?: string | null
+                    phone?: string | null
                 }
                 Update: {
                     id?: string
@@ -242,6 +248,9 @@ export interface Database {
                     role?: 'saas_admin' | 'org_admin' | 'pedagogue' | 'technician' | 'educator' | 'operational' | null
                     organization_id?: string | null
                     created_at?: string
+                    avatar_url?: string | null
+                    nickname?: string | null
+                    phone?: string | null
                 }
             }
             plans: {
