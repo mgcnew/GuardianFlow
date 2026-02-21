@@ -184,20 +184,20 @@ export function UnitSettings() {
             </div>
 
             {/* Tabs */}
-            <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800/50 p-1 rounded-xl w-fit">
+            <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800/50 rounded-2xl w-fit overflow-x-auto no-scrollbar">
                 <button
                     onClick={() => {
                         setActiveTab('unit');
                         setSearchParams({ tab: 'unit' });
                     }}
                     className={clsx(
-                        "px-4 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2",
+                        "px-4 py-2 text-sm font-bold rounded-xl transition-all flex items-center gap-2 whitespace-nowrap",
                         activeTab === 'unit'
-                            ? "bg-white dark:bg-gray-700 text-primary shadow-sm"
+                            ? "bg-white dark:bg-surface-dark text-primary shadow-sm"
                             : "text-text-secondary dark:text-gray-400 hover:text-text-main dark:hover:text-white"
                     )}
                 >
-                    <span className="material-symbols-outlined text-lg">corporate_fare</span>
+                    <span className="material-symbols-outlined text-[20px]">corporate_fare</span>
                     Unidade
                 </button>
                 <button
@@ -206,13 +206,13 @@ export function UnitSettings() {
                         setSearchParams({ tab: 'team' });
                     }}
                     className={clsx(
-                        "px-4 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2",
+                        "px-4 py-2 text-sm font-bold rounded-xl transition-all flex items-center gap-2 whitespace-nowrap",
                         activeTab === 'team'
-                            ? "bg-white dark:bg-gray-700 text-primary shadow-sm"
+                            ? "bg-white dark:bg-surface-dark text-primary shadow-sm"
                             : "text-text-secondary dark:text-gray-400 hover:text-text-main dark:hover:text-white"
                     )}
                 >
-                    <span className="material-symbols-outlined text-lg">groups</span>
+                    <span className="material-symbols-outlined text-[20px]">groups</span>
                     Profissionais
                 </button>
             </div>

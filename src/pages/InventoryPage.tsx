@@ -25,7 +25,7 @@ export function InventoryPage() {
     const [movementType, setMovementType] = useState<'in' | 'out'>('out');
     const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
 
-    const { data: dashboardData, isLoading } = useQuery({
+    const { data: dashboardData, isFetching } = useQuery({
         queryKey: ['inventoryDashboard', profile?.organization_id],
         queryFn: async () => {
             if (!profile?.organization_id) return null;
@@ -70,7 +70,7 @@ export function InventoryPage() {
         }
     });
 
-    if (isLoading && !dashboardData) {
+    if (!dashboardData) {
         return (
             <div className="flex flex-col items-center justify-center py-24">
                 <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
@@ -94,6 +94,9 @@ export function InventoryPage() {
                     <h1 className="text-2xl sm:text-3xl font-black text-text-main dark:text-white tracking-tight flex items-center gap-2">
                         <span className="material-symbols-outlined text-primary text-3xl">inventory_2</span>
                         Gestão de Estoque
+                        {isFetching && (
+                            <span className="material-symbols-outlined text-primary text-sm animate-pulse ml-2" title="Sincronizando...">sync</span>
+                        )}
                     </h1>
                     <p className="text-sm text-text-secondary dark:text-gray-400 font-medium mt-1">
                         Controle de alimentos, itens de higiene, limpeza e necessidades dos acolhidos.
@@ -119,12 +122,18 @@ export function InventoryPage() {
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-1 bg-gray-100 dark:bg-gray-900 rounded-2xl p-1 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800/50 rounded-2xl w-fit overflow-x-auto no-scrollbar">
                 {TABS.map(tab => (
                     <button key={tab.id} onClick={() => setActiveTab(tab.id as DashboardTab)}
-                        className={clsx("flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap",
-                            activeTab === tab.id ? "bg-white dark:bg-surface-dark text-text-main dark:text-white shadow-sm" : "text-text-secondary dark:text-gray-500 hover:text-text-main dark:hover:text-white")}>
-                        <span className="material-symbols-outlined text-base">{tab.icon}</span>{tab.label}
+                        className={clsx(
+                            "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap",
+                            activeTab === tab.id
+                                ? "bg-white dark:bg-surface-dark text-primary shadow-sm"
+                                : "text-text-secondary dark:text-gray-400 hover:text-text-main dark:hover:text-white"
+                        )}
+                    >
+                        <span className="material-symbols-outlined text-[20px]">{tab.icon}</span>
+                        {tab.label}
                     </button>
                 ))}
             </div>

@@ -10,6 +10,7 @@ import clsx from 'clsx';
 import { StatCard } from '../components/dashboard/StatCard';
 import { MaintenanceTaskModal } from '../components/operational/MaintenanceTaskModal';
 import { MaintenanceTaskCard, MaintenanceListItem } from '../components/operational/MaintenanceTasks';
+import { MaintenanceSkeleton, MaintenanceListSkeleton } from '../components/operational/MaintenanceSkeletons';
 
 type OperationalTab = 'agenda' | 'tasks' | 'history';
 
@@ -23,12 +24,10 @@ export function OperationalDashboard() {
         queryKey: ['maintenanceTasks', profile?.organization_id],
         queryFn: async () => {
             if (!profile?.organization_id) return null;
+            // Simplified query without photos join for faster initial load
             const { data, error } = await supabase
                 .from('maintenance_tasks')
-                .select(`
-                    *,
-                    photos:maintenance_photos(id, photo_url, photo_type)
-                `)
+                .select('*')
                 .eq('organization_id', profile.organization_id)
                 .order('scheduled_date', { ascending: true });
 
@@ -39,15 +38,6 @@ export function OperationalDashboard() {
         staleTime: 1000 * 60 * 5, // 5 minutes
         gcTime: 1000 * 60 * 30,   // 30 minutes
     });
-
-    if (isLoading && !maintenanceData) {
-        return (
-            <div className="flex flex-col items-center justify-center py-24">
-                <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-text-secondary font-medium animate-pulse font-display">Sincronizando cronograma operacional...</p>
-            </div>
-        );
-    }
 
     const tasks = maintenanceData || [];
     const todayTasks = tasks.filter(t => isToday(parseISO(t.scheduled_date)) && t.status !== 'completed');
@@ -71,7 +61,7 @@ export function OperationalDashboard() {
                     <h1 className="text-2xl sm:text-3xl font-black text-text-main dark:text-white tracking-tight flex items-center gap-2 font-display">
                         <span className="material-symbols-outlined text-primary text-3xl">construction</span>
                         Operacional & Manutenção
-                        {isFetching && (
+                        {isFetching && !isLoading && (
                             <span className="material-symbols-outlined text-primary text-sm animate-pulse ml-2" title="Sincronizando...">sync</span>
                         )}
                     </h1>
@@ -97,34 +87,34 @@ export function OperationalDashboard() {
                     variant="info"
                     icon="event_upcoming"
                     title="Para Hoje"
-                    value={stats.forToday}
+                    value={isLoading ? '-' : stats.forToday}
                     subValue="Tarefas agendadas"
                 />
                 <StatCard
                     variant="warning"
                     icon="pending_actions"
                     title="Pendentes"
-                    value={stats.pending}
+                    value={isLoading ? '-' : stats.pending}
                     subValue="Total em aberto"
                 />
                 <StatCard
                     variant="danger"
                     icon="build_circle"
                     title="Corretivas"
-                    value={stats.corrective}
+                    value={isLoading ? '-' : stats.corrective}
                     subValue="Reparos urgentes"
                 />
                 <StatCard
                     variant="success"
                     icon="task_alt"
                     title="Concluídas"
-                    value={stats.completed}
+                    value={isLoading ? '-' : stats.completed}
                     subValue="Histórico total"
                 />
             </div>
 
             {/* Tabs */}
-            <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800/50 rounded-2xl w-fit">
+            <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800/50 rounded-2xl w-fit overflow-x-auto no-scrollbar">
                 {[
                     { id: 'agenda', label: 'Cronograma', icon: 'calendar_view_day' },
                     { id: 'tasks', label: 'Todas Tarefas', icon: 'format_list_bulleted' },
@@ -137,9 +127,9 @@ export function OperationalDashboard() {
                             window.scrollTo(0, 0);
                         }}
                         className={clsx(
-                            "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all",
+                            "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap",
                             activeTab === tab.id
-                                ? "bg-white dark:bg-gray-700 text-primary shadow-sm"
+                                ? "bg-white dark:bg-surface-dark text-primary shadow-sm"
                                 : "text-text-secondary dark:text-gray-400 hover:text-text-main dark:hover:text-white"
                         )}
                     >
@@ -163,7 +153,12 @@ export function OperationalDashboard() {
                             </span>
                         </div>
 
-                        {todayTasks.length === 0 ? (
+                        {isLoading ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <MaintenanceSkeleton />
+                                <MaintenanceSkeleton />
+                            </div>
+                        ) : todayTasks.length === 0 ? (
                             <div className="bg-white dark:bg-surface-dark border border-dashed border-border-light dark:border-gray-800 rounded-3xl p-12 text-center">
                                 <div className="size-16 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
                                     <span className="material-symbols-outlined text-3xl">task</span>
@@ -197,7 +192,13 @@ export function OperationalDashboard() {
                             </div>
                         </div>
                         <div className="divide-y divide-gray-50 dark:divide-gray-800">
-                            {pendingTasks.length === 0 ? (
+                            {isLoading ? (
+                                <>
+                                    <MaintenanceListSkeleton />
+                                    <MaintenanceListSkeleton />
+                                    <MaintenanceListSkeleton />
+                                </>
+                            ) : pendingTasks.length === 0 ? (
                                 <div className="p-12 text-center text-text-secondary">Nenhuma tarefa pendente.</div>
                             ) : (
                                 pendingTasks.map(task => (
@@ -221,7 +222,13 @@ export function OperationalDashboard() {
                             </div>
                         </div>
                         <div className="divide-y divide-gray-50 dark:divide-gray-800">
-                            {historyTasks.length === 0 ? (
+                            {isLoading ? (
+                                <>
+                                    <MaintenanceListSkeleton />
+                                    <MaintenanceListSkeleton />
+                                    <MaintenanceListSkeleton />
+                                </>
+                            ) : historyTasks.length === 0 ? (
                                 <div className="p-12 text-center text-text-secondary">Nenhum histórico disponível.</div>
                             ) : (
                                 historyTasks.map(task => (

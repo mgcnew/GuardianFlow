@@ -88,7 +88,7 @@ export function PsychologistDashboard() {
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                    <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl flex-1 sm:flex-initial overflow-x-auto no-scrollbar">
+                    <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800/50 rounded-2xl w-fit overflow-x-auto no-scrollbar">
                         {[
                             { id: 'summary', icon: 'dashboard', label: 'Início' },
                             { id: 'patients', icon: 'group', label: 'Pacientes' },
@@ -100,14 +100,14 @@ export function PsychologistDashboard() {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
                                 className={clsx(
-                                    "flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap min-w-fit flex-1 sm:flex-none",
+                                    "flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap",
                                     activeTab === tab.id
                                         ? "bg-white dark:bg-surface-dark text-primary shadow-sm"
-                                        : "text-text-secondary hover:text-text-main dark:text-gray-400"
+                                        : "text-text-secondary dark:text-gray-400 hover:text-text-main dark:hover:text-white"
                                 )}
                             >
-                                <span className="material-symbols-outlined text-lg">{tab.icon}</span>
-                                <span className="hidden sm:inline">{tab.label}</span>
+                                <span className="material-symbols-outlined text-[20px]">{tab.icon}</span>
+                                {tab.label}
                             </button>
                         ))}
                     </div>

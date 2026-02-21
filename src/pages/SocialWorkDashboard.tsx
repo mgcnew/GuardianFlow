@@ -177,12 +177,19 @@ export function SocialWorkDashboard() {
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-1 bg-gray-100 dark:bg-gray-900 rounded-2xl p-1 overflow-x-auto no-scrollbar">
+            {/* Tabs */}
+            <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800/50 rounded-2xl w-fit overflow-x-auto no-scrollbar">
                 {TABS.map(tab => (
                     <button key={tab.id} onClick={() => setActiveTab(tab.id as DashboardTab)}
-                        className={clsx("flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap",
-                            activeTab === tab.id ? "bg-white dark:bg-surface-dark text-text-main dark:text-white shadow-sm" : "text-text-secondary dark:text-gray-500 hover:text-text-main dark:hover:text-white")}>
-                        <span className="material-symbols-outlined text-base">{tab.icon}</span>{tab.label}
+                        className={clsx(
+                            "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap",
+                            activeTab === tab.id
+                                ? "bg-white dark:bg-surface-dark text-primary shadow-sm"
+                                : "text-text-secondary dark:text-gray-400 hover:text-text-main dark:hover:text-white"
+                        )}
+                    >
+                        <span className="material-symbols-outlined text-[20px]">{tab.icon}</span>
+                        {tab.label}
                     </button>
                 ))}
             </div>

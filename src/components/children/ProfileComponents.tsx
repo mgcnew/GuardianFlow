@@ -103,26 +103,24 @@ export function ProfileHeader({ child, activeTab, setActiveTab, onEdit, onPrintP
                     </div>
                 </div>
             </div>
-            <div className="border-t border-border-light dark:border-gray-800 px-2 md:px-8 bg-gray-50/30 dark:bg-gray-800/20">
-                <nav className="flex gap-1 md:gap-0 md:space-x-8 overflow-x-auto scrollbar-hide font-display py-2 md:py-0">
+            <div className="px-5 md:px-8 py-4 bg-gray-50/30 dark:bg-gray-800/20 border-t border-border-light dark:border-gray-800">
+                <div className="flex items-center gap-1 p-1 bg-gray-100/50 dark:bg-gray-900/40 rounded-2xl w-fit max-w-full overflow-x-auto no-scrollbar">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={clsx(
-                                "md:py-5 md:px-1 md:border-b-2 md:text-[11px] md:font-black md:uppercase md:tracking-[0.2em] transition-all hover:text-text-main dark:hover:text-white whitespace-nowrap",
-                                // Mobile: pill style
-                                "flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-[11px] font-bold md:rounded-none md:bg-transparent min-w-fit flex-1 md:flex-initial",
+                                "flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap",
                                 activeTab === tab.id
-                                    ? "md:border-primary text-primary bg-primary/10 md:bg-transparent"
-                                    : "text-text-secondary dark:text-gray-500 bg-transparent"
+                                    ? "bg-white dark:bg-surface-dark text-primary shadow-sm"
+                                    : "text-text-secondary dark:text-gray-400 hover:text-text-main dark:hover:text-white"
                             )}
                         >
-                            <span className="material-symbols-outlined text-[16px] md:hidden">{tabIcons[tab.id] || 'tab'}</span>
+                            <span className="material-symbols-outlined text-[18px] sm:text-[20px]">{tabIcons[tab.id] || 'tab'}</span>
                             {tab.label}
                         </button>
                     ))}
-                </nav>
+                </div>
             </div>
         </div>
     );

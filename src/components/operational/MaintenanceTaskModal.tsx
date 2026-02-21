@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useState, useRef, useEffect } from 'react';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { format, parseISO } from 'date-fns';
@@ -16,27 +16,81 @@ export function MaintenanceTaskModal({ isOpen, onClose, task }: MaintenanceTaskM
     const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
 
-    // Form State
-    const [formData, setFormData] = useState({
-        title: task?.title || '',
-        description: task?.description || '',
-        task_type: task?.task_type || 'preventive',
-        location: task?.location || '',
-        scheduled_date: task?.scheduled_date ? format(parseISO(task.scheduled_date), "yyyy-MM-dd'T'HH:mm") : format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-        status: task?.status || 'pending',
+    // Fetch photos if not provided in task prop (optimized list load)
+    const { data: taskPhotos, isLoading: loadingPhotos } = useQuery({
+        queryKey: ['maintenancePhotos', task?.id],
+        queryFn: async () => {
+            if (!task?.id) return [];
+            const { data, error } = await supabase
+                .from('maintenance_photos')
+                .select('*')
+                .eq('task_id', task.id);
+            if (error) throw error;
+            return data;
+        },
+        enabled: !!task?.id && isOpen && !task.photos,
     });
 
-    const [materials, setMaterials] = useState<any[]>(task?.materials_used || []);
+    // Combined photos from prop or fetch
+    const photos = task?.photos || taskPhotos || [];
+
+    // Form State
+    const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        task_type: 'preventive',
+        location: '',
+        scheduled_date: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+        status: 'pending',
+    });
+
+    const [materials, setMaterials] = useState<any[]>([]);
     const [newMaterial, setNewMaterial] = useState({ name: '', quantity: 1 });
 
     // Photo states
     const [beforePhoto, setBeforePhoto] = useState<File | null>(null);
-    const [beforePreview, setBeforePreview] = useState<string | null>(task?.photos?.find((p: any) => p.photo_type === 'before')?.photo_url || null);
+    const [beforePreview, setBeforePreview] = useState<string | null>(null);
     const [afterPhoto, setAfterPhoto] = useState<File | null>(null);
-    const [afterPreview, setAfterPreview] = useState<string | null>(task?.photos?.find((p: any) => p.photo_type === 'after')?.photo_url || null);
+    const [afterPreview, setAfterPreview] = useState<string | null>(null);
 
     const beforeInputRef = useRef<HTMLInputElement>(null);
     const afterInputRef = useRef<HTMLInputElement>(null);
+
+    // Update state when task or photos change
+    useEffect(() => {
+        if (task) {
+            setFormData({
+                title: task.title || '',
+                description: task.description || '',
+                task_type: task.task_type || 'preventive',
+                location: task.location || '',
+                scheduled_date: task.scheduled_date ? format(parseISO(task.scheduled_date), "yyyy-MM-dd'T'HH:mm") : format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+                status: task.status || 'pending',
+            });
+            setMaterials(task.materials_used || []);
+        } else {
+            setFormData({
+                title: '',
+                description: '',
+                task_type: 'preventive',
+                location: '',
+                scheduled_date: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+                status: 'pending',
+            });
+            setMaterials([]);
+            setBeforePreview(null);
+            setAfterPreview(null);
+        }
+    }, [task, isOpen]);
+
+    useEffect(() => {
+        if (photos.length > 0) {
+            const before = photos.find((p: any) => p.photo_type === 'before');
+            const after = photos.find((p: any) => p.photo_type === 'after');
+            if (before) setBeforePreview(before.photo_url);
+            if (after) setAfterPreview(after.photo_url);
+        }
+    }, [photos]);
 
     const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'before' | 'after') => {
         if (e.target.files && e.target.files[0]) {
@@ -280,7 +334,9 @@ export function MaintenanceTaskModal({ isOpen, onClose, task }: MaintenanceTaskM
                                 onClick={() => beforeInputRef.current?.click()}
                                 className="aspect-video bg-gray-50 dark:bg-gray-800/50 border-2 border-dashed border-border-light dark:border-gray-700 rounded-2xl flex flex-col items-center justify-center cursor-pointer overflow-hidden relative group"
                             >
-                                {beforePreview ? (
+                                {loadingPhotos ? (
+                                    <div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                ) : beforePreview ? (
                                     <>
                                         <img src={beforePreview} className="w-full h-full object-cover" alt="Antes" />
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -311,7 +367,9 @@ export function MaintenanceTaskModal({ isOpen, onClose, task }: MaintenanceTaskM
                                 onClick={() => afterInputRef.current?.click()}
                                 className="aspect-video bg-gray-50 dark:bg-gray-800/50 border-2 border-dashed border-border-light dark:border-gray-700 rounded-2xl flex flex-col items-center justify-center cursor-pointer overflow-hidden relative group"
                             >
-                                {afterPreview ? (
+                                {loadingPhotos ? (
+                                    <div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                ) : afterPreview ? (
                                     <>
                                         <img src={afterPreview} className="w-full h-full object-cover" alt="Depois" />
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
