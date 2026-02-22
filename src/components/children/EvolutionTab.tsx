@@ -172,7 +172,24 @@ export function EvolutionTab({ childId }: EvolutionTabProps) {
             </div>
 
             {isLoading ? (
-                <div className="flex justify-center py-12"><div className="size-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse mt-8">
+                    {[1, 2, 3].map(col => (
+                        <div key={col} className="space-y-4">
+                            <div className="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-800">
+                                <div className="w-24 h-4 bg-gray-200 dark:bg-gray-800 rounded"></div>
+                                <div className="size-2 rounded-full bg-gray-200 dark:bg-gray-800"></div>
+                            </div>
+                            <div className="space-y-3">
+                                {[1, 2].map(card => (
+                                    <div key={card} className="h-24 bg-white/50 dark:bg-surface-dark/50 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-4">
+                                        <div className="w-3/4 h-4 bg-gray-200 dark:bg-gray-700/50 rounded-full mb-3"></div>
+                                        <div className="w-1/2 h-3 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {/* Column: Pending */}

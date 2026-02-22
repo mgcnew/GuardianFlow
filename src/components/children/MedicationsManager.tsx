@@ -271,8 +271,25 @@ export function MedicationsManager({ childId }: MedicationsManagerProps) {
             ) : (
                 <div className="space-y-4">
                     {isLoading ? (
-                        <div className="text-center py-10">
-                            <span className="size-8 border-2 border-primary border-t-transparent rounded-full animate-spin inline-block"></span>
+                        <div className="space-y-4 animate-pulse">
+                            {[1, 2].map(i => (
+                                <div key={i} className="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm space-y-4">
+                                    <div className="flex justify-between items-start">
+                                        <div className="space-y-2 w-full">
+                                            <div className="flex gap-2">
+                                                <div className="w-20 h-5 bg-gray-200 dark:bg-gray-700/50 rounded-lg"></div>
+                                            </div>
+                                            <div className="w-48 h-6 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
+                                            <div className="w-32 h-4 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
+                                        </div>
+                                    </div>
+                                    <div className="w-full h-16 bg-gray-200 dark:bg-gray-700/50 rounded-xl"></div>
+                                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-50 dark:border-gray-700/50">
+                                        <div className="w-full h-12 bg-gray-200 dark:bg-gray-700/50 rounded-lg"></div>
+                                        <div className="w-full h-12 bg-gray-200 dark:bg-gray-700/50 rounded-lg"></div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     ) : medications?.length === 0 ? (
                         <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">

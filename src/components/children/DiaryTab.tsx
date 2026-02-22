@@ -248,7 +248,26 @@ export function DiaryTab({ childId }: DiaryTabProps) {
 
             {/* Timeline */}
             {isLoading ? (
-                <div className="flex justify-center py-12"><div className="size-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>
+                <div className="space-y-6 animate-pulse pl-6 border-l-2 border-gray-100 dark:border-gray-800">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="relative">
+                            <div className="absolute -left-[33px] top-2 h-4 w-4 rounded-full border-4 border-white dark:border-[#1a1a2e] bg-gray-200 dark:bg-gray-700"></div>
+                            <div className="rounded-2xl bg-white dark:bg-surface-dark p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
+                                <div className="flex gap-3 items-center">
+                                    <div className="size-8 rounded-xl bg-gray-200 dark:bg-gray-700/50"></div>
+                                    <div className="space-y-2">
+                                        <div className="w-48 h-4 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
+                                        <div className="w-32 h-2 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div className="space-y-2 pt-2">
+                                    <div className="w-full h-3 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
+                                    <div className="w-3/4 h-3 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             ) : filteredEntries.length === 0 ? (
                 <div className="text-center py-12 md:py-16 bg-white dark:bg-surface-dark rounded-2xl md:rounded-3xl ring-1 ring-border-light dark:ring-gray-800">
                     <span className="material-symbols-outlined text-5xl text-gray-300 dark:text-gray-700 mb-3 block">history_edu</span>

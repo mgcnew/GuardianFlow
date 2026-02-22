@@ -37,15 +37,15 @@ export function ChildrenList() {
     const [activeTab, setActiveTab] = useState<'all' | 'urgent' | 'active' | 'pending'>('all');
     const [sortBy, setSortBy] = useState<'name' | 'age' | 'time'>('name');
 
-    const { data: children, isLoading, isError, error } = useQuery({
+    const { data: children, isLoading, isError } = useQuery({
         queryKey: ['children'],
         queryFn: async () => {
-            const { data, error } = await supabase
+            const { data, error: fetchError } = await supabase
                 .from('children')
                 .select('*')
                 .order('full_name');
 
-            if (error) throw error;
+            if (fetchError) throw fetchError;
             return data as Child[] || [];
         },
         staleTime: 1000 * 60 * 5,

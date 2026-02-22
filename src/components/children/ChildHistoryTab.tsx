@@ -279,59 +279,44 @@ export function ChildHistoryTab({ childId, child }: ChildHistoryTabProps) {
     const [expandedId, setExpandedId] = useState<string | null>(null);
 
     // Fetch all data sources in parallel
-    const { data: entries = [] } = useQuery({
-        queryKey: ['child_entries', childId],
+    const { data, isLoading } = useQuery({
+        queryKey: ['child_timeline', childId],
         queryFn: async () => {
-            const { data } = await supabase.from('child_entries').select('*, author:profiles!child_entries_author_id_fkey(full_name)').eq('child_id', childId).order('created_at', { ascending: false });
-            return data || [];
+            const [
+                { data: entries },
+                { data: logs },
+                { data: events },
+                { data: medications },
+                { data: documents },
+                { data: goals }
+            ] = await Promise.all([
+                supabase.from('child_entries').select('*, author:profiles!child_entries_author_id_fkey(full_name)').eq('child_id', childId).order('created_at', { ascending: false }),
+                supabase.from('logs').select('*, staff:profiles!logs_staff_id_fkey(full_name)').eq('child_id', childId).order('created_at', { ascending: false }),
+                supabase.from('calendar_events').select('*').eq('child_id', childId).order('start_time', { ascending: false }),
+                supabase.from('medications').select('*').eq('child_id', childId).order('created_at', { ascending: false }),
+                supabase.from('child_documents').select('*').eq('child_id', childId).order('created_at', { ascending: false }),
+                supabase.from('child_goals').select('*').eq('child_id', childId).order('created_at', { ascending: false })
+            ]);
+
+            return {
+                entries: entries || [],
+                logs: logs || [],
+                events: events || [],
+                medications: medications || [],
+                documents: documents || [],
+                goals: goals || []
+            };
         },
         enabled: !!childId,
+        staleTime: 1000 * 60 * 5,
     });
 
-    const { data: logs = [] } = useQuery({
-        queryKey: ['child_logs', childId],
-        queryFn: async () => {
-            const { data } = await supabase.from('logs').select('*, staff:profiles!logs_staff_id_fkey(full_name)').eq('child_id', childId).order('created_at', { ascending: false });
-            return data || [];
-        },
-        enabled: !!childId,
-    });
-
-    const { data: events = [] } = useQuery({
-        queryKey: ['child_events_history', childId],
-        queryFn: async () => {
-            const { data } = await supabase.from('calendar_events').select('*').eq('child_id', childId).order('start_time', { ascending: false });
-            return data || [];
-        },
-        enabled: !!childId,
-    });
-
-    const { data: medications = [] } = useQuery({
-        queryKey: ['child_medications', childId],
-        queryFn: async () => {
-            const { data } = await supabase.from('medications').select('*').eq('child_id', childId).order('created_at', { ascending: false });
-            return data || [];
-        },
-        enabled: !!childId,
-    });
-
-    const { data: documents = [] } = useQuery({
-        queryKey: ['child_documents', childId],
-        queryFn: async () => {
-            const { data } = await supabase.from('child_documents').select('*').eq('child_id', childId).order('created_at', { ascending: false });
-            return data || [];
-        },
-        enabled: !!childId,
-    });
-
-    const { data: goals = [] } = useQuery({
-        queryKey: ['child_goals', childId],
-        queryFn: async () => {
-            const { data } = await supabase.from('child_goals').select('*').eq('child_id', childId).order('created_at', { ascending: false });
-            return data || [];
-        },
-        enabled: !!childId,
-    });
+    const entries = data?.entries || [];
+    const logs = data?.logs || [];
+    const events = data?.events || [];
+    const medications = data?.medications || [];
+    const documents = data?.documents || [];
+    const goals = data?.goals || [];
 
     // Build unified timeline
     const timeline = useMemo(() => {
@@ -365,6 +350,47 @@ export function ChildHistoryTab({ childId, child }: ChildHistoryTabProps) {
     ];
 
     const overallColor = getScoreColor(profileScore.overall);
+
+    if (isLoading) {
+        return (
+            <div className="space-y-6 animate-pulse">
+                {/* Score Card Skeleton */}
+                <div className="rounded-3xl bg-white dark:bg-surface-dark p-8 border border-gray-100 dark:border-gray-800 shadow-sm">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="size-10 rounded-2xl bg-gray-200 dark:bg-gray-700/50"></div>
+                        <div className="space-y-2">
+                            <div className="w-48 h-6 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
+                            <div className="w-32 h-3 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
+                        </div>
+                    </div>
+                    <div className="flex flex-col md:flex-row items-center gap-8">
+                        <div className="size-36 rounded-full bg-gray-200 dark:bg-gray-700/50 shrink-0"></div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+                            {[1, 2, 3, 4, 5].map(i => (
+                                <div key={i} className="h-16 bg-gray-100 dark:bg-gray-800/50 rounded-2xl"></div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Timeline Skeleton */}
+                <div className="rounded-3xl bg-white dark:bg-surface-dark p-8 border border-gray-100 dark:border-gray-800 shadow-sm space-y-6">
+                    <div className="flex gap-2 mb-6">
+                        {[1, 2, 3, 4].map(i => (
+                            <div key={i} className="w-24 h-8 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+                        ))}
+                    </div>
+                    <div className="pl-6 border-l-2 border-gray-100 dark:border-gray-800 space-y-6">
+                        {[1, 2, 3, 4].map(i => (
+                            <div key={i} className="h-24 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 relative">
+                                <div className="absolute -left-[33px] top-3 size-4 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
