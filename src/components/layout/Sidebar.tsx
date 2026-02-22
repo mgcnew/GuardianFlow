@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { ThemeToggleIcon } from '../shared/ThemeToggleIcon';
+import { DashboardIcon, ResidentsIcon } from '../shared/CustomIcons';
 
 const navItems = [
     { icon: 'dashboard', label: 'Dashboard', to: '/dashboard' },
@@ -121,14 +122,20 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
                     >
                         {({ isActive }) => (
                             <>
-                                <span
-                                    className={clsx(
-                                        "material-symbols-outlined group-hover:text-text-main dark:group-hover:text-white transition-colors shrink-0",
-                                        (isActive && item.icon === 'dashboard') ? 'fill-1' : ''
-                                    )}
-                                >
-                                    {item.icon}
-                                </span>
+                                {item.icon === 'dashboard' ? (
+                                    <DashboardIcon isActive={isActive} className="size-5 shrink-0" />
+                                ) : item.icon === 'child_care' ? (
+                                    <ResidentsIcon isActive={isActive} className="size-5 shrink-0" />
+                                ) : (
+                                    <span
+                                        className={clsx(
+                                            "material-symbols-outlined group-hover:text-text-main dark:group-hover:text-white transition-colors shrink-0",
+                                            (isActive && item.icon === 'dashboard') ? 'fill-1' : ''
+                                        )}
+                                    >
+                                        {item.icon}
+                                    </span>
+                                )}
                                 <span className={clsx(
                                     "text-sm font-medium transition-opacity duration-300 whitespace-nowrap",
                                     isCollapsed && !isMobileOpen ? "opacity-0 w-0 hidden" : "opacity-100"
