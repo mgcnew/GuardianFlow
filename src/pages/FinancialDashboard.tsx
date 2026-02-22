@@ -21,7 +21,7 @@ export function FinancialDashboard() {
     const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
     const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
 
-    const { data: financeData, isLoading } = useQuery({
+    const { data: financeData, isLoading, isError } = useQuery({
         queryKey: ['financialDashboard', profile?.organization_id],
         queryFn: async () => {
             if (!profile?.organization_id) return null;
@@ -50,14 +50,58 @@ export function FinancialDashboard() {
         staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
-    if (isLoading && !financeData) {
+    if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center py-24">
-                <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-text-secondary font-medium animate-pulse">Carregando dados financeiros...</p>
+            <div className="space-y-6 w-full animate-pulse pb-24 md:pb-8">
+                {/* Header Skeleton */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <div className="w-64 h-8 bg-gray-200 dark:bg-gray-800 rounded-xl mb-2"></div>
+                        <div className="w-96 h-4 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                    </div>
+                    <div className="flex gap-2">
+                        <div className="w-32 h-10 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+                        <div className="w-32 h-10 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+                    </div>
+                </div>
+
+                {/* Tabs Skeleton */}
+                <div className="flex gap-2">
+                    {[1, 2, 3, 4].map(i => (
+                        <div key={i} className="w-28 h-10 bg-gray-100 dark:bg-gray-800/50 rounded-xl"></div>
+                    ))}
+                </div>
+
+                {/* Stats Grid Skeleton */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="h-32 bg-white/50 dark:bg-surface-dark/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
+                    ))}
+                </div>
+
+                {/* Main Content Skeleton */}
+                <div className="h-[400px] bg-white/50 dark:bg-surface-dark/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
             </div>
         );
     }
+
+    if (isError) {
+        return (
+            <div className="flex flex-col items-center justify-center p-12 text-center bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-3xl text-red-600 dark:text-red-400">
+                <span className="material-symbols-outlined text-4xl mb-4">error</span>
+                <h3 className="text-xl font-bold mb-2">Erro ao carregar dados financeiros</h3>
+                <p className="text-sm max-w-md mx-auto mb-4">Não foi possível carregar as informações financeiras. Por favor, tente novamente mais tarde.</p>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="px-4 py-2 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition active:scale-95"
+                >
+                    Tentar Novamente
+                </button>
+            </div>
+        );
+    }
+
+    if (!financeData) return null;
 
     const TABS = [
         { id: 'overview', label: 'Visão Geral', icon: 'monitoring' },

@@ -77,7 +77,7 @@ export function SocialWorkDashboard() {
     const [childSearch, setChildSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('all');
 
-    const { data: dashboardData, isLoading } = useQuery({
+    const { data: dashboardData, isLoading, isError } = useQuery({
         queryKey: ['socialWorkDashboard', profile?.organization_id],
         queryFn: async () => {
             if (!profile?.organization_id) return null;
@@ -130,7 +130,7 @@ export function SocialWorkDashboard() {
         return matchesSearch && matchesStatus;
     }) || [];
 
-    if (isLoading && !dashboardData) {
+    if (isLoading) {
         return (
             <div className="space-y-6 w-full animate-pulse pb-24 md:pb-8">
                 {/* Header Skeleton */}
@@ -149,14 +149,14 @@ export function SocialWorkDashboard() {
                 {/* Tabs Skeleton */}
                 <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map(i => (
-                        <div key={i} className="w-28 h-10 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+                        <div key={i} className="w-28 h-10 bg-gray-100 dark:bg-gray-800/50 rounded-xl"></div>
                     ))}
                 </div>
 
                 {/* Stats Grid Skeleton */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                     {[1, 2, 3, 4, 5, 6].map(i => (
-                        <div key={i} className="h-28 bg-white/50 dark:bg-surface-dark/50 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4"></div>
+                        <div key={i} className="h-24 bg-white/50 dark:bg-surface-dark/50 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4"></div>
                     ))}
                 </div>
 
@@ -167,6 +167,24 @@ export function SocialWorkDashboard() {
             </div>
         );
     }
+
+    if (isError) {
+        return (
+            <div className="flex flex-col items-center justify-center p-12 text-center bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-3xl text-red-600 dark:text-red-400">
+                <span className="material-symbols-outlined text-4xl mb-4">error</span>
+                <h3 className="text-xl font-bold mb-2">Erro ao carregar assistência social</h3>
+                <p className="text-sm max-w-md mx-auto mb-4">Não foi possível carregar as informações do serviço social. Por favor, tente novamente mais tarde.</p>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="px-4 py-2 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition active:scale-95"
+                >
+                    Tentar Novamente
+                </button>
+            </div>
+        );
+    }
+
+    if (!dashboardData) return null;
 
     const TABS = [
         { id: 'overview', label: 'Visão Geral', icon: 'dashboard' },
