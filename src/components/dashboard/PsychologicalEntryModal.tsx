@@ -642,14 +642,14 @@ export function PsychologicalEntryModal({ isOpen, onClose, initialChildId }: Psy
 
                                 <button
                                     onClick={onClose}
-                                    className="px-6 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-bold text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                    className="h-12 px-6 rounded-xl border border-gray-200 dark:border-gray-800 text-sm font-bold text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800 active:scale-95 transition-all font-display"
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     onClick={() => saveMutation.mutate()}
                                     disabled={!form.child_id || !form.content || saveMutation.isPending}
-                                    className="px-8 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:brightness-110 shadow-lg shadow-primary/20 active:scale-95 transition-all disabled:opacity-50 disabled:grayscale flex items-center gap-2"
+                                    className="h-12 px-8 rounded-xl bg-primary text-white text-sm font-bold hover:brightness-110 shadow-sm active:scale-95 transition-all disabled:opacity-50 disabled:grayscale flex items-center gap-2"
                                 >
                                     {saveMutation.isPending ? (
                                         <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

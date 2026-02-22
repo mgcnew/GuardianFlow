@@ -468,13 +468,13 @@ export function IndividualLogForm({ onSuccess, onCancel }: IndividualLogFormProp
                     )}
                 </div>
                 <div className="flex gap-3">
-                    <button onClick={onCancel} className="px-4 py-2.5 text-sm font-semibold text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">
+                    <button onClick={onCancel} className="h-12 px-5 text-sm font-bold text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors font-display">
                         Cancelar
                     </button>
                     <button
                         onClick={handleSubmit}
                         disabled={loading || !description.trim()}
-                        className="px-6 py-2.5 bg-primary text-white rounded-xl font-bold text-sm shadow-md shadow-primary/20 hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
+                        className="h-12 px-8 bg-primary text-white rounded-xl font-bold text-sm shadow-sm hover:brightness-110 disabled:opacity-50 disabled:grayscale transition-all active:scale-95"
                     >
                         {loading ? (
                             <span className="flex items-center gap-2">

@@ -205,7 +205,7 @@ export function OperationalDashboard() {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={handleNewTask}
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold px-6 py-3 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95"
+                        className="h-12 flex-1 sm:flex-none flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold px-6 rounded-2xl shadow-sm transition-all active:scale-95"
                     >
                         <span className="material-symbols-outlined">add_task</span>
                         Nova Ordem

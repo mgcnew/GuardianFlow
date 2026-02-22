@@ -112,7 +112,7 @@ export function PedagogueDashboard() {
                 <span className="material-symbols-outlined text-4xl mb-4">error</span>
                 <h3 className="text-xl font-bold mb-2">Erro ao carregar dados</h3>
                 <p className="text-sm max-w-md mx-auto mb-4">Não foi possível carregar o painel pedagógico. Por favor, tente novamente mais tarde.</p>
-                <button onClick={() => window.location.reload()} className="px-4 py-2 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition">Tentar Novamente</button>
+                <button onClick={() => window.location.reload()} className="h-10 px-6 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition shadow-sm active:scale-95">Tentar Novamente</button>
             </div>
         );
     }
@@ -152,7 +152,7 @@ export function PedagogueDashboard() {
                     </div>
                     <button
                         onClick={() => { setSelectedChildId(undefined); setIsModalOpen(true); }}
-                        className="flex-1 sm:flex-none px-4 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95"
+                        className="flex-1 sm:flex-none h-12 px-5 bg-primary text-white text-sm font-bold rounded-xl hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95"
                     >
                         <span className="material-symbols-outlined text-lg">edit_note</span>
                         <span className="whitespace-nowrap">Novo Registro</span>
@@ -301,8 +301,8 @@ export function PedagogueDashboard() {
                             />
                         </div>
                         <div className="flex gap-2">
-                            <button className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs font-bold text-text-secondary">Todos os Anos</button>
-                            <button className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs font-bold text-text-secondary">Escolarizados</button>
+                            <button className="h-10 px-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs font-bold text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shadow-sm">Todos os Anos</button>
+                            <button className="h-10 px-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs font-bold text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shadow-sm">Escolarizados</button>
                         </div>
                     </div>
 
@@ -330,7 +330,7 @@ export function PedagogueDashboard() {
                                     </div>
                                     <button
                                         onClick={() => { setSelectedChildId(child.id); setIsModalOpen(true); }}
-                                        className="w-full py-2.5 bg-primary/5 text-primary text-[10px] font-black uppercase rounded-xl hover:bg-primary hover:text-white transition-all active:scale-95"
+                                        className="w-full h-10 bg-primary/10 text-primary text-[10px] font-black uppercase rounded-xl hover:bg-primary hover:text-white transition-all active:scale-95 shadow-sm"
                                     >
                                         Registrar progresso
                                     </button>

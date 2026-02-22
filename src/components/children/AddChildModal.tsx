@@ -894,7 +894,7 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
                                 form="add-child-form"
                                 type="submit"
                                 disabled={loading}
-                                className="px-8 py-3 bg-primary text-white text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl hover:bg-primary/90 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-primary/20"
+                                className="h-12 px-8 bg-primary text-white text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl hover:bg-primary/90 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 shadow-sm"
                             >
                                 {loading ? (
                                     <>

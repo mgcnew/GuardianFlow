@@ -283,14 +283,14 @@ export function PedagogicalEntryModal({ isOpen, onClose, initialChildId }: Pedag
                     {step > 1 ? (
                         <button
                             onClick={() => setStep(step - 1)}
-                            className="px-6 py-3 rounded-xl border border-gray-100 text-sm font-bold text-text-secondary hover:bg-gray-50 transition-all"
+                            className="h-12 px-6 rounded-xl border border-gray-200 dark:border-gray-800 text-sm font-bold text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800 active:scale-95 transition-all font-display"
                         >
                             Voltar
                         </button>
                     ) : (
                         <button
                             onClick={onClose}
-                            className="px-6 py-3 rounded-xl border border-gray-100 text-sm font-bold text-text-secondary hover:bg-gray-50 transition-all"
+                            className="h-12 px-6 rounded-xl border border-gray-200 dark:border-gray-800 text-sm font-bold text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800 active:scale-95 transition-all font-display"
                         >
                             Cancelar
                         </button>
@@ -300,8 +300,8 @@ export function PedagogicalEntryModal({ isOpen, onClose, initialChildId }: Pedag
                         {step === 1 ? (
                             <button
                                 onClick={() => setStep(2)}
-                                disabled={!form.child_id}
-                                className="px-8 py-3 rounded-xl bg-primary text-white text-sm font-bold hover:brightness-110 active:scale-95 shadow-lg shadow-primary/20 transition-all disabled:opacity-50 flex items-center gap-2"
+                                disabled={!form.child_id || !form.category}
+                                className="h-12 px-8 rounded-xl bg-primary text-white text-sm font-bold hover:brightness-110 shadow-sm active:scale-95 transition-all disabled:opacity-50 disabled:grayscale flex items-center gap-2"
                             >
                                 Próximo Passo
                                 <span className="material-symbols-outlined text-lg">arrow_forward</span>
@@ -310,7 +310,7 @@ export function PedagogicalEntryModal({ isOpen, onClose, initialChildId }: Pedag
                             <button
                                 onClick={() => saveMutation.mutate()}
                                 disabled={!form.title || !form.content || saveMutation.isPending}
-                                className="px-8 py-3 rounded-xl bg-primary text-white text-sm font-bold hover:brightness-110 active:scale-95 shadow-lg shadow-primary/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2 min-w-[180px]"
+                                className="h-12 px-8 rounded-xl bg-primary text-white text-sm font-bold hover:brightness-110 shadow-sm active:scale-95 transition-all disabled:opacity-50 disabled:grayscale flex items-center justify-center gap-2 min-w-[200px]"
                             >
                                 {saveMutation.isPending ? (
                                     <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

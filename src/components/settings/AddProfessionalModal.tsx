@@ -252,7 +252,7 @@ export function AddProfessionalModal({ isOpen, onClose, onSuccess }: AddProfessi
                     <button
                         onClick={handleSubmit}
                         disabled={loading}
-                        className="px-8 py-2.5 bg-primary text-white text-sm font-bold rounded-2xl hover:bg-primary/90 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-primary/20"
+                        className="h-12 px-8 bg-primary text-white text-sm font-bold rounded-2xl hover:bg-primary/90 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 shadow-sm"
                     >
                         {loading ? 'Processando...' : 'Enviar Convite'}
                         {!loading && <span className="material-symbols-outlined text-lg">send</span>}

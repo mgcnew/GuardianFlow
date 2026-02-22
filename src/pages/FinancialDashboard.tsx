@@ -146,10 +146,10 @@ export function FinancialDashboard() {
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                    <button onClick={() => handleNewTransaction('expense')} className="flex-1 sm:flex-none px-4 py-2.5 bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 text-text-main dark:text-white text-xs font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
+                    <button onClick={() => handleNewTransaction('expense')} className="flex-1 sm:flex-none px-4 h-12 bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 text-text-main dark:text-white text-xs font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
                         <span className="material-symbols-outlined text-base text-red-500">arrow_downward</span>Nova Despesa
                     </button>
-                    <button onClick={() => handleNewTransaction('income')} className="flex-1 sm:flex-none px-4 py-2.5 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-primary/20 active:scale-95">
+                    <button onClick={() => handleNewTransaction('income')} className="h-12 flex-1 sm:flex-none px-6 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
                         <span className="material-symbols-outlined text-base">arrow_upward</span>Nova Receita
                     </button>
                 </div>

@@ -98,7 +98,7 @@ export function ChildProfile() {
                 <p className="text-text-secondary dark:text-gray-400 mb-6 font-display">O registro solicitado não existe ou foi removido.</p>
                 <button
                     onClick={() => navigate('/children')}
-                    className="px-6 py-2.5 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all font-display"
+                    className="h-10 px-6 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all font-display shadow-sm"
                 >
                     Voltar para Lista
                 </button>

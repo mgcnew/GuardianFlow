@@ -117,7 +117,7 @@ export function PsychologistDashboard() {
                 <span className="material-symbols-outlined text-4xl mb-4">error</span>
                 <h3 className="text-xl font-bold mb-2">Erro ao carregar dados</h3>
                 <p className="text-sm max-w-md mx-auto mb-4">Não foi possível carregar o painel clínico. Por favor, tente novamente mais tarde.</p>
-                <button onClick={() => window.location.reload()} className="px-4 py-2 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition">Tentar Novamente</button>
+                <button onClick={() => window.location.reload()} className="h-10 px-6 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition shadow-sm active:scale-95">Tentar Novamente</button>
             </div>
         );
     }
@@ -158,7 +158,7 @@ export function PsychologistDashboard() {
                     </div>
                     <button
                         onClick={() => { setSelectedChildId(undefined); setIsEntryModalOpen(true); }}
-                        className="flex-1 sm:flex-none px-4 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95"
+                        className="flex-1 sm:flex-none h-12 px-5 bg-primary text-white text-sm font-bold rounded-xl hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95"
                     >
                         <span className="material-symbols-outlined text-lg">clinical_notes</span>
                         <span className="whitespace-nowrap">Registrar Evolução</span>
@@ -337,13 +337,13 @@ export function PsychologistDashboard() {
                                     <div className="grid grid-cols-2 gap-2">
                                         <button
                                             onClick={() => { setSelectedChildId(child.id); setIsEntryModalOpen(true); }}
-                                            className="py-2.5 bg-primary/5 text-primary text-[10px] font-black uppercase rounded-xl hover:bg-primary transition-all hover:text-white"
+                                            className="h-10 bg-primary/10 text-primary text-[10px] font-black uppercase rounded-xl hover:bg-primary transition-all hover:text-white active:scale-95 shadow-sm"
                                         >
                                             Registrar Evolução
                                         </button>
                                         <button
                                             onClick={() => { setSelectedChildId(child.id); setActiveTab('analysis'); }}
-                                            className="py-2.5 bg-gray-50 dark:bg-gray-800 text-text-secondary text-[10px] font-black uppercase rounded-xl hover:bg-gray-100 transition-all dark:hover:bg-gray-700"
+                                            className="h-10 bg-gray-100 dark:bg-gray-800 text-text-secondary text-[10px] font-black uppercase rounded-xl hover:bg-gray-200 transition-all dark:hover:bg-gray-700 active:scale-95 shadow-sm"
                                         >
                                             Ver Evolução
                                         </button>

@@ -313,9 +313,10 @@ export function FamilyReferenceModal({ isOpen, onClose, childId, childName }: Fa
                             {/* Save Button */}
                             <div className="flex items-center gap-3 pt-2">
                                 <button onClick={() => { setView('list'); resetForm(); }}
-                                    className="flex-1 py-3 text-sm font-bold text-text-secondary rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">Cancelar</button>
+                                    className="h-12 flex-1 text-sm font-bold text-text-secondary rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all font-display">Cancelar</button>
                                 <button onClick={() => saveMutation.mutate()} disabled={!form.full_name || saveMutation.isPending}
-                                    className="flex-1 py-3 bg-teal-600 text-white text-sm font-bold rounded-xl hover:bg-teal-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                                    className="h-12 flex-1 bg-teal-600 text-white text-sm font-bold rounded-xl hover:bg-teal-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+                                >
                                     {saveMutation.isPending ? <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><span className="material-symbols-outlined text-lg">save</span>{editingId ? 'Atualizar' : 'Salvar'}</>}
                                 </button>
                             </div>

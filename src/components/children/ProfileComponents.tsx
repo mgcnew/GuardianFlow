@@ -85,7 +85,7 @@ export function ProfileHeader({ child, activeTab, setActiveTab, onEdit, onPrintP
                         <div className="flex gap-2 mt-2 md:mt-0 w-full md:w-auto">
                             <button
                                 onClick={onEdit}
-                                className="flex-1 md:flex-none flex items-center justify-center gap-2 rounded-xl md:rounded-2xl border border-border-light dark:border-gray-700 bg-white dark:bg-transparent px-4 py-3 text-[11px] md:text-xs font-black uppercase tracking-wider md:tracking-widest text-text-secondary dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-display active:scale-95"
+                                className="h-10 flex-1 md:flex-none flex items-center justify-center gap-2 rounded-xl border border-border-light dark:border-gray-700 bg-white dark:bg-transparent px-4 text-[11px] md:text-xs font-black uppercase tracking-wider md:tracking-widest text-text-secondary dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-display active:scale-95 shadow-sm"
                             >
                                 <span className="material-symbols-outlined text-[18px]">edit_note</span>
                                 <span className="hidden sm:inline">Editar Tudo</span>
@@ -93,7 +93,7 @@ export function ProfileHeader({ child, activeTab, setActiveTab, onEdit, onPrintP
                             </button>
                             <button
                                 onClick={onPrintPIA}
-                                className="flex-1 md:flex-none flex items-center justify-center gap-2 rounded-xl md:rounded-2xl bg-primary px-4 py-3 text-[11px] md:text-xs font-black uppercase tracking-wider md:tracking-widest text-white shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all font-display active:scale-95"
+                                className="h-10 flex-1 md:flex-none flex items-center justify-center gap-2 rounded-xl bg-primary px-4 text-[11px] md:text-xs font-black uppercase tracking-wider md:tracking-widest text-white shadow-sm hover:bg-primary/90 transition-all font-display active:scale-95"
                             >
                                 <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
                                 <span className="hidden sm:inline">Relatório PIA</span>

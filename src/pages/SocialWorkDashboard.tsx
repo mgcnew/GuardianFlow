@@ -176,7 +176,7 @@ export function SocialWorkDashboard() {
                 <p className="text-sm max-w-md mx-auto mb-4">Não foi possível carregar as informações do serviço social. Por favor, tente novamente mais tarde.</p>
                 <button
                     onClick={() => window.location.reload()}
-                    className="px-4 py-2 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition active:scale-95"
+                    className="h-10 px-6 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition active:scale-95 shadow-sm"
                 >
                     Tentar Novamente
                 </button>
@@ -209,18 +209,18 @@ export function SocialWorkDashboard() {
                 </div>
                 <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto order-last sm:order-none">
                     <button onClick={() => { setSelectedChildId(undefined); setIsVisitModalOpen(true); }}
-                        className="flex-1 sm:flex-none px-3 py-2.5 bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 text-text-main dark:text-white text-[10px] sm:text-xs font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
-                        <span className="material-symbols-outlined text-[18px] sm:text-base text-purple-500">family_restroom</span>
+                        className="flex-1 sm:flex-none h-12 px-4 bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 text-text-main dark:text-white text-xs font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
+                        <span className="material-symbols-outlined text-lg text-purple-500">family_restroom</span>
                         <span className="hidden xs:inline">Visita</span>
                     </button>
                     <button onClick={() => { setSelectedChildId(undefined); setIsHearingModalOpen(true); }}
-                        className="flex-1 sm:flex-none px-3 py-2.5 bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 text-text-main dark:text-white text-[10px] sm:text-xs font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
-                        <span className="material-symbols-outlined text-[18px] sm:text-base text-red-500">gavel</span>
+                        className="flex-1 sm:flex-none h-12 px-4 bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 text-text-main dark:text-white text-xs font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
+                        <span className="material-symbols-outlined text-lg text-red-500">gavel</span>
                         <span className="hidden xs:inline">Audiência</span>
                     </button>
                     <button onClick={() => { setSelectedChildId(undefined); setIsEntryModalOpen(true); }}
-                        className="flex-[2] sm:flex-none px-3 py-2.5 bg-primary text-white text-[10px] sm:text-xs font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-primary/20 active:scale-95">
-                        <span className="material-symbols-outlined text-[18px] sm:text-base">add</span>
+                        className="flex-[2] sm:flex-none h-12 px-6 bg-primary text-white text-xs font-bold rounded-xl hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
+                        <span className="material-symbols-outlined text-lg">add</span>
                         Novo <span className="hidden xs:inline">Atendimento</span>
                     </button>
                 </div>
@@ -535,8 +535,8 @@ function HearingsTab({ data, onNew }: { data: any; onNew: () => void }) {
                 <h2 className="text-lg font-black text-text-main dark:text-white flex items-center gap-2">
                     <span className="material-symbols-outlined text-red-500">gavel</span>Audiências Judiciais
                 </h2>
-                <button onClick={onNew} className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-xl hover:bg-red-700 transition-all flex items-center gap-1.5 active:scale-95">
-                    <span className="material-symbols-outlined text-base">add</span>Nova Audiência
+                <button onClick={onNew} className="h-10 px-4 bg-red-600 text-white text-xs font-bold rounded-xl hover:brightness-110 transition-all flex items-center gap-2 shadow-sm active:scale-95">
+                    <span className="material-symbols-outlined text-lg">add</span>Nova Audiência
                 </button>
             </div>
 
@@ -613,8 +613,8 @@ function VisitsTab({ data, onNew }: { data: any; onNew: () => void }) {
                 <h2 className="text-lg font-black text-text-main dark:text-white flex items-center gap-2">
                     <span className="material-symbols-outlined text-purple-500">family_restroom</span>Visitas Familiares
                 </h2>
-                <button onClick={onNew} className="px-4 py-2 bg-purple-600 text-white text-xs font-bold rounded-xl hover:bg-purple-700 transition-all flex items-center gap-1.5 active:scale-95">
-                    <span className="material-symbols-outlined text-base">add</span>Nova Visita
+                <button onClick={onNew} className="h-10 px-4 bg-purple-600 text-white text-xs font-bold rounded-xl hover:brightness-110 transition-all flex items-center gap-2 shadow-sm active:scale-95">
+                    <span className="material-symbols-outlined text-lg">add</span>Nova Visita
                 </button>
             </div>
 
@@ -669,8 +669,8 @@ function AdoptionTab({ data, onEdit, onNew }: any) {
                     <h3 className="text-sm font-black text-text-main dark:text-white uppercase tracking-tight">Crianças em Adoção</h3>
                     <p className="text-[10px] text-text-secondary uppercase tracking-widest font-medium">Gestão de Vínculos e Processos</p>
                 </div>
-                <button onClick={onNew} className="px-4 py-2 bg-pink-500 text-white text-[10px] font-black uppercase rounded-xl hover:bg-pink-600 transition-all flex items-center gap-1.5 shadow-lg shadow-pink-500/20">
-                    <span className="material-symbols-outlined text-sm">add</span>Novo Processo
+                <button onClick={onNew} className="h-10 px-4 bg-pink-500 text-white text-[10px] font-black uppercase rounded-xl hover:brightness-110 transition-all flex items-center gap-2 shadow-sm active:scale-95">
+                    <span className="material-symbols-outlined text-lg">add</span>Novo Processo
                 </button>
             </div>
 

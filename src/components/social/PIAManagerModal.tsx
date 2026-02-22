@@ -190,7 +190,8 @@ export function PIAManagerModal({ isOpen, onClose, childId, childName }: PIAMana
                             </div>
                             <div className="flex justify-end">
                                 <button onClick={() => saveAssessmentMutation.mutate()} disabled={saveAssessmentMutation.isPending}
-                                    className="px-6 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2">
+                                    className="h-12 px-8 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition-all shadow-sm flex items-center gap-2"
+                                >
                                     {saveAssessmentMutation.isPending ? <div className="size-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><span className="material-symbols-outlined text-sm">save</span> Salvar Parecer</>}
                                 </button>
                             </div>
@@ -218,7 +219,7 @@ export function PIAManagerModal({ isOpen, onClose, childId, childName }: PIAMana
                                         <input type="date" className="flex-1 px-3 py-3 bg-white dark:bg-gray-900 border border-transparent rounded-xl text-sm font-medium outline-none shadow-sm"
                                             value={newGoal.deadline} onChange={e => setNewGoal(g => ({ ...g, deadline: e.target.value }))} />
                                         <button onClick={() => addGoalMutation.mutate()} disabled={!newGoal.description || addGoalMutation.isPending}
-                                            className="size-11 bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/20 flex items-center justify-center hover:bg-blue-700 active:scale-95 transition-all disabled:opacity-50">
+                                            className="h-11 w-11 bg-blue-600 text-white rounded-xl shadow-sm flex items-center justify-center hover:bg-blue-700 active:scale-95 transition-all disabled:opacity-50">
                                             <span className="material-symbols-outlined">check</span>
                                         </button>
                                     </div>
@@ -287,7 +288,7 @@ export function PIAManagerModal({ isOpen, onClose, childId, childName }: PIAMana
                     <p className="text-[10px] text-text-secondary dark:text-gray-500 italic max-w-md leading-relaxed">
                         O PIA deve ser elaborado pela equipe técnica e discutido com o acolhido e sua família, visando à superação da situação que motivou o acolhimento.
                     </p>
-                    <button onClick={onClose} className="px-6 py-2.5 text-xs font-black text-text-secondary uppercase tracking-widest hover:text-text-main transition-colors">Fechar</button>
+                    <button onClick={onClose} className="h-12 px-8 text-xs font-black text-text-secondary uppercase tracking-widest hover:text-text-main transition-colors font-display">Fechar</button>
                 </div>
             </div>
         </div>, document.body

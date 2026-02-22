@@ -288,7 +288,7 @@ export function UserProfile() {
                         <button
                             type="submit"
                             disabled={saving}
-                            className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                            className="h-12 px-8 bg-primary text-white text-sm font-bold rounded-xl hover:brightness-110 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 shadow-sm font-display"
                         >
                             {saving ? (
                                 <>
@@ -330,7 +330,7 @@ export function UserProfile() {
                                     alert('E-mail de redefinição enviado!');
                                 }
                             }}
-                            className="px-5 py-2.5 border border-border-light dark:border-gray-700 text-text-main dark:text-white text-sm font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex-shrink-0"
+                            className="h-12 px-6 border border-border-light dark:border-gray-700 text-text-main dark:text-white text-sm font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex-shrink-0 shadow-sm font-display"
                         >
                             Enviar e-mail
                         </button>

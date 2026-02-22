@@ -170,7 +170,7 @@ export function EducatorLogbook() {
                 <div className="relative" ref={actionMenuRef}>
                     <button
                         onClick={() => setShowActionMenu(!showActionMenu)}
-                        className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white font-bold text-xs uppercase tracking-tight px-5 py-3 rounded-xl shadow-md shadow-primary/20 transition-all active:scale-95 whitespace-nowrap"
+                        className="flex items-center justify-center gap-2 h-12 px-6 bg-primary text-white font-bold text-xs uppercase tracking-tight rounded-xl hover:brightness-110 transition-all shadow-sm active:scale-95 whitespace-nowrap"
                     >
                         <span className="material-symbols-outlined text-[20px]" style={{ transition: 'transform 0.2s', transform: showActionMenu ? 'rotate(45deg)' : 'rotate(0deg)' }}>add</span>
                         Novo Registro

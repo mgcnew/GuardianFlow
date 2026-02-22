@@ -420,14 +420,14 @@ export function PsychologistSessionModal({ isOpen, onClose, selectedDate, eventT
                     {step > 1 ? (
                         <button
                             onClick={() => setStep(step - 1)}
-                            className="px-6 py-3.5 rounded-xl border border-gray-100 text-sm font-bold text-text-secondary hover:bg-gray-50 transition-all"
+                            className="h-12 px-6 rounded-xl border border-gray-100 dark:border-gray-800 text-sm font-bold text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800 transition-all active:scale-95 font-display"
                         >
                             Voltar
                         </button>
                     ) : (
                         <button
                             onClick={onClose}
-                            className="px-6 py-3.5 rounded-xl border border-gray-100 text-sm font-bold text-text-secondary hover:bg-gray-50 transition-all"
+                            className="h-12 px-6 rounded-xl border border-gray-100 dark:border-gray-800 text-sm font-bold text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800 transition-all active:scale-95 font-display"
                         >
                             Cancelar
                         </button>
@@ -437,7 +437,7 @@ export function PsychologistSessionModal({ isOpen, onClose, selectedDate, eventT
                         <button
                             onClick={() => setStep(step + 1)}
                             disabled={step === 1 && !formData.child_id}
-                            className="flex-1 px-6 py-3.5 rounded-xl bg-primary text-white text-sm font-bold hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale flex items-center justify-center gap-2"
+                            className="h-12 flex-1 px-6 rounded-xl bg-primary text-white text-sm font-bold hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale flex items-center justify-center gap-2 shadow-sm"
                         >
                             Próximo Passo
                             <span className="material-symbols-outlined text-lg">arrow_forward</span>
@@ -446,7 +446,7 @@ export function PsychologistSessionModal({ isOpen, onClose, selectedDate, eventT
                         <button
                             onClick={() => saveMutation.mutate(formData)}
                             disabled={saveMutation.isPending}
-                            className="flex-1 px-6 py-3.5 rounded-xl bg-primary text-white text-sm font-bold hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                            className="h-12 flex-1 px-6 rounded-xl bg-primary text-white text-sm font-bold hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-sm"
                         >
                             {saveMutation.isPending ? (
                                 <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

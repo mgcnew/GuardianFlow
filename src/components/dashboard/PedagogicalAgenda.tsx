@@ -240,7 +240,7 @@ export function PedagogicalAgenda() {
 
                     <button
                         onClick={handleCreateEvent}
-                        className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95 ml-auto"
+                        className="h-10 flex items-center gap-2 px-6 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all shadow-sm active:scale-95 ml-auto"
                     >
                         <span className="material-symbols-outlined text-[20px]">calendar_add_on</span>
                         <span className="hidden sm:inline">Agendar Atividade</span>

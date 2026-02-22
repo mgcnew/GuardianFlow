@@ -178,7 +178,7 @@ export function Dashboard() {
                 </div>
                 <button
                     onClick={() => window.location.reload()}
-                    className="px-6 py-2.5 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                    className="h-10 px-6 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all active:scale-95 shadow-sm"
                 >
                     Tentar Novamente
                 </button>

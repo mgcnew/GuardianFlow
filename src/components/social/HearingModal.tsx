@@ -222,9 +222,10 @@ export function HearingModal({ isOpen, onClose, initialChildId }: HearingModalPr
 
                 {/* Footer */}
                 <div className="p-4 border-t border-gray-100 dark:border-gray-800 flex items-center gap-3 bg-gray-50/50 dark:bg-gray-900/50">
-                    <button onClick={onClose} className="flex-1 py-3 text-sm font-bold text-text-secondary rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">Cancelar</button>
+                    <button onClick={onClose} className="h-12 flex-1 text-sm font-bold text-text-secondary rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all font-display">Cancelar</button>
                     <button onClick={() => saveMutation.mutate()} disabled={!form.child_id || !form.hearing_date || saveMutation.isPending}
-                        className="flex-1 py-3 bg-red-600 text-white text-sm font-bold rounded-xl hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                        className="h-12 flex-1 bg-red-600 text-white text-sm font-bold rounded-xl hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+                    >
                         {saveMutation.isPending ? <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><span className="material-symbols-outlined text-lg">gavel</span> Registrar</>}
                     </button>
                 </div>

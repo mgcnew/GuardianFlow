@@ -313,7 +313,7 @@ export function UnitSettings() {
                                 <button
                                     type="submit"
                                     disabled={saving}
-                                    className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                                    className="h-10 px-6 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 shadow-sm"
                                 >
                                     {saving ? (
                                         <>
@@ -347,7 +347,7 @@ export function UnitSettings() {
                                 <p className="text-sm font-semibold text-text-main dark:text-white">Excluir organização</p>
                                 <p className="text-xs text-text-secondary dark:text-gray-400 mt-0.5">Essa ação é irreversível. Todos os dados serão permanentemente apagados.</p>
                             </div>
-                            <button className="px-5 py-2.5 border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 text-sm font-bold rounded-xl hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors flex-shrink-0">
+                            <button className="h-10 px-5 border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 text-sm font-bold rounded-xl hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors flex-shrink-0 shadow-sm">
                                 Excluir Organização
                             </button>
                         </div>
@@ -362,7 +362,7 @@ export function UnitSettings() {
                         </h2>
                         <button
                             onClick={() => setIsAddModalOpen(true)}
-                            className="px-4 py-2 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-md shadow-primary/20"
+                            className="h-10 px-4 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-sm"
                         >
                             <span className="material-symbols-outlined text-lg">person_add</span>
                             Adicionar Profissional

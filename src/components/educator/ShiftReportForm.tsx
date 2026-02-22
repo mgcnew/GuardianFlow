@@ -136,14 +136,14 @@ export function ShiftReportForm({ onSuccess, onCancel }: ShiftReportFormProps) {
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="px-4 py-2 text-sm font-medium text-text-secondary dark:text-gray-400 hover:text-text-main dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                    className="h-12 px-6 text-sm font-bold text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all font-display"
                 >
                     Cancelar
                 </button>
                 <button
                     type="submit"
                     disabled={loading}
-                    className="flex items-center gap-2 px-6 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg font-medium shadow-sm shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="h-12 px-8 bg-primary hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-sm transition-all disabled:opacity-50 disabled:grayscale flex items-center justify-center gap-2"
                 >
                     {loading ? (
                         <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

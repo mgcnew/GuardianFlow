@@ -727,7 +727,7 @@ export function EditChildModal({ isOpen, onClose, child, initialTab = 'basic' }:
                         <button type="button" onClick={onClose} className="flex-1 sm:flex-none px-6 sm:px-8 py-3.5 sm:py-3.5 border border-border-light dark:border-gray-700 rounded-2xl font-black text-text-secondary dark:text-gray-400 hover:bg-white dark:hover:bg-gray-700 transition-all font-display uppercase text-[10px] sm:text-xs tracking-widest active:scale-95">
                             Cancelar
                         </button>
-                        <button form="edit-child-form" type="submit" disabled={loading} className="flex-1 sm:flex-none px-8 sm:px-12 py-3.5 sm:py-3.5 bg-primary text-white rounded-2xl font-black hover:bg-primary/90 transition-all shadow-xl shadow-primary/30 disabled:opacity-50 font-display uppercase text-[10px] sm:text-xs tracking-widest flex items-center justify-center gap-2 active:scale-95">
+                        <button form="edit-child-form" type="submit" disabled={loading} className="h-12 flex-1 sm:flex-none px-8 sm:px-12 bg-primary text-white rounded-2xl font-black hover:bg-primary/90 transition-all shadow-sm disabled:opacity-50 font-display uppercase text-[10px] sm:text-xs tracking-widest flex items-center justify-center gap-2 active:scale-95">
                             {loading ? (
                                 <>
                                     <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

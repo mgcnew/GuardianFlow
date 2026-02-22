@@ -724,7 +724,7 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                             <button
                                 onClick={() => setStep((s) => s + 1 as 1 | 2 | 3)}
                                 disabled={!canProceed()}
-                                className="px-8 py-3 rounded-xl bg-primary text-white text-sm font-bold hover:brightness-110 active:scale-95 shadow-lg shadow-primary/20 transition-all disabled:opacity-50 flex items-center gap-2"
+                                className="h-10 px-8 rounded-xl bg-primary text-white text-sm font-bold hover:brightness-110 active:scale-95 shadow-sm transition-all disabled:opacity-50 flex items-center gap-2"
                             >
                                 Próximo
                                 <span className="material-symbols-outlined text-lg">arrow_forward</span>
@@ -734,8 +734,8 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                                 onClick={() => mutation.mutate(formData)}
                                 disabled={mutation.isPending || (activeTab === 'details' && step === 1 && !formData.child_id && !formData.for_all_children && !eventToEdit)}
                                 className={clsx(
-                                    "px-8 py-3 rounded-xl text-white text-sm font-bold hover:brightness-110 active:scale-95 shadow-lg transition-all disabled:opacity-50 flex items-center gap-2",
-                                    activeTab === 'outcome' ? "bg-green-600 shadow-green-600/20" : "bg-primary shadow-primary/20"
+                                    "h-10 px-8 rounded-xl text-white text-sm font-bold hover:brightness-110 active:scale-95 shadow-sm transition-all disabled:opacity-50 flex items-center gap-2",
+                                    activeTab === 'outcome' ? "bg-green-600" : "bg-primary"
                                 )}
                             >
                                 {mutation.isPending ? (

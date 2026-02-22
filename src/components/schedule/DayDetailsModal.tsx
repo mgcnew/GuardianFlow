@@ -149,7 +149,7 @@ export function DayDetailsModal({ isOpen, onClose, date, events, onEditEvent, on
                 <div className="p-4 border-t border-border-light dark:border-gray-800 bg-gray-50 dark:bg-surface-dark">
                     <button
                         onClick={onCreateEvent}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                        className="h-10 w-full flex items-center justify-center gap-2 px-6 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all shadow-sm active:scale-95"
                     >
                         <span className="material-symbols-outlined">add</span>
                         Adicionar Evento
