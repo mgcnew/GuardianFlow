@@ -17,33 +17,37 @@ export function PsychologistDashboard() {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterRisk, setFilterRisk] = useState('all');
 
-    const { data: psychData, isLoading } = useQuery({
+    const { data: psychData, isLoading, isError } = useQuery({
         queryKey: ['psychDashboard', profile?.organization_id],
         queryFn: async () => {
             if (!profile?.organization_id) return null;
 
-            // Fetch summary stats
-            const { data: children } = await supabase
-                .from('children')
-                .select('id, full_name, psychological_status, psychologist_indications')
-                .eq('organization_id', profile.organization_id);
-
-            const { data: recentEntries } = await supabase
-                .from('child_entries')
-                .select('*, children(full_name)')
-                .eq('organization_id', profile.organization_id)
-                .eq('type', 'psychological')
-                .order('created_at', { ascending: false })
-                .limit(10);
-
-            const { data: appointments } = await supabase
-                .from('calendar_events')
-                .select('*, children(full_name)')
-                .eq('organization_id', profile.organization_id)
-                .eq('type', 'medical') // Mapping medical to clinical/psychological for now
-                .gte('start_time', new Date().toISOString())
-                .order('start_time', { ascending: true })
-                .limit(5);
+            // Fetch all required data in parallel
+            const [
+                { data: children },
+                { data: recentEntries },
+                { data: appointments }
+            ] = await Promise.all([
+                supabase
+                    .from('children')
+                    .select('id, full_name, psychological_status, psychologist_indications')
+                    .eq('organization_id', profile.organization_id),
+                supabase
+                    .from('child_entries')
+                    .select('*, children(full_name)')
+                    .eq('organization_id', profile.organization_id)
+                    .eq('type', 'psychological')
+                    .order('created_at', { ascending: false })
+                    .limit(10),
+                supabase
+                    .from('calendar_events')
+                    .select('*, children(full_name)')
+                    .eq('organization_id', profile.organization_id)
+                    .eq('type', 'medical') // Mapping medical to clinical/psychological for now
+                    .gte('start_time', new Date().toISOString())
+                    .order('start_time', { ascending: true })
+                    .limit(5)
+            ]);
 
             return {
                 stats: {
@@ -58,7 +62,8 @@ export function PsychologistDashboard() {
                 criticalChildren: children?.filter(c => c.psychological_status).slice(0, 5) || []
             };
         },
-        enabled: !!profile?.organization_id
+        enabled: !!profile?.organization_id,
+        staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
     const filteredChildren = psychData?.allChildren.filter(child => {
@@ -70,9 +75,49 @@ export function PsychologistDashboard() {
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center py-24">
-                <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-text-secondary font-medium animate-pulse">Carregando painel clínico...</p>
+            <div className="space-y-6 w-full animate-pulse pb-24 md:pb-8">
+                {/* Header Skeleton */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <div className="w-64 h-8 bg-gray-200 dark:bg-gray-800 rounded-xl mb-2"></div>
+                        <div className="w-96 h-4 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <div className="flex gap-2">
+                            {[1, 2, 3, 4, 5].map(i => (
+                                <div key={i} className="w-24 h-10 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+                            ))}
+                        </div>
+                        <div className="w-40 h-10 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+                    </div>
+                </div>
+
+                {/* Stats Grid Skeleton */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    {[1, 2, 3, 4].map(i => (
+                        <div key={i} className="h-32 bg-white/50 dark:bg-surface-dark/50 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5"></div>
+                    ))}
+                </div>
+
+                {/* Main Content Skeleton */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                    <div className="lg:col-span-2 h-[400px] bg-white/50 dark:bg-surface-dark/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
+                    <div className="space-y-6">
+                        <div className="h-[200px] bg-white/50 dark:bg-surface-dark/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
+                        <div className="h-[180px] bg-white/50 dark:bg-surface-dark/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (isError) {
+        return (
+            <div className="flex flex-col items-center justify-center p-12 text-center bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-3xl text-red-600 dark:text-red-400">
+                <span className="material-symbols-outlined text-4xl mb-4">error</span>
+                <h3 className="text-xl font-bold mb-2">Erro ao carregar dados</h3>
+                <p className="text-sm max-w-md mx-auto mb-4">Não foi possível carregar o painel clínico. Por favor, tente novamente mais tarde.</p>
+                <button onClick={() => window.location.reload()} className="px-4 py-2 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition">Tentar Novamente</button>
             </div>
         );
     }
