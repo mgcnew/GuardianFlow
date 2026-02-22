@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { DailyTimeline } from '../components/educator/DailyTimeline';
 import { ShiftReportForm } from '../components/educator/ShiftReportForm';
 import { IndividualLogForm } from '../components/educator/IndividualLogForm';
+import { ReparationModal } from '../components/educator/ReparationModal';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -14,7 +15,7 @@ export function EducatorLogbook() {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const [viewDate, setViewDate] = useState(new Date().toISOString().split('T')[0]);
-    const [activeModal, setActiveModal] = useState<'individual' | 'shift' | null>(null);
+    const [activeModal, setActiveModal] = useState<'individual' | 'shift' | 'reparation' | null>(null);
     const [showActionMenu, setShowActionMenu] = useState(false);
     const actionMenuRef = useRef<HTMLDivElement>(null);
 
@@ -70,6 +71,26 @@ export function EducatorLogbook() {
                 console.error('Erro ao buscar relatórios de turno:', reportsError);
             }
 
+            // Fetch Reparations
+            const { data: reparations, error: reparationsError } = await supabase
+                .from('educational_reparations')
+                .select(`
+                    id,
+                    created_at,
+                    reason,
+                    type,
+                    start_time,
+                    end_time,
+                    children (full_name),
+                    profiles (full_name)
+                `)
+                .gte('created_at', `${viewDate}T00:00:00`)
+                .lte('created_at', `${viewDate}T23:59:59`);
+
+            if (reparationsError) {
+                console.error('Erro ao buscar reparações:', reparationsError);
+            }
+
             // Map and Merge
             const mappedLogs = (logs || []).map(l => {
                 const profile = Array.isArray(l.profiles) ? l.profiles[0] : l.profiles;
@@ -100,7 +121,23 @@ export function EducatorLogbook() {
                 };
             });
 
-            const items = [...mappedLogs, ...mappedReports].sort((a, b) =>
+            const mappedReparations = (reparations || []).map(rep => {
+                const profile = Array.isArray(rep.profiles) ? rep.profiles[0] : rep.profiles;
+                const child = Array.isArray(rep.children) ? rep.children[0] : rep.children;
+                return {
+                    id: rep.id,
+                    type: 'reparation' as const,
+                    created_at: rep.created_at,
+                    author_name: profile?.full_name || 'Equipe',
+                    child_name: child?.full_name,
+                    description: rep.reason,
+                    reparation_type: rep.type,
+                    start_time: rep.start_time,
+                    end_time: rep.end_time
+                };
+            });
+
+            const items = [...mappedLogs, ...mappedReports, ...mappedReparations].sort((a, b) =>
                 new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
             );
 
@@ -205,6 +242,19 @@ export function EducatorLogbook() {
                                     <p className="text-[11px] text-text-secondary dark:text-gray-500">Criar relatório de troca de plantão</p>
                                 </div>
                             </button>
+                            <div className="h-px bg-gray-100 dark:bg-gray-800 mx-3" />
+                            <button
+                                onClick={() => { setActiveModal('reparation'); setShowActionMenu(false); }}
+                                className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors text-left group"
+                            >
+                                <div className="size-10 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-rose-600 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                                    <span className="material-symbols-outlined text-xl">gavel</span>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-text-main dark:text-white">Nova Reparação</p>
+                                    <p className="text-[11px] text-text-secondary dark:text-gray-500">Medida pedagógica de reparação</p>
+                                </div>
+                            </button>
                         </div>
                     )}
                 </div>
@@ -250,7 +300,7 @@ export function EducatorLogbook() {
                                     <span className="material-symbols-outlined text-xl">{activeModal === 'individual' ? 'person_add' : 'clinical_notes'}</span>
                                 </div>
                                 <h3 className="text-lg font-black text-text-main dark:text-white uppercase tracking-tight">
-                                    {activeModal === 'individual' ? 'Novo Atendimento' : 'Relatório de Turno'}
+                                    {activeModal === 'individual' ? 'Novo Atendimento' : activeModal === 'shift' ? 'Relatório de Turno' : 'Nova Reparação'}
                                 </h3>
                             </div>
                             <button
@@ -268,8 +318,13 @@ export function EducatorLogbook() {
                                     onSuccess={() => { setActiveModal(null); queryClient.invalidateQueries({ queryKey: ['logbook-timeline'] }); }}
                                     onCancel={() => setActiveModal(null)}
                                 />
-                            ) : (
+                            ) : activeModal === 'shift' ? (
                                 <ShiftReportForm
+                                    onSuccess={() => { setActiveModal(null); queryClient.invalidateQueries({ queryKey: ['logbook-timeline'] }); }}
+                                    onCancel={() => setActiveModal(null)}
+                                />
+                            ) : (
+                                <ReparationModal
                                     onSuccess={() => { setActiveModal(null); queryClient.invalidateQueries({ queryKey: ['logbook-timeline'] }); }}
                                     onCancel={() => setActiveModal(null)}
                                 />

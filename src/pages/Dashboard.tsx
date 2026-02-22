@@ -9,6 +9,7 @@ import { createPortal } from 'react-dom';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import clsx from 'clsx';
+import { ActiveReparations } from '../components/dashboard/ActiveReparations';
 
 export function Dashboard() {
     const { user, profile, signOut } = useAuth();
@@ -224,6 +225,8 @@ export function Dashboard() {
                     variant="purple"
                 />
             </div>
+
+            <ActiveReparations />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                 <ActivityFeed logs={logs} />

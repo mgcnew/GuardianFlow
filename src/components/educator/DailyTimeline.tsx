@@ -4,7 +4,7 @@ import { ptBR } from 'date-fns/locale';
 
 interface TimelineItem {
     id: string;
-    type: 'log' | 'report';
+    type: 'log' | 'report' | 'reparation';
     created_at: string;
     author_name: string;
     description: string; // Para Logs é a observação, Para Reports é o resumo
@@ -18,6 +18,11 @@ interface TimelineItem {
     // Report specific
     shift?: string;
     occurrences?: string;
+
+    // Reparation specific
+    reparation_type?: string;
+    start_time?: string;
+    end_time?: string;
 }
 
 interface DailyTimelineProps {
@@ -91,6 +96,10 @@ export function DailyTimeline({ items, loading }: DailyTimelineProps) {
                     icon = cat.icon;
                     iconBg = cat.bg;
                     iconColor = cat.color;
+                } else if (item.type === 'reparation') {
+                    icon = 'gavel';
+                    iconBg = 'bg-rose-100 dark:bg-rose-900/30';
+                    iconColor = 'text-rose-600 dark:text-rose-400';
                 } else {
                     // Report
                     icon = item.shift === 'night' ? 'dark_mode' : item.shift === 'afternoon' ? 'wb_twilight' : 'wb_sunny';
@@ -112,7 +121,9 @@ export function DailyTimeline({ items, loading }: DailyTimelineProps) {
                         {/* Card de Conteúdo */}
                         <div className={clsx(
                             "rounded-2xl border bg-white dark:bg-surface-dark shadow-sm hover:shadow-md transition-shadow overflow-hidden group",
-                            item.type === 'report' ? "border-l-4 border-l-primary/50 dark:border-gray-800 border-y-gray-100 border-r-gray-100" : "border-gray-100 dark:border-gray-800"
+                            item.type === 'report' ? "border-l-4 border-l-primary/50 dark:border-gray-800 border-y-gray-100 border-r-gray-100" :
+                                item.type === 'reparation' ? "border-l-4 border-l-rose-400 dark:border-rose-900/50 border-y-gray-100 border-r-gray-100" :
+                                    "border-gray-100 dark:border-gray-800"
                         )}>
 
                             {/* Header do Card */}
@@ -125,18 +136,26 @@ export function DailyTimeline({ items, loading }: DailyTimelineProps) {
                                     </div>
 
                                     {item.type === 'log' ? (
-                                        // Header Log: Foto e Nome do Acolhido
                                         <>
                                             <div className="size-10 rounded-full overflow-hidden bg-gray-200 border border-gray-100">
-                                                <img src={item.child_photo || 'https://via.placeholder.com/40'} alt={item.child_name} className="w-full h-full object-cover" />
+                                                <img src={item.child_photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.child_name || '')}&background=random&color=fff`} alt={item.child_name} className="w-full h-full object-cover" />
                                             </div>
                                             <div>
                                                 <h4 className="font-bold text-text-main dark:text-white text-sm">{item.child_name}</h4>
                                                 <p className="text-xs text-text-secondary dark:text-gray-400">Registrado por {item.author_name}</p>
                                             </div>
                                         </>
+                                    ) : item.type === 'reparation' ? (
+                                        <>
+                                            <div className="size-10 rounded-full bg-rose-50 dark:bg-rose-900/20 text-rose-600 flex items-center justify-center border border-rose-100 dark:border-rose-900/30">
+                                                <span className="material-symbols-outlined">gavel</span>
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-text-main dark:text-white text-sm uppercase tracking-tight">PEDAGÓGICO: {item.child_name}</h4>
+                                                <p className="text-xs text-text-secondary dark:text-gray-400">Medida aplicada por {item.author_name}</p>
+                                            </div>
+                                        </>
                                     ) : (
-                                        // Header Report: Título do Relatório
                                         <div>
                                             <h4 className="font-bold text-text-main dark:text-white text-sm flex items-center gap-2">
                                                 RELATÓRIO DE TURNO
@@ -164,7 +183,7 @@ export function DailyTimeline({ items, loading }: DailyTimelineProps) {
                                             categoryConfig[item.category]?.bg || "bg-gray-100",
                                             categoryConfig[item.category]?.color || "text-gray-600"
                                         )}>
-                                            {categoryConfig[item.category] ? 'Categoria: ' + item.category : 'Ocorrência'}
+                                            {item.category}
                                         </span>
                                     </div>
                                 )}
@@ -172,6 +191,23 @@ export function DailyTimeline({ items, loading }: DailyTimelineProps) {
                                 <p className="text-sm text-text-main dark:text-gray-300 whitespace-pre-line leading-relaxed">
                                     {item.description}
                                 </p>
+
+                                {item.type === 'reparation' && (
+                                    <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-50 dark:border-gray-800">
+                                        <div>
+                                            <p className="text-[10px] font-black uppercase tracking-wider text-text-secondary mb-1">Início</p>
+                                            <p className="text-xs font-bold text-text-main dark:text-gray-300">
+                                                {item.start_time ? format(new Date(item.start_time), "dd/MM 'às' HH:mm", { locale: ptBR }) : '-'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black uppercase tracking-wider text-text-secondary mb-1">Fim</p>
+                                            <p className="text-xs font-bold text-rose-600 dark:text-rose-400">
+                                                {item.end_time ? format(new Date(item.end_time), "dd/MM 'às' HH:mm", { locale: ptBR }) : '-'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
 
                                 {item.type === 'report' && item.occurrences && (
                                     <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-lg">
