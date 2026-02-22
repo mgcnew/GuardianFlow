@@ -132,9 +132,38 @@ export function SocialWorkDashboard() {
 
     if (isLoading && !dashboardData) {
         return (
-            <div className="flex flex-col items-center justify-center py-24">
-                <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-text-secondary font-medium animate-pulse">Carregando painel social...</p>
+            <div className="space-y-6 w-full animate-pulse pb-24 md:pb-8">
+                {/* Header Skeleton */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <div className="w-48 h-8 bg-gray-200 dark:bg-gray-800 rounded-xl mb-2"></div>
+                        <div className="w-64 h-4 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                    </div>
+                    <div className="flex gap-2">
+                        <div className="w-24 h-10 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+                        <div className="w-24 h-10 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+                        <div className="w-32 h-10 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+                    </div>
+                </div>
+
+                {/* Tabs Skeleton */}
+                <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map(i => (
+                        <div key={i} className="w-28 h-10 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+                    ))}
+                </div>
+
+                {/* Stats Grid Skeleton */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    {[1, 2, 3, 4, 5, 6].map(i => (
+                        <div key={i} className="h-28 bg-white/50 dark:bg-surface-dark/50 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4"></div>
+                    ))}
+                </div>
+
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <div className="h-[400px] bg-white/50 dark:bg-surface-dark/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
+                    <div className="h-[400px] bg-white/50 dark:bg-surface-dark/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
+                </div>
             </div>
         );
     }

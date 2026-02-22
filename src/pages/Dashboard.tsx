@@ -26,47 +26,44 @@ export function Dashboard() {
             console.log('QueryFn: Starting fetch for org:', profile.organization_id);
 
             try {
-                // Fetch children with full fields for stats
-                const { data: children, error: cErr } = await supabase
-                    .from('children')
-                    .select('id, full_name, status, judicial_process')
-                    .eq('organization_id', profile.organization_id);
+                // Run all queries in parallel for vastly improved performance waterfall
+                const [
+                    { data: children, error: cErr },
+                    { data: meds, error: mErr },
+                    { data: logs, error: lErr },
+                    { data: profiles, error: pErr },
+                    { data: orgData }
+                ] = await Promise.all([
+                    // Fetch children
+                    supabase.from('children')
+                        .select('id, full_name, status, judicial_process')
+                        .eq('organization_id', profile.organization_id),
+                    // Fetch all active medications
+                    supabase.from('medications')
+                        .select('*, children(full_name)')
+                        .eq('organization_id', profile.organization_id),
+                    // Fetch logs (Activity feed)
+                    supabase.from('logs')
+                        .select('*, children(full_name), profiles(full_name)')
+                        .eq('organization_id', profile.organization_id)
+                        .order('created_at', { ascending: false })
+                        .limit(5),
+                    // Fetch staff
+                    supabase.from('profiles')
+                        .select('*')
+                        .eq('organization_id', profile.organization_id)
+                        .limit(5),
+                    // Fetch organization details (for capacity etc)
+                    supabase.from('organizations')
+                        .select('*')
+                        .eq('id', profile.organization_id)
+                        .single()
+                ]);
 
                 if (cErr) throw cErr;
-
-                // Fetch all active medications for the organization
-                const { data: meds, error: mErr } = await supabase
-                    .from('medications')
-                    .select('*, children(full_name)')
-                    .eq('organization_id', profile.organization_id);
-
                 if (mErr) throw mErr;
-
-                // Fetch logs
-                const { data: logs, error: lErr } = await supabase
-                    .from('logs')
-                    .select('*, children(full_name), profiles(full_name)')
-                    .eq('organization_id', profile.organization_id)
-                    .order('created_at', { ascending: false })
-                    .limit(5);
-
                 if (lErr) throw lErr;
-
-                // Fetch staff
-                const { data: profiles, error: pErr } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('organization_id', profile.organization_id)
-                    .limit(5);
-
                 if (pErr) throw pErr;
-
-                // Fetch organization details (for capacity etc)
-                const { data: orgData } = await supabase
-                    .from('organizations')
-                    .select('*')
-                    .eq('id', profile.organization_id)
-                    .single();
 
                 const activeMeds = meds?.filter(m => !m.end_date || new Date(m.end_date) >= new Date())
                     .map(m => ({
@@ -110,9 +107,30 @@ export function Dashboard() {
 
     if (isLoading || isProfileLoading) {
         return (
-            <div className="flex flex-col items-center justify-center py-24">
-                <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-text-secondary font-medium animate-pulse">Sincronizando seus dados...</p>
+            <div className="space-y-4 sm:space-y-6 w-full animate-pulse">
+                {/* Stats Skeleton */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    {[1, 2, 3, 4].map(i => (
+                        <div key={i} className="h-[110px] sm:h-32 bg-white/50 dark:bg-surface-dark/50 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col justify-between p-4 sm:p-5">
+                            <div className="flex justify-between items-start">
+                                <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700/50"></div>
+                            </div>
+                            <div>
+                                <div className="w-1/2 h-3 bg-gray-200 dark:bg-gray-700/50 rounded-full mb-2"></div>
+                                <div className="w-1/3 h-6 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Main Content Skeleton */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                    <div className="lg:col-span-2 h-[450px] bg-white/50 dark:bg-surface-dark/50 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
+                    <div className="flex flex-col gap-6">
+                        <div className="h-[200px] bg-white/50 dark:bg-surface-dark/50 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
+                        <div className="h-[200px] bg-white/50 dark:bg-surface-dark/50 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
+                    </div>
+                </div>
             </div>
         );
     }
