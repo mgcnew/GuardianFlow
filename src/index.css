@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400..900&family=Inter:wght@100..900&family=Outfit:wght@100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -101,6 +103,24 @@
 
   .duration-500 {
     animation-duration: 500ms;
+  }
+
+  /* Brutalist Shadow Utilities */
+  .shadow-hard {
+    box-shadow: 4px 4px 0px 0px currentColor;
+  }
+
+  .shadow-hard-xl {
+    box-shadow: 8px 8px 0px 0px currentColor;
+  }
+
+  .border-sharp {
+    border-radius: 0px;
+  }
+
+  /* Custom Typography */
+  .font-display-new {
+    font-family: 'Outfit', sans-serif;
   }
 
   /* Hide scrollbar utility */
