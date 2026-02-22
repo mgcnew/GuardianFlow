@@ -3,7 +3,18 @@ import clsx from 'clsx';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { ThemeToggleIcon } from '../shared/ThemeToggleIcon';
-import { DashboardIcon, ResidentsIcon } from '../shared/CustomIcons';
+import {
+    DashboardIcon,
+    ResidentsIcon,
+    AgendaIcon,
+    LogbookIcon,
+    PsychologyIcon,
+    PedagogyIcon,
+    SocialWorkIcon,
+    InventoryIcon,
+    FinancialIcon,
+    OperationalIcon
+} from '../shared/CustomIcons';
 
 const navItems = [
     { icon: 'dashboard', label: 'Dashboard', to: '/dashboard' },
@@ -17,6 +28,20 @@ const navItems = [
     { icon: 'account_balance_wallet', label: 'Financeiro', to: '/dashboard/finance' },
     { icon: 'construction', label: 'Operacional', to: '/dashboard/operational' },
 ];
+
+// Map icon names to their respective components
+const iconMap: { [key: string]: React.ElementType } = {
+    dashboard: DashboardIcon,
+    child_care: ResidentsIcon,
+    calendar_month: AgendaIcon,
+    edit_note: LogbookIcon,
+    psychology: PsychologyIcon,
+    school: PedagogyIcon,
+    diversity_3: SocialWorkIcon,
+    inventory_2: InventoryIcon,
+    account_balance_wallet: FinancialIcon,
+    construction: OperationalIcon,
+};
 
 interface SidebarProps {
     isCollapsed: boolean;
@@ -103,49 +128,41 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
 
             {/* Navigation */}
             <nav className="flex-1 flex flex-col gap-2 p-4 overflow-y-auto no-scrollbar overflow-x-hidden">
-                {filteredNavItems.map((item) => (
-                    <NavLink
-                        key={item.to}
-                        to={item.to}
-                        end={item.to === '/dashboard'}
-                        onClick={closeMobile}
-                        className={({ isActive }) =>
-                            clsx(
-                                'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group overflow-hidden',
-                                isActive
-                                    ? 'bg-primary-light dark:bg-primary/20 text-primary'
-                                    : 'text-text-secondary dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-text-main dark:hover:text-white',
-                                isCollapsed && !isMobileOpen ? "justify-center" : ""
-                            )
-                        }
-                        title={isCollapsed && !isMobileOpen ? item.label : ''}
-                    >
-                        {({ isActive }) => (
-                            <>
-                                {item.icon === 'dashboard' ? (
-                                    <DashboardIcon isActive={isActive} className="size-5 shrink-0" />
-                                ) : item.icon === 'child_care' ? (
-                                    <ResidentsIcon isActive={isActive} className="size-5 shrink-0" />
-                                ) : (
-                                    <span
-                                        className={clsx(
-                                            "material-symbols-outlined group-hover:text-text-main dark:group-hover:text-white transition-colors shrink-0",
-                                            (isActive && item.icon === 'dashboard') ? 'fill-1' : ''
-                                        )}
-                                    >
-                                        {item.icon}
+                {filteredNavItems.map((item) => {
+                    const IconComponent = iconMap[item.icon];
+                    return (
+                        <NavLink
+                            key={item.to}
+                            to={item.to}
+                            end={item.to === '/dashboard'}
+                            onClick={closeMobile}
+                            className={({ isActive }) =>
+                                clsx(
+                                    'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group overflow-hidden',
+                                    isActive
+                                        ? 'bg-primary-light dark:bg-primary/20 text-primary'
+                                        : 'text-text-secondary dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-text-main dark:hover:text-white',
+                                    isCollapsed && !isMobileOpen ? "justify-center" : ""
+                                )
+                            }
+                            title={isCollapsed && !isMobileOpen ? item.label : ''}
+                        >
+                            {({ isActive }) => (
+                                <>
+                                    {IconComponent && (
+                                        <IconComponent isActive={isActive} className="size-5 shrink-0" />
+                                    )}
+                                    <span className={clsx(
+                                        "text-sm font-medium transition-opacity duration-300 whitespace-nowrap",
+                                        isCollapsed && !isMobileOpen ? "opacity-0 w-0 hidden" : "opacity-100"
+                                    )}>
+                                        {item.label}
                                     </span>
-                                )}
-                                <span className={clsx(
-                                    "text-sm font-medium transition-opacity duration-300 whitespace-nowrap",
-                                    isCollapsed && !isMobileOpen ? "opacity-0 w-0 hidden" : "opacity-100"
-                                )}>
-                                    {item.label}
-                                </span>
-                            </>
-                        )}
-                    </NavLink>
-                ))}
+                                </>
+                            )}
+                        </NavLink>
+                    );
+                })}
             </nav>
 
 
