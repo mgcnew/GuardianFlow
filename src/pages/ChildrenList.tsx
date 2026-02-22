@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { ChildCard } from '../components/children/ChildCard';
@@ -37,7 +37,11 @@ export function ChildrenList() {
     const [activeTab, setActiveTab] = useState<'all' | 'urgent' | 'active' | 'pending'>('all');
     const [sortBy, setSortBy] = useState<'name' | 'age' | 'time'>('name');
 
-    const { data: children, isLoading, isError } = useQuery({
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
+    const { data: children, isLoading } = useQuery({
         queryKey: ['children'],
         queryFn: async () => {
             const { data, error: fetchError } = await supabase
@@ -51,7 +55,6 @@ export function ChildrenList() {
         staleTime: 1000 * 60 * 5,
     });
 
-    // Helper functions
     const calculateAge = (dob: string | null) => {
         if (!dob) return 0;
         const birthDate = new Date(dob);
@@ -77,13 +80,9 @@ export function ChildrenList() {
         return `${diffYears} anos`;
     };
 
-    // Filter and Sort Logic
     const filteredChildren = (children || [])
         .filter(child => {
-            // Tab filter
             if (activeTab !== 'all' && child.status !== activeTab) return false;
-
-            // Search filter
             const query = searchQuery.toLowerCase();
             return (
                 child.full_name.toLowerCase().includes(query) ||
@@ -99,7 +98,6 @@ export function ChildrenList() {
             return 0;
         });
 
-    // Stats
     const stats = {
         total: children?.length || 0,
         urgent: children?.filter(c => c.status === 'urgent').length || 0,
@@ -109,230 +107,170 @@ export function ChildrenList() {
 
     if (isLoading) {
         return (
-            <div className="space-y-6 animate-pulse">
-                {/* Header Skeleton */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <div className="w-64 h-8 bg-gray-200 dark:bg-gray-800 rounded-xl mb-2"></div>
-                        <div className="w-96 h-4 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+            <div className="space-y-6 animate-pulse p-4">
+                <div className="flex justify-between items-center">
+                    <div className="space-y-2">
+                        <div className="h-6 w-48 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+                        <div className="h-4 w-64 bg-slate-100 dark:bg-slate-900 rounded-lg" />
                     </div>
-                    <div className="w-48 h-12 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+                    <div className="h-10 w-40 bg-slate-200 dark:bg-slate-800 rounded-xl" />
                 </div>
-
-                {/* Stats Row Skeleton */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    {[1, 2, 3, 4].map(i => (
-                        <div key={i} className="h-24 bg-white/50 dark:bg-surface-dark/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 flex items-center gap-4">
-                            <div className="size-12 rounded-2xl bg-gray-200 dark:bg-gray-700/50 shrink-0"></div>
-                            <div className="space-y-2 w-full">
-                                <div className="w-12 h-6 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
-                                <div className="w-20 h-3 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
-                            </div>
-                        </div>
-                    ))}
+                <div className="grid grid-cols-4 gap-4">
+                    {[1, 2, 3, 4].map(i => <div key={i} className="h-28 bg-slate-100 dark:bg-slate-900 rounded-[24px]" />)}
                 </div>
-
-                {/* Controls Skeleton */}
-                <div className="h-16 bg-white/50 dark:bg-surface-dark/50 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
-
-                {/* List Skeleton */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                        <div key={i} className="h-[280px] bg-white/50 dark:bg-surface-dark/50 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
-                    ))}
+                <div className="grid grid-cols-4 gap-4">
+                    {[1, 2, 3, 4].map(i => <div key={i} className="h-72 bg-slate-100 dark:bg-slate-900 rounded-[24px]" />)}
                 </div>
-            </div>
-        );
-    }
-
-    if (isError) {
-        return (
-            <div className="flex flex-col items-center justify-center p-12 text-center bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-3xl text-red-600 dark:text-red-400">
-                <span className="material-symbols-outlined text-4xl mb-4">error</span>
-                <h3 className="text-xl font-bold mb-2">Erro ao carregar dados</h3>
-                <p className="text-sm max-w-md mx-auto mb-4">Não foi possível carregar a lista de acolhidos. Por favor, tente novamente mais tarde.</p>
-                <button onClick={() => window.location.reload()} className="px-4 py-2 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition">Tentar Novamente</button>
             </div>
         );
     }
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-6 pb-12 animate-in fade-in duration-500">
+            {/* Header - Scaled down */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-text-main dark:text-white font-display">Gestão de Acolhidos</h2>
-                    <p className="text-sm text-text-secondary dark:text-gray-400 mt-1">Acompanhamento e prontuário digital dos acolhidos</p>
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-primary/10 rounded-full text-[9px] font-black uppercase tracking-widest text-primary mb-3">
+                        <span className="material-symbols-outlined text-[14px]">id_card</span>
+                        Gestão de Identidade
+                    </div>
+                    <h2 className="text-3xl font-black text-text-main dark:text-white font-display tracking-tight leading-none mb-2">Acolhidos</h2>
+                    <p className="text-sm text-text-secondary dark:text-gray-400 font-medium">Controle técnico e prontuários digitais integrados.</p>
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="h-12 inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold px-6 rounded-xl transition-all shadow-sm active:scale-95"
+                    className="h-11 flex items-center justify-center gap-2 bg-primary text-white font-black uppercase tracking-[0.05em] text-[11px] px-6 rounded-xl transition-all shadow-lg hover:shadow-primary/20 hover:scale-105 active:scale-95"
                 >
-                    <span className="material-symbols-outlined text-[20px]">add</span>
+                    <span className="material-symbols-outlined text-[18px]">add</span>
                     Novo Acolhimento
                 </button>
             </div>
 
-            {/* Stats Row */}
+            {/* Stats Row - Scaled down */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                    { label: 'Total', value: stats.total, icon: 'groups', color: 'blue' },
-                    { label: 'Urgentes', value: stats.urgent, icon: 'emergency', color: 'red' },
-                    { label: 'Ativos', value: stats.active, icon: 'check_circle', color: 'emerald' },
-                    { label: 'Pendentes', value: stats.pending, icon: 'pending', color: 'amber' },
+                    { label: 'Total Geral', value: stats.total, icon: 'groups', color: 'blue' },
+                    { label: 'Urgências', value: stats.urgent, icon: 'bolt', color: 'rose' },
+                    { label: 'Efetivados', value: stats.active, icon: 'verified', color: 'emerald' },
+                    { label: 'Processamento', value: stats.pending, icon: 'hourglass_top', color: 'amber' },
                 ].map((stat) => (
                     <div key={stat.label} className={clsx(
-                        "rounded-3xl border p-5 shadow-sm flex items-center gap-4 transition-all hover:shadow-md",
-                        stat.color === 'blue' && "bg-blue-50/50 border-blue-100 dark:bg-surface-dark dark:border-gray-800 text-blue-600",
-                        stat.color === 'red' && "bg-red-50/50 border-red-100 dark:bg-surface-dark dark:border-gray-800 text-red-600",
-                        stat.color === 'emerald' && "bg-emerald-50/50 border-emerald-100 dark:bg-surface-dark dark:border-gray-800 text-emerald-600",
-                        stat.color === 'amber' && "bg-amber-50/50 border-amber-100 dark:bg-surface-dark dark:border-gray-800 text-amber-600"
+                        "group bg-white dark:bg-surface-dark rounded-[24px] border border-slate-100 dark:border-gray-800 p-5 transition-all duration-300 hover:shadow-md",
                     )}>
-                        <div className={clsx(
-                            "size-12 rounded-2xl flex items-center justify-center shrink-0",
-                            stat.color === 'blue' && "bg-blue-100 dark:bg-blue-900/30",
-                            stat.color === 'red' && "bg-red-100 dark:bg-red-900/30",
-                            stat.color === 'emerald' && "bg-emerald-100 dark:bg-emerald-900/30",
-                            stat.color === 'amber' && "bg-amber-100 dark:bg-amber-900/30"
-                        )}>
-                            <span className="material-symbols-outlined text-2xl">{stat.icon}</span>
-                        </div>
-                        <div>
-                            <p className="text-3xl font-black text-text-main dark:text-white leading-none">{stat.value}</p>
-                            <p className={clsx(
-                                "text-[10px] font-black uppercase tracking-widest mt-1.5",
-                                stat.color === 'blue' && "text-blue-600/70 dark:text-gray-500",
-                                stat.color === 'red' && "text-red-600/70 dark:text-gray-500",
-                                stat.color === 'emerald' && "text-emerald-600/70 dark:text-gray-500",
-                                stat.color === 'amber' && "text-amber-600/70 dark:text-gray-500"
+                        <div className="flex justify-between items-start mb-3">
+                            <div className={clsx(
+                                "size-10 rounded-xl flex items-center justify-center",
+                                stat.color === 'blue' && "bg-blue-500 text-white",
+                                stat.color === 'rose' && "bg-rose-500 text-white",
+                                stat.color === 'emerald' && "bg-emerald-500 text-white",
+                                stat.color === 'amber' && "bg-amber-500 text-white"
                             )}>
-                                {stat.label}
-                            </p>
+                                <span className="material-symbols-outlined text-xl">{stat.icon}</span>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-2xl font-black text-text-main dark:text-white leading-none tracking-tighter">{stat.value}</p>
+                            </div>
                         </div>
+                        <p className="text-[9px] font-black uppercase tracking-[0.15em] text-text-secondary dark:text-gray-500">
+                            {stat.label}
+                        </p>
                     </div>
                 ))}
             </div>
 
-            {/* Controls */}
-            <div className="bg-white dark:bg-surface-dark p-2 rounded-2xl border border-border-light dark:border-gray-800 shadow-sm flex flex-col xl:flex-row gap-4">
-                {/* Tabs */}
-                <div className="flex p-1 bg-gray-50 dark:bg-gray-900 rounded-xl">
-                    {[
-                        { id: 'all', label: 'Todos' },
-                        { id: 'urgent', label: 'Urgentes' },
-                        { id: 'active', label: 'Ativos' },
-                        { id: 'pending', label: 'Pendentes' },
-                    ].map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id as any)}
-                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === tab.id
-                                ? 'bg-white dark:bg-gray-800 text-primary shadow-sm'
-                                : 'text-text-secondary dark:text-gray-400 hover:text-text-main dark:hover:text-white'
-                                }`}
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
-                </div>
-
-                {/* Search */}
-                <div className="flex-1 relative">
-                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary dark:text-gray-400 text-[20px]">search</span>
+            {/* Filter & Search Bar - Scaled down */}
+            <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center">
+                <div className="flex-1 relative group">
+                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
                     <input
-                        className="w-full pl-10 pr-4 py-2 bg-transparent border-none text-sm focus:ring-0 outline-none text-text-main dark:text-white placeholder-text-secondary"
-                        placeholder="Buscar por nome, processo ou CPF..."
+                        className="w-full pl-11 pr-4 py-3 bg-white dark:bg-surface-dark border-2 border-slate-50 dark:border-transparent rounded-[18px] text-[13px] font-bold text-text-main dark:text-white placeholder-slate-400 focus:border-primary/20 transition-all outline-none shadow-sm"
+                        placeholder="Pesquisar acolhido..."
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
 
-                <div className="h-8 w-[1px] bg-border-light dark:bg-gray-800 hidden xl:block self-center"></div>
+                <div className="flex p-1 bg-white dark:bg-surface-dark border border-slate-100 dark:border-gray-800 rounded-[16px] shadow-sm overflow-x-auto">
+                    {[
+                        { id: 'all', label: 'Todos' },
+                        { id: 'urgent', label: 'Críticos' },
+                        { id: 'active', label: 'Regulares' },
+                        { id: 'pending', label: 'Ingresso' },
+                    ].map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id as any)}
+                            className={clsx(
+                                "px-4 py-2 rounded-[12px] text-[10px] font-black uppercase tracking-wider whitespace-nowrap transition-all",
+                                activeTab === tab.id
+                                    ? 'bg-primary text-white shadow-md shadow-primary/20'
+                                    : 'text-slate-400 hover:text-slate-600 dark:hover:text-white'
+                            )}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
 
-                {/* Sort */}
-                <div className="flex items-center gap-3 px-2">
-                    <span className="text-xs font-bold text-text-secondary dark:text-gray-400 uppercase">Ordenar:</span>
+                <div className="flex items-center gap-2 bg-white dark:bg-surface-dark px-4 py-2.5 border border-slate-100 dark:border-gray-800 rounded-[16px] shadow-sm">
+                    <span className="material-symbols-outlined text-slate-400 text-[18px]">sort</span>
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as any)}
-                        className="bg-transparent border-none text-sm font-bold text-text-main dark:text-white focus:ring-0 outline-none cursor-pointer"
+                        className="bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-white focus:ring-0 outline-none p-0 cursor-pointer"
                     >
-                        <option value="name">Nome (A-Z)</option>
-                        <option value="age">Idade (Maior)</option>
-                        <option value="time">Tempo de Casa</option>
+                        <option value="name">A-Z</option>
+                        <option value="age">Idade</option>
+                        <option value="time">Tempo</option>
                     </select>
                 </div>
             </div>
 
-            {/* List */}
+            {/* Main List Grid - Removed manual reveal for CSS animation */}
             {filteredChildren.length === 0 ? (
-                <div className="flex flex-col items-center justify-center p-12 py-20 text-center bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 rounded-3xl shadow-sm">
-                    <div className="size-20 bg-gray-50 dark:bg-gray-900 rounded-full flex items-center justify-center text-gray-400 mb-6">
-                        <span className="material-symbols-outlined text-5xl">person_search</span>
+                <div className="flex flex-col items-center justify-center py-24 bg-white dark:bg-surface-dark border-2 border-dashed border-slate-100 dark:border-gray-800 rounded-[32px]">
+                    <div className="size-16 bg-slate-50 dark:bg-gray-800 rounded-full flex items-center justify-center text-slate-300 mb-6">
+                        <span className="material-symbols-outlined text-4xl">person_search</span>
                     </div>
-                    <h3 className="text-xl font-bold text-text-main dark:text-white mb-2">Nenhum resultado</h3>
-                    <p className="text-text-secondary dark:text-gray-400 mb-8 max-w-xs mx-auto">
-                        Não encontramos nenhum acolhido com os critérios selecionados.
-                    </p>
+                    <h3 className="text-xl font-black text-text-main dark:text-white mb-2 font-display">Nenhum resultado.</h3>
                     <button
                         onClick={() => { setSearchQuery(''); setActiveTab('all'); }}
-                        className="text-primary font-bold hover:underline"
+                        className="text-primary text-[10px] font-black uppercase tracking-widest hover:underline"
                     >
-                        Limpar todos os filtros
+                        Resetar Filtros
                     </button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-                    {filteredChildren.map(child => (
-                        <ChildCard
-                            key={child.id}
-                            id={child.id}
-                            name={child.full_name}
-                            image={child.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(child.full_name)}&background=random&color=fff`}
-                            status={child.status as any}
-                            unit={child.unit || 'N/A'}
-                            age={calculateAge(child.date_of_birth)}
-                            timeInCare={formatTimeInCare(child.admission_date)}
-                            legalStatus={child.legal_status || 'Não informado'}
-                            lastUpdate="Atualizado recentemente"
-                            onEditProfile={() => {
-                                setEditingChild(child);
-                                setEditModalTab('basic');
-                            }}
-                            onManageMedications={() => {
-                                setMedicationChild(child);
-                            }}
-                            onViewDetails={() => setViewChildId(child.id)}
-                        />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {filteredChildren.map((child, idx) => (
+                        <div key={child.id} className="animate-in fade-in slide-in-from-bottom-2 duration-500" style={{ animationDelay: `${idx * 40}ms`, animationFillMode: 'both' }}>
+                            <ChildCard
+                                id={child.id}
+                                name={child.full_name}
+                                image={child.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(child.full_name)}&background=random&color=fff`}
+                                status={child.status as any}
+                                unit={child.unit || 'Acolhimento'}
+                                age={calculateAge(child.date_of_birth)}
+                                timeInCare={formatTimeInCare(child.admission_date)}
+                                legalStatus={child.legal_status || 'A definir'}
+                                lastUpdate="Registrado"
+                                onEditProfile={() => {
+                                    setEditingChild(child);
+                                    setEditModalTab('basic');
+                                }}
+                                onManageMedications={() => setMedicationChild(child)}
+                                onViewDetails={() => setViewChildId(child.id)}
+                            />
+                        </div>
                     ))}
                 </div>
             )}
 
-            <AddChildModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-            />
-
-            <EditChildModal
-                isOpen={!!editingChild}
-                onClose={() => setEditingChild(null)}
-                child={editingChild}
-                initialTab={editModalTab}
-            />
-
-            <MedicationsModal
-                isOpen={!!medicationChild}
-                onClose={() => setMedicationChild(null)}
-                child={medicationChild}
-            />
-
-            <ChildDetailsModal
-                childId={viewChildId}
-                isOpen={!!viewChildId}
-                onClose={() => setViewChildId(null)}
-            />
+            <AddChildModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+            <EditChildModal isOpen={!!editingChild} onClose={() => setEditingChild(null)} child={editingChild} initialTab={editModalTab} />
+            <MedicationsModal isOpen={!!medicationChild} onClose={() => setMedicationChild(null)} child={medicationChild} />
+            <ChildDetailsModal childId={viewChildId} isOpen={!!viewChildId} onClose={() => setViewChildId(null)} />
         </div>
     );
 }
-
