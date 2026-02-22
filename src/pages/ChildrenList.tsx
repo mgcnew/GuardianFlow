@@ -37,7 +37,7 @@ export function ChildrenList() {
     const [activeTab, setActiveTab] = useState<'all' | 'urgent' | 'active' | 'pending'>('all');
     const [sortBy, setSortBy] = useState<'name' | 'age' | 'time'>('name');
 
-    const { data: children, isLoading } = useQuery({
+    const { data: children, isLoading, isError, error } = useQuery({
         queryKey: ['children'],
         queryFn: async () => {
             const { data, error } = await supabase
@@ -109,9 +109,49 @@ export function ChildrenList() {
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center py-24">
-                <div className="size-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-text-secondary font-medium font-display">Carregando acolhidos...</p>
+            <div className="space-y-6 animate-pulse">
+                {/* Header Skeleton */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <div className="w-64 h-8 bg-gray-200 dark:bg-gray-800 rounded-xl mb-2"></div>
+                        <div className="w-96 h-4 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                    </div>
+                    <div className="w-48 h-12 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+                </div>
+
+                {/* Stats Row Skeleton */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[1, 2, 3, 4].map(i => (
+                        <div key={i} className="h-24 bg-white/50 dark:bg-surface-dark/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 flex items-center gap-4">
+                            <div className="size-12 rounded-2xl bg-gray-200 dark:bg-gray-700/50 shrink-0"></div>
+                            <div className="space-y-2 w-full">
+                                <div className="w-12 h-6 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
+                                <div className="w-20 h-3 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Controls Skeleton */}
+                <div className="h-16 bg-white/50 dark:bg-surface-dark/50 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
+
+                {/* List Skeleton */}
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                        <div key={i} className="h-[280px] bg-white/50 dark:bg-surface-dark/50 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    if (isError) {
+        return (
+            <div className="flex flex-col items-center justify-center p-12 text-center bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-3xl text-red-600 dark:text-red-400">
+                <span className="material-symbols-outlined text-4xl mb-4">error</span>
+                <h3 className="text-xl font-bold mb-2">Erro ao carregar dados</h3>
+                <p className="text-sm max-w-md mx-auto mb-4">Não foi possível carregar a lista de acolhidos. Por favor, tente novamente mais tarde.</p>
+                <button onClick={() => window.location.reload()} className="px-4 py-2 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition">Tentar Novamente</button>
             </div>
         );
     }

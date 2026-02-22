@@ -53,9 +53,39 @@ export function ChildProfile() {
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center py-24">
-                <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-text-secondary font-medium font-display animate-pulse">Carregando prontuário...</p>
+            <div className="flex flex-col gap-4 sm:gap-6 animate-pulse">
+                {/* Profile Header Skeleton */}
+                <div className="bg-white dark:bg-surface-dark rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-6 border border-border-light dark:border-gray-800 shadow-sm relative overflow-hidden">
+                    <div className="size-24 sm:size-32 rounded-full border-4 border-white dark:border-gray-800 shadow-md bg-gray-200 dark:bg-gray-700/50 shrink-0"></div>
+                    <div className="flex-1 text-center md:text-left space-y-3 w-full">
+                        <div className="w-1/2 h-8 bg-gray-200 dark:bg-gray-700/50 rounded-xl mx-auto md:mx-0"></div>
+                        <div className="w-1/3 h-4 bg-gray-200 dark:bg-gray-700/50 rounded-full mx-auto md:mx-0"></div>
+                        <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mt-2">
+                            <div className="w-20 h-6 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
+                            <div className="w-24 h-6 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
+                            <div className="w-16 h-6 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Tabs Skeleton */}
+                <div className="flex gap-2 p-1 bg-gray-50 dark:bg-gray-900 rounded-2xl w-full overflow-x-auto">
+                    {[1, 2, 3, 4, 5, 6].map(i => (
+                        <div key={i} className="w-24 h-10 bg-gray-200 dark:bg-gray-800 rounded-xl shrink-0"></div>
+                    ))}
+                </div>
+
+                {/* Grid Content Skeleton */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                    <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+                        <div className="h-64 bg-white/50 dark:bg-surface-dark/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
+                        <div className="h-48 bg-white/50 dark:bg-surface-dark/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
+                    </div>
+                    <div className="space-y-4 sm:space-y-6">
+                        <div className="h-40 bg-white/50 dark:bg-surface-dark/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm"></div>
+                        <div className="h-32 bg-primary/5 dark:bg-primary/10 rounded-3xl border border-primary/10 dark:border-primary/20"></div>
+                    </div>
+                </div>
             </div>
         );
     }
