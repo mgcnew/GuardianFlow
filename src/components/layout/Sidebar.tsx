@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 import clsx from 'clsx';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { ThemeToggleIcon } from '../shared/ThemeToggleIcon';
 
 const navItems = [
     { icon: 'dashboard', label: 'Dashboard', to: '/dashboard' },
@@ -152,12 +153,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
                     )}
                     title={isDark ? 'Modo claro' : 'Modo escuro'}
                 >
-                    <span className={clsx(
-                        "material-symbols-outlined text-[18px] shrink-0 transition-transform duration-300",
-                        isDark ? "rotate-0" : "rotate-180"
-                    )}>
-                        {isDark ? 'light_mode' : 'dark_mode'}
-                    </span>
+                    <ThemeToggleIcon isDark={isDark} className="w-5 h-5 shrink-0" />
                     <span className={clsx("transition-all duration-300 whitespace-nowrap", isCollapsed && !isMobileOpen ? "w-0 opacity-0 hidden" : "w-auto opacity-100")}>
                         {isDark ? 'Modo Claro' : 'Modo Escuro'}
                     </span>

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { ThemeToggleIcon } from '../shared/ThemeToggleIcon';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { EmergencyModal } from './EmergencyModal';
@@ -114,15 +115,10 @@ export function Header({ onMenuToggle }: HeaderProps) {
                     {/* Theme Toggle */}
                     <button
                         onClick={toggleTheme}
-                        className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-text-secondary dark:text-gray-400 transition-all active:scale-90"
+                        className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all active:scale-90"
                         title={isDark ? 'Modo claro' : 'Modo escuro'}
                     >
-                        <span className={clsx(
-                            "material-symbols-outlined transition-transform duration-300",
-                            isDark ? "rotate-0" : "rotate-180"
-                        )}>
-                            {isDark ? 'light_mode' : 'dark_mode'}
-                        </span>
+                        <ThemeToggleIcon isDark={isDark} className="w-6 h-6" />
                     </button>
 
                     <button className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-text-secondary dark:text-gray-400 transition-colors relative">
