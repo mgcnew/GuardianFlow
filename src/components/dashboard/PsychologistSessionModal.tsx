@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { format, addMinutes, parseISO } from 'date-fns';
 import clsx from 'clsx';
+import { createNotification } from '../../lib/notifications';
 
 interface PsychologistSessionModalProps {
     isOpen: boolean;
@@ -173,10 +174,22 @@ export function PsychologistSessionModal({ isOpen, onClose, selectedDate, eventT
                 }
             }
         },
-        onSuccess: () => {
+        onSuccess: async (_, variables) => {
             setIsSuccess(true);
             queryClient.invalidateQueries({ queryKey: ['psychologist-calendar-events'] });
             queryClient.invalidateQueries({ queryKey: ['calendar-events'] });
+
+            // Send notification for the NEW session
+            const childName = children?.find(c => c.id === variables.child_id)?.full_name || 'Acolhido';
+            await createNotification({
+                organization_id: profile?.organization_id!,
+                title: 'Novo Agendamento Psicológico',
+                content: `Sessão para ${childName} em ${variables.date} às ${variables.start_time}`,
+                type: 'event',
+                link: '/dashboard/agenda',
+                metadata: { type: 'psychology' }
+            });
+
             setTimeout(() => {
                 onClose();
             }, 1000);

@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import clsx from 'clsx';
+import { createNotification } from '../../lib/notifications';
 
 const SOCIAL_CATEGORIES = [
     { id: 'atendimento', label: 'Atendimento', icon: 'diversity_3' },
@@ -107,10 +108,24 @@ export function SocialWorkEntryModal({ isOpen, onClose, initialChildId }: Social
 
             if (error) throw error;
         },
-        onSuccess: () => {
+        onSuccess: async () => {
             setIsSuccess(true);
             queryClient.invalidateQueries({ queryKey: ['socialWorkDashboard'] });
             queryClient.invalidateQueries({ queryKey: ['child_entries'] });
+
+            // Send notification for HIGH urgency entries
+            if (form.urgency === 'high') {
+                const child = children?.find(c => c.id === form.child_id);
+                await createNotification({
+                    organization_id: profile?.organization_id!,
+                    title: 'Atenção Social: Caso Crítico',
+                    content: `${child?.full_name || 'Acolhido'}: ${form.title}`,
+                    type: 'warning',
+                    link: '/dashboard/social',
+                    metadata: { child_id: form.child_id, category: form.category }
+                });
+            }
+
             setTimeout(() => {
                 onClose();
             }, 1000);

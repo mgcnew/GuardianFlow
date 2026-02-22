@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { createNotification } from '../../lib/notifications';
 
 interface IndividualLogFormProps {
     onSuccess: () => void;
@@ -123,6 +124,23 @@ export function IndividualLogForm({ onSuccess, onCancel }: IndividualLogFormProp
             });
 
             if (error) throw error;
+
+            // Send notification for critical/high severity or incidents
+            if (severity === 'critical' || severity === 'high' || selectedCategory === 'incident') {
+                await createNotification({
+                    organization_id: profile?.organization_id!,
+                    title: severity === 'critical' ? 'Alerta Crítico: Ocorrência' : 'Nova Ocorrência',
+                    content: `${selectedResident.full_name}: ${description.substring(0, 100)}${description.length > 100 ? '...' : ''}`,
+                    type: severity === 'critical' ? 'error' : 'warning',
+                    link: '/dashboard/logbook',
+                    metadata: {
+                        child_id: selectedResident.id,
+                        severity,
+                        category: selectedCategory
+                    }
+                });
+            }
+
             onSuccess();
         } catch (error: any) {
             alert('Erro: ' + error.message);

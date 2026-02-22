@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { format } from 'date-fns';
 import clsx from 'clsx';
+import { createNotification } from '../../lib/notifications';
 
 interface CalendarEventModalProps {
     isOpen: boolean;
@@ -315,9 +316,22 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                 }
             }
         },
-        onSuccess: async () => {
+        onSuccess: async (_, variables) => {
             setIsSuccess(true);
             await queryClient.invalidateQueries({ queryKey: ['calendar-events'] });
+
+            // Send notification only for NEW events
+            if (!eventToEdit) {
+                await createNotification({
+                    organization_id: profile?.organization_id!,
+                    title: 'Novo Evento na Agenda',
+                    content: `${variables.title} agendado para ${variables.start_date} às ${variables.start_time}`,
+                    type: 'event',
+                    link: '/dashboard/agenda',
+                    metadata: { type: variables.type }
+                });
+            }
+
             setTimeout(() => {
                 onClose();
             }, 1000);

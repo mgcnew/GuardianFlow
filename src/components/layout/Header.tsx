@@ -5,6 +5,9 @@ import { ThemeToggleIcon } from '../shared/ThemeToggleIcon';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { EmergencyModal } from './EmergencyModal';
+import { NotificationDropdown } from './NotificationDropdown';
+import { useNotifications } from '../../hooks/useNotifications';
+import { NotificationBell } from './NotificationBell';
 
 interface HeaderProps {
     onMenuToggle?: () => void;
@@ -14,16 +17,23 @@ export function Header({ onMenuToggle }: HeaderProps) {
     const { user, profile, organization, signOut, switchRole } = useAuth();
     const { toggleTheme, isDark } = useTheme();
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
     const [searchExpanded, setSearchExpanded] = useState(false);
     const [emergencyModalOpen, setEmergencyModalOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const notifRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLDivElement>(null);
+
+    const { unreadCount } = useNotifications();
 
     // Close dropdown and search when clicking outside
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setDropdownOpen(false);
+            }
+            if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+                setNotifDropdownOpen(false);
             }
             if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
                 setSearchExpanded(false);
@@ -121,10 +131,25 @@ export function Header({ onMenuToggle }: HeaderProps) {
                         <ThemeToggleIcon isDark={isDark} className="w-6 h-6" />
                     </button>
 
-                    <button className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-text-secondary dark:text-gray-400 transition-colors relative">
-                        <span className="material-symbols-outlined">notifications</span>
-                        <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-surface-dark"></span>
-                    </button>
+                    <div className="relative" ref={notifRef}>
+                        <button
+                            onClick={() => setNotifDropdownOpen(!notifDropdownOpen)}
+                            className={clsx(
+                                "flex items-center justify-center w-10 h-10 rounded-full transition-all relative active:scale-95",
+                                notifDropdownOpen ? "bg-primary/5 shadow-inner" : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                            )}
+                        >
+                            <NotificationBell
+                                unreadCount={unreadCount}
+                                isOpen={notifDropdownOpen}
+                            />
+                        </button>
+
+                        <NotificationDropdown
+                            isOpen={notifDropdownOpen}
+                            onClose={() => setNotifDropdownOpen(false)}
+                        />
+                    </div>
 
                     <div className="h-8 w-[1px] bg-border-light dark:bg-gray-700 mx-1 hidden md:block"></div>
 

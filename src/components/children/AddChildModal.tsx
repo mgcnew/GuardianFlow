@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { DocumentUploadManager } from './DocumentUploadManager';
+import { createNotification } from '../../lib/notifications';
 
 interface AddChildModalProps {
     isOpen: boolean;
@@ -166,6 +167,16 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
                 .single();
 
             if (insertError) throw insertError;
+
+            // Send notification
+            await createNotification({
+                organization_id: profile.organization_id,
+                title: 'Novo Acolhimento',
+                content: `O acolhido ${formData.full_name} foi registrado no sistema.`,
+                type: 'resident',
+                link: '/dashboard/children',
+                metadata: { child_id: newChild.id }
+            });
 
             // Upload pending documents
             if (pendingDocuments.length > 0 && newChild) {

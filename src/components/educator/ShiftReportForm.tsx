@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import clsx from 'clsx';
 import { useQueryClient } from '@tanstack/react-query';
+import { createNotification } from '../../lib/notifications';
 
 interface ShiftReportFormProps {
     onSuccess: () => void;
@@ -56,6 +57,16 @@ export function ShiftReportForm({ onSuccess, onCancel }: ShiftReportFormProps) {
             });
 
             if (error) throw error;
+
+            // Send notification for the shift report
+            await createNotification({
+                organization_id: profile.organization_id,
+                title: 'Relatório de Turno Finalizado',
+                content: `Turno da ${formData.shift === 'morning' ? 'Manhã' : formData.shift === 'afternoon' ? 'Tarde' : 'Noite'} concluído.`,
+                type: 'info',
+                link: '/dashboard/logbook',
+                metadata: { shift: formData.shift }
+            });
 
             queryClient.invalidateQueries({ queryKey: ['daily_overview'] });
             alert('Relatório salvo com sucesso!');
