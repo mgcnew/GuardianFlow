@@ -31,18 +31,20 @@ export function LandingPage() {
         <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900">
             {/* Header - Transparent to Solid on Scroll */}
             <header className={clsx(
-                "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 lg:px-16",
-                scrolled ? "py-4" : "py-8"
+                "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-3 md:px-6 lg:px-16",
+                scrolled ? "py-2 md:py-4" : "py-4 md:py-8"
             )}>
                 <div className={clsx(
-                    "max-w-7xl mx-auto flex items-center justify-between px-8 py-3.5 transition-all duration-300 rounded-full",
-                    scrolled ? "bg-white/90 backdrop-blur-md shadow-sm border border-slate-200" : "bg-transparent"
+                    "max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 h-12 md:h-16 transition-all duration-300",
+                    scrolled
+                        ? "bg-white/90 backdrop-blur-md shadow-sm border border-slate-200 rounded-full"
+                        : "bg-white/60 md:bg-transparent backdrop-blur-sm md:backdrop-blur-none rounded-2xl md:rounded-none"
                 )}>
-                    <div className="flex items-center gap-3">
-                        <div className="size-9 bg-blue-600 rounded-lg flex items-center justify-center shadow-md shadow-blue-600/20">
-                            <span className="material-symbols-outlined text-white text-[22px]">shield_with_heart</span>
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <div className="size-8 md:size-9 bg-blue-600 rounded-lg flex items-center justify-center shadow-md shadow-blue-600/20 shrink-0">
+                            <span className="material-symbols-outlined text-white text-[18px] md:text-[22px]">shield_with_heart</span>
                         </div>
-                        <span className="text-xl font-black tracking-tight text-slate-900 font-display-new uppercase">GuardianFlow</span>
+                        <span className="text-base md:text-xl font-black tracking-tight text-slate-900 font-display-new uppercase">GuardianFlow</span>
                     </div>
 
                     <nav className="hidden md:flex items-center gap-10">
@@ -51,16 +53,16 @@ export function LandingPage() {
                         ))}
                     </nav>
 
-                    <div className="flex items-center gap-3">
-                        <button onClick={() => navigate('/login')} className="px-5 py-2 text-[13px] font-bold text-slate-700 hover:text-blue-600 transition-colors">Entrar</button>
-                        <button onClick={() => navigate('/login')} className="px-7 py-2.5 bg-slate-900 text-white text-[13px] font-bold rounded-full hover:bg-blue-600 shadow-lg shadow-slate-900/10 transition-all active:scale-95">Solicitar Acesso</button>
+                    <div className="flex items-center gap-1 md:gap-3">
+                        <button onClick={() => navigate('/login')} className="px-3 md:px-5 py-2 text-[12px] md:text-[13px] font-bold text-slate-700 hover:text-blue-600 transition-colors">Entrar</button>
+                        <button onClick={() => navigate('/login')} className="hidden sm:block px-5 lg:px-7 py-2 md:py-2.5 bg-slate-900 text-white text-[12px] md:text-[13px] font-bold rounded-full hover:bg-blue-600 shadow-lg shadow-slate-900/10 transition-all active:scale-95">Solicitar Acesso</button>
                     </div>
                 </div>
             </header>
 
             <main>
                 {/* Hero Section - The First Impression of Confidence */}
-                <section className="relative pt-44 pb-28 px-6 overflow-hidden bg-white">
+                <section className="relative pt-24 sm:pt-32 md:pt-44 pb-16 md:pb-28 px-6 overflow-hidden bg-white">
                     {/* Subtle grid pattern for a technical/organized look */}
                     <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1e293b 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
 
@@ -70,8 +72,8 @@ export function LandingPage() {
                             Certificação de Dados e Sigilo Institucional
                         </div>
 
-                        <h1 className="reveal font-serif text-5xl md:text-8xl font-medium tracking-tight text-slate-900 leading-[1.05] mb-8">
-                            Gestão de abrigos com<br /><span className="text-blue-600">rigor técnico</span> e <span className="italic">fé pública.</span>
+                        <h1 className="reveal font-serif text-3xl sm:text-5xl md:text-8xl font-medium tracking-tight text-slate-900 leading-[1.1] md:leading-[1.05] mb-6 md:mb-8">
+                            Gestão de abrigos com<br className="hidden sm:block" /><span className="text-blue-600"> rigor técnico</span> e <span className="italic">fé pública.</span>
                         </h1>
 
                         <p className="reveal max-w-2xl mx-auto text-[18px] md:text-[21px] text-slate-500 font-medium leading-relaxed mb-12">
@@ -79,11 +81,11 @@ export function LandingPage() {
                             segurança de dados e do acompanhamento humano impecável.
                         </p>
 
-                        <div className="reveal flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <button onClick={() => navigate('/login')} className="w-full sm:w-auto px-12 py-5 bg-blue-600 text-white text-[16px] font-bold rounded-full shadow-2xl shadow-blue-600/30 hover:bg-blue-700 hover:scale-[1.02] transition-all active:scale-95">
+                        <div className="reveal flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4">
+                            <button onClick={() => navigate('/login')} className="w-full sm:w-auto px-8 md:px-12 py-3.5 md:py-5 bg-blue-600 text-white text-[14px] md:text-[16px] font-bold rounded-full shadow-2xl shadow-blue-600/30 hover:bg-blue-700 hover:scale-[1.02] transition-all active:scale-95">
                                 Ver Demonstração Completa
                             </button>
-                            <button className="w-full sm:w-auto px-12 py-5 bg-white text-slate-900 text-[16px] font-bold rounded-full border-2 border-slate-900 hover:bg-slate-50 transition-all">
+                            <button className="w-full sm:w-auto px-8 md:px-12 py-3.5 md:py-5 bg-white text-slate-900 text-[14px] md:text-[16px] font-bold rounded-full border-2 border-slate-900 hover:bg-slate-50 transition-all">
                                 Protocolo de Segurança
                             </button>
                         </div>
@@ -114,8 +116,8 @@ export function LandingPage() {
                     <div className="max-w-7xl mx-auto">
                         <div className="flex flex-col lg:flex-row justify-between items-end gap-8 mb-20 text-left">
                             <div className="max-w-2xl">
-                                <span className="text-[12px] font-black uppercase tracking-[0.3em] text-blue-600 mb-4 block">Arquitetura de Confiança</span>
-                                <h2 className="reveal font-serif text-4xl md:text-6xl font-medium text-slate-900 leading-tight">Um sistema projetado para ser o alicerce do seu trabalho.</h2>
+                                <span className="text-[10px] md:text-[12px] font-black uppercase tracking-[0.3em] text-blue-600 mb-4 block">Arquitetura de Confiança</span>
+                                <h2 className="reveal font-serif text-3xl md:text-6xl font-medium text-slate-900 leading-tight">Um sistema projetado para ser o alicerce do seu trabalho.</h2>
                             </div>
                             <div className="reveal pb-2 hidden lg:block">
                                 <p className="text-slate-500 font-medium max-w-sm text-right leading-relaxed">
@@ -124,7 +126,7 @@ export function LandingPage() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
                             {[
                                 {
                                     title: 'Blindagem de Dados',
@@ -142,7 +144,7 @@ export function LandingPage() {
                                     icon: 'gavel'
                                 }
                             ].map((card, i) => (
-                                <div key={i} className="reveal p-12 bg-white rounded-[40px] shadow-[0_4px_30px_rgba(0,0,0,0.02)] border border-slate-200 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-500 group">
+                                <div key={i} className="reveal p-8 md:p-12 bg-white rounded-[32px] md:rounded-[40px] shadow-[0_4px_30px_rgba(0,0,0,0.02)] border border-slate-200 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-500 group">
                                     <div className="size-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-8 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                                         <span className="material-symbols-outlined text-3xl">{card.icon}</span>
                                     </div>
@@ -183,8 +185,8 @@ export function LandingPage() {
                             </div>
                         </div>
                         <div className="flex-1 reveal order-1 lg:order-2">
-                            <h2 className="font-serif text-4xl md:text-6xl font-medium text-slate-900 mb-8 leading-tight">O espelho da sua<br />governança.</h2>
-                            <p className="text-lg text-slate-500 font-medium leading-relaxed mb-10">
+                            <h2 className="font-serif text-3xl md:text-6xl font-medium text-slate-900 mb-6 md:mb-8 leading-tight">O espelho da sua<br className="hidden sm:block" />governança.</h2>
+                            <p className="text-base md:text-lg text-slate-500 font-medium leading-relaxed mb-8 md:text-lg">
                                 O GuardianFlow não é apenas software, é o cartão de visita digital do seu rigor administrativo.
                                 Quando o sistema opera, cada dado gerado é uma prova da qualidade do acolhimento da sua unidade.
                             </p>
@@ -205,9 +207,9 @@ export function LandingPage() {
                 </section>
 
                 {/* Final Call to Action - Focused on Professional Urgency and Trust */}
-                <section className="py-40 px-6">
-                    <div className="max-w-5xl mx-auto rounded-[64px] bg-slate-900 p-16 md:p-24 text-center text-white relative overflow-hidden ring-1 ring-slate-800 shadow-[0_48px_100px_rgba(0,0,0,0.15)]">
-                        <div className="absolute top-0 right-0 p-20 opacity-5 pointer-events-none">
+                <section className="py-20 md:py-40 px-6">
+                    <div className="max-w-5xl mx-auto rounded-[32px] md:rounded-[64px] bg-slate-900 p-10 md:p-24 text-center text-white relative overflow-hidden ring-1 ring-slate-800 shadow-[0_48px_100px_rgba(0,0,0,0.15)]">
+                        <div className="absolute top-0 right-0 p-20 opacity-5 pointer-events-none hidden md:block">
                             <span className="material-symbols-outlined text-[300px]">verified</span>
                         </div>
 
