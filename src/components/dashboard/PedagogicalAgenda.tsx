@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import { CalendarEventModal } from '../schedule/CalendarEventModal';
+import { PedagogicalEventModal } from './PedagogicalEventModal';
 import {
     format,
     startOfMonth,
@@ -156,30 +156,37 @@ export function PedagogicalAgenda() {
     };
 
     const eventTypeColors: Record<string, string> = {
-        medical: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800',
-        vaccine: 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800',
-        school: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800',
-        outing: 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800',
-        meeting: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-800',
+        tutoring: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800',
+        homework: 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-900/20 dark:text-teal-300 dark:border-teal-800',
+        evaluation: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800',
+        school_meeting: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800',
+        activity: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/20 dark:text-rose-300 dark:border-rose-800',
+        external_course: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-800',
         other: 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700',
     };
 
     const eventTypeBorderColors: Record<string, string> = {
-        medical: 'border-l-blue-500',
-        vaccine: 'border-l-green-500',
-        school: 'border-l-purple-500',
-        outing: 'border-l-yellow-500',
-        meeting: 'border-l-indigo-500',
+        tutoring: 'border-l-blue-500',
+        homework: 'border-l-teal-500',
+        evaluation: 'border-l-purple-500',
+        school_meeting: 'border-l-amber-500',
+        activity: 'border-l-rose-500',
+        external_course: 'border-l-indigo-500',
         other: 'border-l-gray-500',
     };
 
     const eventTypeLabels: Record<string, string> = {
-        medical: 'Médico',
-        vaccine: 'Vacina',
-        school: 'Escola',
-        outing: 'Passeio',
-        meeting: 'Reunião',
+        tutoring: 'Reforço',
+        homework: 'Apoio Dever',
+        evaluation: 'Avaliação',
+        school_meeting: 'Reunião',
+        activity: 'Lúdica',
+        external_course: 'Curso',
         other: 'Outro',
+    };
+
+    const getEventDisplayType = (event: any) => {
+        return event.metadata?.pedagogical_type || event.type || 'other';
     };
 
     return (
@@ -389,8 +396,8 @@ export function PedagogicalAgenda() {
                                                         onClick={(e) => handleEditEvent(event, e)}
                                                         className={clsx(
                                                             "text-[10px] p-2 rounded-lg border border-l-[3px] cursor-pointer hover:brightness-95 transition-all shadow-sm",
-                                                            eventTypeColors[event.type] || eventTypeColors['other'],
-                                                            eventTypeBorderColors[event.type] || eventTypeBorderColors['other']
+                                                            eventTypeColors[getEventDisplayType(event)] || eventTypeColors['other'],
+                                                            eventTypeBorderColors[getEventDisplayType(event)] || eventTypeBorderColors['other']
                                                         )}
                                                     >
                                                         <div className="font-bold truncate mb-0.5">{event.title}</div>
@@ -436,7 +443,7 @@ export function PedagogicalAgenda() {
                                                 onClick={(e) => handleEditEvent(event, e)}
                                                 className={clsx(
                                                     "flex gap-4 p-4 rounded-xl border bg-white dark:bg-gray-800 hover:shadow-md transition-all cursor-pointer",
-                                                    eventTypeBorderColors[event.type] || eventTypeBorderColors['other'],
+                                                    eventTypeBorderColors[getEventDisplayType(event)] || eventTypeBorderColors['other'],
                                                     "border-l-[4px] border-gray-100 dark:border-gray-700"
                                                 )}
                                             >
@@ -448,9 +455,9 @@ export function PedagogicalAgenda() {
                                                     <div className="flex items-center gap-2 mb-1">
                                                         <span className={clsx(
                                                             "text-[10px] uppercase font-bold px-1.5 py-0.5 rounded",
-                                                            eventTypeColors[event.type] || eventTypeColors['other']
+                                                            eventTypeColors[getEventDisplayType(event)] || eventTypeColors['other']
                                                         )}>
-                                                            {eventTypeLabels[event.type] || 'Evento'}
+                                                            {eventTypeLabels[getEventDisplayType(event)] || 'Evento'}
                                                         </span>
                                                         {event.child && (
                                                             <span className="text-xs text-text-secondary dark:text-gray-400 flex items-center gap-1">
@@ -537,7 +544,7 @@ export function PedagogicalAgenda() {
                                                 onClick={(e) => handleEditEvent(event, e)}
                                                 className={clsx(
                                                     "group relative p-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/30 hover:border-primary/30 transition-all cursor-pointer",
-                                                    eventTypeBorderColors[event.type] || eventTypeBorderColors['other'],
+                                                    eventTypeBorderColors[getEventDisplayType(event)] || eventTypeBorderColors['other'],
                                                     "border-l-[3px]"
                                                 )}
                                             >
@@ -547,9 +554,9 @@ export function PedagogicalAgenda() {
                                                     </span>
                                                     <span className={clsx(
                                                         "text-[9px] font-bold px-1.5 py-0.5 rounded uppercase",
-                                                        eventTypeColors[event.type] || eventTypeColors['other']
+                                                        eventTypeColors[getEventDisplayType(event)] || eventTypeColors['other']
                                                     )}>
-                                                        {eventTypeLabels[event.type] || 'Evento'}
+                                                        {eventTypeLabels[getEventDisplayType(event)] || 'Evento'}
                                                     </span>
                                                 </div>
                                                 <h4 className="text-sm font-bold text-text-main dark:text-white line-clamp-2">{event.title}</h4>
@@ -568,8 +575,8 @@ export function PedagogicalAgenda() {
                                                 key={ghost.id}
                                                 className={clsx(
                                                     "p-3 rounded-xl border border-l-[3px] shadow-sm",
-                                                    eventTypeColors[ghost.type] || eventTypeColors['other'],
-                                                    eventTypeBorderColors[ghost.type] || eventTypeBorderColors['other']
+                                                    eventTypeColors[getEventDisplayType(ghost)] || eventTypeColors['other'],
+                                                    eventTypeBorderColors[getEventDisplayType(ghost)] || eventTypeBorderColors['other']
                                                 )}
                                             >
                                                 <div className="flex justify-between items-center text-[10px] font-bold mb-1 opacity-80">
@@ -602,7 +609,7 @@ export function PedagogicalAgenda() {
                 )}
             </div>
 
-            <CalendarEventModal
+            <PedagogicalEventModal
                 isOpen={isEventModalOpen}
                 onClose={() => {
                     setIsEventModalOpen(false);
@@ -610,7 +617,7 @@ export function PedagogicalAgenda() {
                 }}
                 selectedDate={selectedDate}
                 eventToEdit={eventToEdit}
-                initialType="school"
+                initialType="tutoring"
             />
         </div >
     );
