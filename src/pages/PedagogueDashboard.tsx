@@ -5,14 +5,22 @@ import { useAuth } from '../contexts/AuthContext';
 import { StatCard } from '../components/dashboard/StatCard';
 import { PedagogicalAgenda } from '../components/dashboard/PedagogicalAgenda';
 import { PedagogicalEntryModal } from '../components/dashboard/PedagogicalEntryModal';
+import { SchoolReportModal } from '../components/dashboard/SchoolReportModal';
+import { SchoolMeetingModal } from '../components/dashboard/SchoolMeetingModal';
+import { ExtracurricularModal } from '../components/dashboard/ExtracurricularModal';
+import { AcademicEvolutionReportModal } from '../components/dashboard/AcademicEvolutionReportModal';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import clsx from 'clsx';
 
 export function PedagogueDashboard() {
     const { profile } = useAuth();
-    const [activeTab, setActiveTab] = useState<'summary' | 'students' | 'history' | 'agenda'>('summary');
+    const [activeTab, setActiveTab] = useState<'summary' | 'students' | 'history' | 'agenda' | 'academic'>('summary');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
+    const [isExtraModalOpen, setIsExtraModalOpen] = useState(false);
+    const [isEvolutionModalOpen, setIsEvolutionModalOpen] = useState(false);
     const [selectedChildId, setSelectedChildId] = useState<string | undefined>(undefined);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -24,7 +32,10 @@ export function PedagogueDashboard() {
             const [
                 { data: children },
                 { data: recentEntries },
-                { data: schoolEvents }
+                { data: schoolEvents },
+                { data: schoolReports },
+                { data: schoolMeetings },
+                { data: extracurricular }
             ] = await Promise.all([
                 supabase
                     .from('children')
@@ -44,7 +55,19 @@ export function PedagogueDashboard() {
                     .eq('type', 'school')
                     .gte('start_time', new Date().toISOString())
                     .order('start_time', { ascending: true })
-                    .limit(5)
+                    .limit(5),
+                supabase
+                    .from('school_reports')
+                    .select('*, children(full_name)')
+                    .eq('organization_id', profile.organization_id),
+                supabase
+                    .from('school_meetings')
+                    .select('*, children(full_name)')
+                    .eq('organization_id', profile.organization_id),
+                supabase
+                    .from('extracurricular_activities')
+                    .select('*, children(full_name)')
+                    .eq('organization_id', profile.organization_id)
             ]);
 
             return {
@@ -57,6 +80,9 @@ export function PedagogueDashboard() {
                 allChildren: children || [],
                 recentEntries: recentEntries || [],
                 schoolEvents: schoolEvents || [],
+                schoolReports: schoolReports || [],
+                schoolMeetings: schoolMeetings || [],
+                extracurricular: extracurricular || [],
                 criticalCases: children?.filter(c => c.pedagogue_indications).slice(0, 5) || []
             };
         },
@@ -131,6 +157,7 @@ export function PedagogueDashboard() {
                     <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800/50 rounded-2xl w-fit max-w-full overflow-x-auto no-scrollbar">
                         {[
                             { id: 'summary', icon: 'dashboard', label: 'Início' },
+                            { id: 'academic', icon: 'auto_stories', label: 'Painel Escolar' },
                             { id: 'students', icon: 'school', label: 'Alunos' },
                             { id: 'history', icon: 'history', label: 'Histórico' },
                             { id: 'agenda', icon: 'calendar_month', label: 'Agenda' }
@@ -341,6 +368,206 @@ export function PedagogueDashboard() {
                 </div>
             )}
 
+            {activeTab === 'academic' && (
+                <div className="space-y-6 animate-in fade-in duration-500">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        {/* Selector - Sidebar of this tab */}
+                        <div className="md:col-span-1 space-y-4">
+                            <h3 className="text-xs font-black uppercase text-text-secondary tracking-widest px-2">Selecionar Aluno</h3>
+                            <div className="bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 rounded-3xl p-2 space-y-1">
+                                {pedagogueData?.allChildren.slice(0, 10).map(child => (
+                                    <button
+                                        key={child.id}
+                                        onClick={() => setSelectedChildId(child.id)}
+                                        className={clsx(
+                                            "w-full flex items-center gap-3 p-3 rounded-2xl text-left transition-all",
+                                            selectedChildId === child.id
+                                                ? "bg-primary/10 text-primary"
+                                                : "hover:bg-gray-50 dark:hover:bg-gray-800 text-text-secondary"
+                                        )}
+                                    >
+                                        <div className="size-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center font-bold text-xs">
+                                            {child.full_name[0]}
+                                        </div>
+                                        <span className="text-xs font-bold truncate">{child.full_name}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Details View */}
+                        <div className="md:col-span-3 space-y-6">
+                            {!selectedChildId ? (
+                                <div className="h-[400px] bg-gray-50/50 dark:bg-gray-900/30 border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-[2.5rem] flex flex-col items-center justify-center text-center p-8">
+                                    <span className="material-symbols-outlined text-5xl text-gray-300 mb-4">school</span>
+                                    <h3 className="text-xl font-extrabold text-text-main dark:text-gray-100">Painel de Acompanhamento Acadêmico</h3>
+                                    <p className="text-sm text-text-secondary max-w-sm mt-2">Selecione um aluno à esquerda para visualizar notas, reuniões e evolução pedagógica.</p>
+                                </div>
+                            ) : (
+                                <>
+                                    {/* Selected Child Header */}
+                                    <div className="flex items-center justify-between bg-white dark:bg-surface-dark p-6 rounded-3xl border border-border-light dark:border-gray-800 shadow-sm">
+                                        <div className="flex items-center gap-4">
+                                            <div className="size-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-2xl font-black">
+                                                {pedagogueData?.allChildren.find(c => c.id === selectedChildId)?.full_name[0]}
+                                            </div>
+                                            <div>
+                                                <h2 className="text-xl font-black text-text-main dark:text-white">
+                                                    {pedagogueData?.allChildren.find(c => c.id === selectedChildId)?.full_name}
+                                                </h2>
+                                                <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mt-1">
+                                                    {pedagogueData?.allChildren.find(c => c.id === selectedChildId)?.schooling || 'Série não informada'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => setIsEvolutionModalOpen(true)}
+                                            className="h-10 px-4 bg-primary text-white text-xs font-bold rounded-xl flex items-center gap-2 hover:brightness-110 transition-all shadow-sm active:scale-95"
+                                        >
+                                            <span className="material-symbols-outlined text-sm">print</span>
+                                            Relatório de Evolução
+                                        </button>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {/* Grades Section */}
+                                        <div className="bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 rounded-3xl overflow-hidden shadow-sm">
+                                            <div className="p-5 border-b border-border-light dark:border-gray-800 flex items-center justify-between">
+                                                <h3 className="font-bold flex items-center gap-2">
+                                                    <span className="material-symbols-outlined text-primary">analytics</span>
+                                                    Boletim Acadêmico
+                                                </h3>
+                                                <button
+                                                    onClick={() => setIsReportModalOpen(true)}
+                                                    className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all"
+                                                >
+                                                    <span className="material-symbols-outlined text-lg">add</span>
+                                                </button>
+                                            </div>
+                                            <div className="p-5">
+                                                <div className="space-y-3">
+                                                    {pedagogueData?.schoolReports.filter((r: any) => r.child_id === selectedChildId).length === 0 ? (
+                                                        <p className="text-xs text-text-secondary italic text-center py-8">Nenhuma nota registrada.</p>
+                                                    ) : (
+                                                        <table className="w-full text-left text-xs">
+                                                            <thead>
+                                                                <tr className="text-text-secondary uppercase font-black tracking-widest border-b border-gray-50 dark:border-gray-800">
+                                                                    <th className="pb-2">Disciplina</th>
+                                                                    <th className="pb-2">Período</th>
+                                                                    <th className="pb-2">Nota</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
+                                                                {pedagogueData?.schoolReports
+                                                                    .filter((r: any) => r.child_id === selectedChildId)
+                                                                    .map((report: any) => (
+                                                                        <tr key={report.id} className="group">
+                                                                            <td className="py-3 font-bold">{report.subject}</td>
+                                                                            <td className="py-3 text-text-secondary">{report.period}</td>
+                                                                            <td className="py-3">
+                                                                                <span className={clsx(
+                                                                                    "font-black px-2 py-1 rounded-lg",
+                                                                                    report.grade >= 7 ? "text-green-600 bg-green-50 dark:bg-green-900/20" : "text-red-600 bg-red-50 dark:bg-red-900/20"
+                                                                                )}>
+                                                                                    {report.grade}
+                                                                                </span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                            </tbody>
+                                                        </table>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Extracurricular Section */}
+                                        <div className="bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 rounded-3xl overflow-hidden shadow-sm">
+                                            <div className="p-5 border-b border-border-light dark:border-gray-800 flex items-center justify-between">
+                                                <h3 className="font-bold flex items-center gap-2">
+                                                    <span className="material-symbols-outlined text-primary">star</span>
+                                                    Atividades Extra
+                                                </h3>
+                                                <button
+                                                    onClick={() => setIsExtraModalOpen(true)}
+                                                    className="size-8 rounded-lg bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all"
+                                                >
+                                                    <span className="material-symbols-outlined text-lg">add</span>
+                                                </button>
+                                            </div>
+                                            <div className="p-5 space-y-4">
+                                                {pedagogueData?.extracurricular.filter((a: any) => a.child_id === selectedChildId).length === 0 ? (
+                                                    <p className="text-xs text-text-secondary italic text-center py-8">Nenhuma atividade registrada.</p>
+                                                ) : (
+                                                    pedagogueData?.extracurricular
+                                                        .filter((a: any) => a.child_id === selectedChildId)
+                                                        .map((activity: any) => (
+                                                            <div key={activity.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-transparent hover:border-primary/20 transition-all">
+                                                                <div className="size-10 rounded-xl bg-white dark:bg-surface-dark flex items-center justify-center shadow-sm">
+                                                                    <span className="material-symbols-outlined text-primary">
+                                                                        {activity.category === 'esporte' ? 'sports_soccer' :
+                                                                            activity.category === 'arte' ? 'palette' :
+                                                                                activity.category === 'musica' ? 'music_note' : 'school'}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <p className="text-xs font-black uppercase text-text-main dark:text-white truncate">{activity.name}</p>
+                                                                    <p className="text-[10px] text-text-secondary font-bold">{activity.schedule}</p>
+                                                                </div>
+                                                                <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-green-100 dark:bg-green-900/30 text-green-700">Ativo</span>
+                                                            </div>
+                                                        ))
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* School Meetings History */}
+                                    <div className="bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 rounded-3xl overflow-hidden shadow-sm">
+                                        <div className="p-5 border-b border-border-light dark:border-gray-800 flex items-center justify-between">
+                                            <h3 className="font-bold flex items-center gap-2">
+                                                <span className="material-symbols-outlined text-primary">groups</span>
+                                                Atas de Reuniões e Contato Escolar
+                                            </h3>
+                                            <button
+                                                onClick={() => setIsMeetingModalOpen(true)}
+                                                className="h-9 px-4 rounded-xl bg-primary/10 text-primary text-xs font-bold hover:bg-primary hover:text-white transition-all"
+                                            >
+                                                Nova Ata
+                                            </button>
+                                        </div>
+                                        <div className="divide-y divide-gray-50 dark:divide-gray-800">
+                                            {pedagogueData?.schoolMeetings.filter((m: any) => m.child_id === selectedChildId).length === 0 ? (
+                                                <p className="text-xs text-text-secondary italic text-center py-12">Nenhuma reunião registrada para este aluno.</p>
+                                            ) : (
+                                                pedagogueData?.schoolMeetings
+                                                    .filter((m: any) => m.child_id === selectedChildId)
+                                                    .map((meeting: any) => (
+                                                        <div key={meeting.id} className="p-5 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                                            <div className="flex justify-between items-start mb-3">
+                                                                <div>
+                                                                    <p className="text-[10px] font-black uppercase text-text-secondary tracking-widest">{format(new Date(meeting.meeting_date), "dd 'de' MMMM, yyyy", { locale: ptBR })}</p>
+                                                                    <p className="text-xs font-bold text-text-main mt-1">Participantes: {meeting.participants}</p>
+                                                                </div>
+                                                                <span className="size-8 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center">
+                                                                    <span className="material-symbols-outlined text-[18px]">article</span>
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-sm text-text-secondary dark:text-gray-400 leading-relaxed italic">
+                                                                "{meeting.summary}"
+                                                            </p>
+                                                        </div>
+                                                    ))
+                                            )}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {activeTab === 'history' && (
                 <div className="bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 rounded-3xl shadow-sm overflow-hidden animate-in fade-in duration-500">
                     <div className="p-6 border-b border-border-light dark:border-gray-800 flex justify-between items-center">
@@ -395,6 +622,36 @@ export function PedagogueDashboard() {
                 isOpen={isModalOpen}
                 onClose={() => { setIsModalOpen(false); setSelectedChildId(undefined); }}
                 initialChildId={selectedChildId}
+            />
+
+            <SchoolReportModal
+                isOpen={isReportModalOpen}
+                onClose={() => setIsReportModalOpen(false)}
+                initialChildId={selectedChildId}
+                childrenList={pedagogueData?.allChildren || []}
+            />
+
+            <SchoolMeetingModal
+                isOpen={isMeetingModalOpen}
+                onClose={() => setIsMeetingModalOpen(false)}
+                initialChildId={selectedChildId}
+                childrenList={pedagogueData?.allChildren || []}
+            />
+
+            <ExtracurricularModal
+                isOpen={isExtraModalOpen}
+                onClose={() => setIsExtraModalOpen(false)}
+                initialChildId={selectedChildId}
+                childrenList={pedagogueData?.allChildren || []}
+            />
+
+            <AcademicEvolutionReportModal
+                isOpen={isEvolutionModalOpen}
+                onClose={() => setIsEvolutionModalOpen(false)}
+                child={pedagogueData?.allChildren.find(c => c.id === selectedChildId)}
+                reports={pedagogueData?.schoolReports.filter((r: any) => r.child_id === selectedChildId) || []}
+                meetings={pedagogueData?.schoolMeetings.filter((m: any) => m.child_id === selectedChildId) || []}
+                activities={pedagogueData?.extracurricular.filter((a: any) => a.child_id === selectedChildId) || []}
             />
         </div>
     );
