@@ -1,6 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import clsx from 'clsx';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -272,68 +270,24 @@ export function EducatorLogbook() {
                 <DailyTimeline items={timelineItems} loading={loading} />
             </div>
 
-            {/* Modais */}
-            {activeModal && createPortal(
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-400">
-                    <style>
-                        {`
-                            .scrollbar-hide::-webkit-scrollbar {
-                                display: none;
-                            }
-                            .scrollbar-hide {
-                                -ms-overflow-style: none;
-                                scrollbar-width: none;
-                            }
-                        `}
-                    </style>
-                    <div className={clsx(
-                        "bg-white dark:bg-surface-dark w-full rounded-3xl shadow-2xl border border-border-light dark:border-gray-800 overflow-hidden flex flex-col",
-                        activeModal === 'individual' ? "max-w-3xl max-h-[90vh]" : "max-w-2xl max-h-[85vh]"
-                    )}>
-                        {/* Modal Header */}
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex-shrink-0">
-                            <div className="flex items-center gap-3">
-                                <div className={clsx(
-                                    "size-9 rounded-xl flex items-center justify-center",
-                                    activeModal === 'individual' ? "bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400" : "bg-primary/10 dark:bg-primary/20 text-primary"
-                                )}>
-                                    <span className="material-symbols-outlined text-xl">{activeModal === 'individual' ? 'person_add' : 'clinical_notes'}</span>
-                                </div>
-                                <h3 className="text-lg font-black text-text-main dark:text-white uppercase tracking-tight">
-                                    {activeModal === 'individual' ? 'Novo Atendimento' : activeModal === 'shift' ? 'Relatório de Turno' : 'Nova Reparação'}
-                                </h3>
-                            </div>
-                            <button
-                                onClick={() => setActiveModal(null)}
-                                className="size-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors text-gray-400 hover:text-gray-600"
-                            >
-                                <span className="material-symbols-outlined text-[20px]">close</span>
-                            </button>
-                        </div>
+            {/* Modals */}
+            <IndividualLogForm
+                isOpen={activeModal === 'individual'}
+                onClose={() => setActiveModal(null)}
+                onSuccess={() => { setActiveModal(null); queryClient.invalidateQueries({ queryKey: ['logbook-timeline'] }); }}
+            />
 
-                        {/* Modal Content */}
-                        <div className="flex-1 overflow-y-auto p-6 md:p-8 scrollbar-hide">
-                            {activeModal === 'individual' ? (
-                                <IndividualLogForm
-                                    onSuccess={() => { setActiveModal(null); queryClient.invalidateQueries({ queryKey: ['logbook-timeline'] }); }}
-                                    onCancel={() => setActiveModal(null)}
-                                />
-                            ) : activeModal === 'shift' ? (
-                                <ShiftReportForm
-                                    onSuccess={() => { setActiveModal(null); queryClient.invalidateQueries({ queryKey: ['logbook-timeline'] }); }}
-                                    onCancel={() => setActiveModal(null)}
-                                />
-                            ) : (
-                                <ReparationModal
-                                    onSuccess={() => { setActiveModal(null); queryClient.invalidateQueries({ queryKey: ['logbook-timeline'] }); }}
-                                    onCancel={() => setActiveModal(null)}
-                                />
-                            )}
-                        </div>
-                    </div>
-                </div>,
-                document.body
-            )}
+            <ShiftReportForm
+                isOpen={activeModal === 'shift'}
+                onClose={() => setActiveModal(null)}
+                onSuccess={() => { setActiveModal(null); queryClient.invalidateQueries({ queryKey: ['logbook-timeline'] }); }}
+            />
+
+            <ReparationModal
+                isOpen={activeModal === 'reparation'}
+                onClose={() => setActiveModal(null)}
+                onSuccess={() => { setActiveModal(null); queryClient.invalidateQueries({ queryKey: ['logbook-timeline'] }); }}
+            />
         </div>
     );
 }
