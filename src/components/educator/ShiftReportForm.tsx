@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import clsx from 'clsx';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
-import { createNotification } from '../../lib/notifications';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
