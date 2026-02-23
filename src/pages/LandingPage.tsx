@@ -5,17 +5,17 @@ import clsx from 'clsx';
 
 export function LandingPage() {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
-        if (user) {
+        if (!loading && user) {
             navigate('/dashboard');
         }
         const handleScroll = () => setScrolled(window.scrollY > 20);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [user, navigate]);
+    }, [user, loading, navigate]);
 
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {

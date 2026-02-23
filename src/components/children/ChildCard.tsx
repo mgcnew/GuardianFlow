@@ -48,7 +48,7 @@ const legalStatusConfig: Record<string, string> = {
 };
 
 export function ChildCard({ id, name, image, status, unit, age, timeInCare, legalStatus, lastUpdate, onEditProfile, onManageMedications, onViewDetails }: ChildCardProps) {
-    const { profile } = useAuth();
+    const { profile, canAccess } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
@@ -113,27 +113,33 @@ export function ChildCard({ id, name, image, status, unit, age, timeInCare, lega
             {/* Quick Actions Bar */}
             <div className="px-5 flex items-center justify-between py-2 border-y border-slate-50 dark:border-gray-800/50">
                 <div className="flex -space-x-1">
-                    <button
-                        onClick={onViewDetails}
-                        className="size-7 rounded-full bg-slate-50 dark:bg-gray-800 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary/10 transition-all active:scale-90"
-                        title="Ver Resumo"
-                    >
-                        <span className="material-symbols-outlined text-[16px]">visibility</span>
-                    </button>
-                    <button
-                        onClick={onManageMedications}
-                        className="size-7 rounded-full bg-slate-50 dark:bg-gray-800 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all active:scale-90"
-                        title="Medicações"
-                    >
-                        <span className="material-symbols-outlined text-[16px]">medication</span>
-                    </button>
-                    <Link
-                        to={`/dashboard/children/${id}`}
-                        className="size-7 rounded-full bg-slate-50 dark:bg-gray-800 flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 transition-all active:scale-90"
-                        title="Prontuário Completo"
-                    >
-                        <span className="material-symbols-outlined text-[16px]">person_book</span>
-                    </Link>
+                    {canAccess('children', 'view') && (
+                        <button
+                            onClick={onViewDetails}
+                            className="size-7 rounded-full bg-slate-50 dark:bg-gray-800 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary/10 transition-all active:scale-90"
+                            title="Ver Resumo"
+                        >
+                            <span className="material-symbols-outlined text-[16px]">visibility</span>
+                        </button>
+                    )}
+                    {canAccess('health', 'view') && (
+                        <button
+                            onClick={onManageMedications}
+                            className="size-7 rounded-full bg-slate-50 dark:bg-gray-800 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all active:scale-90"
+                            title="Medicações"
+                        >
+                            <span className="material-symbols-outlined text-[16px]">medication</span>
+                        </button>
+                    )}
+                    {(canAccess('children', 'view') || canAccess('health', 'view') || canAccess('pedagogy', 'view')) && (
+                        <Link
+                            to={`/dashboard/children/${id}`}
+                            className="size-7 rounded-full bg-slate-50 dark:bg-gray-800 flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 transition-all active:scale-90"
+                            title="Prontuário Completo"
+                        >
+                            <span className="material-symbols-outlined text-[16px]">person_book</span>
+                        </Link>
+                    )}
                 </div>
 
                 <div className="relative" ref={menuRef}>
@@ -150,7 +156,7 @@ export function ChildCard({ id, name, image, status, unit, age, timeInCare, lega
                     {isMenuOpen && (
                         <div className="absolute right-0 top-full mt-1.5 w-44 bg-white dark:bg-gray-800 rounded-[16px] shadow-[0_10px_30px_rgba(0,0,0,0.1)] border border-gray-100 dark:border-gray-700 z-50 overflow-hidden">
                             <div className="p-1.5 space-y-1">
-                                {isAdmin && (
+                                {canAccess('children', 'edit') && (
                                     <button
                                         onClick={() => { setIsMenuOpen(false); onEditProfile?.(); }}
                                         className="w-full text-left px-3 py-2 text-[12px] font-bold text-text-secondary dark:text-gray-300 hover:bg-primary/5 hover:text-primary rounded-lg transition-all flex items-center gap-2.5"
@@ -159,13 +165,15 @@ export function ChildCard({ id, name, image, status, unit, age, timeInCare, lega
                                         Editar Perfil
                                     </button>
                                 )}
-                                <button
-                                    onClick={() => navigate(`/dashboard/agenda?child=${id}`)}
-                                    className="w-full text-left px-3 py-2 text-[12px] font-bold text-text-secondary dark:text-gray-300 hover:bg-primary/5 hover:text-primary rounded-lg transition-all flex items-center gap-2.5"
-                                >
-                                    <span className="material-symbols-outlined text-[16px]">event</span>
-                                    Agendar
-                                </button>
+                                {canAccess('agenda', 'create') && (
+                                    <button
+                                        onClick={() => navigate(`/dashboard/agenda?child=${id}`)}
+                                        className="w-full text-left px-3 py-2 text-[12px] font-bold text-text-secondary dark:text-gray-300 hover:bg-primary/5 hover:text-primary rounded-lg transition-all flex items-center gap-2.5"
+                                    >
+                                        <span className="material-symbols-outlined text-[16px]">event</span>
+                                        Agendar
+                                    </button>
+                                )}
                                 <button
                                     className="w-full text-left px-3 py-2 text-[12px] font-bold text-text-secondary dark:text-gray-300 hover:bg-primary/5 hover:text-primary rounded-lg transition-all flex items-center gap-2.5"
                                 >

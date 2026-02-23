@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import clsx from 'clsx';
 import { AddProfessionalModal } from '../components/settings/AddProfessionalModal';
+import { PermissionsSettings } from '../components/settings/PermissionsSettings';
 
 interface OrgData {
     name: string;
@@ -24,7 +25,7 @@ interface OrgData {
 export function UnitSettings() {
     const { profile, refreshOrganization } = useAuth();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [activeTab, setActiveTab] = useState<'unit' | 'team'>((searchParams.get('tab') as 'unit' | 'team') || 'unit');
+    const [activeTab, setActiveTab] = useState<'unit' | 'team' | 'permissions'>((searchParams.get('tab') as any) || 'unit');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
@@ -243,9 +244,24 @@ export function UnitSettings() {
                     <span className="material-symbols-outlined text-[20px]">groups</span>
                     Profissionais
                 </button>
+                <button
+                    onClick={() => {
+                        setActiveTab('permissions');
+                        setSearchParams({ tab: 'permissions' });
+                    }}
+                    className={clsx(
+                        "px-4 py-2 text-sm font-bold rounded-xl transition-all flex items-center gap-2 whitespace-nowrap",
+                        activeTab === 'permissions'
+                            ? "bg-white dark:bg-surface-dark text-primary shadow-sm"
+                            : "text-text-secondary dark:text-gray-400 hover:text-text-main dark:hover:text-white"
+                    )}
+                >
+                    <span className="material-symbols-outlined text-[20px]">security</span>
+                    Permissões
+                </button>
             </div>
 
-            {activeTab === 'unit' ? (
+            {activeTab === 'unit' && (
                 <>
                     {/* Form Card */}
                     <form onSubmit={handleSave}>
@@ -353,7 +369,9 @@ export function UnitSettings() {
                         </div>
                     </div>
                 </>
-            ) : (
+            )}
+
+            {activeTab === 'team' && (
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-bold text-text-main dark:text-white flex items-center gap-2">
@@ -463,6 +481,10 @@ export function UnitSettings() {
                         </table>
                     </div>
                 </div>
+            )}
+
+            {activeTab === 'permissions' && (
+                <PermissionsSettings />
             )}
 
             <AddProfessionalModal

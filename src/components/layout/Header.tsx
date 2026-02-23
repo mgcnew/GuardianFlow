@@ -14,7 +14,7 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuToggle }: HeaderProps) {
-    const { user, profile, organization, signOut, switchRole } = useAuth();
+    const { user, profile, organization, signOut } = useAuth();
     const { toggleTheme, isDark } = useTheme();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
@@ -183,26 +183,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
                                     <p className="text-sm font-bold text-text-main dark:text-white truncate">{user?.email}</p>
                                 </div>
 
-                                {['saas_admin', 'admin'].includes(profile?.role || '') && (
-                                    <div className="px-4 py-2 border-b border-border-light dark:border-gray-800">
-                                        <p className="text-[10px] font-bold text-text-secondary dark:text-gray-500 uppercase tracking-wider mb-2">Simular Papel (Dev)</p>
-                                        <div className="grid grid-cols-2 gap-1.5">
-                                            {['admin', 'technical', 'educator', 'operational'].map((role) => (
-                                                <button
-                                                    key={role}
-                                                    onClick={() => {
-                                                        // @ts-ignore
-                                                        if (typeof switchRole === 'function') switchRole(role);
-                                                        setDropdownOpen(false);
-                                                    }}
-                                                    className="text-[10px] px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 hover:bg-primary/10 hover:text-primary transition-colors text-center truncate border border-transparent hover:border-primary/20"
-                                                >
-                                                    {role}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
+
 
                                 <div className="py-1">
                                     <Link

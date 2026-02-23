@@ -28,6 +28,7 @@ interface Child {
 }
 
 export function ChildrenList() {
+    const { canAccess } = useAuth();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingChild, setEditingChild] = useState<Child | null>(null);
     const [medicationChild, setMedicationChild] = useState<Child | null>(null);
@@ -137,13 +138,15 @@ export function ChildrenList() {
                     <h2 className="text-3xl font-black text-text-main dark:text-white font-display tracking-tight leading-none mb-2">Acolhidos</h2>
                     <p className="text-sm text-text-secondary dark:text-gray-400 font-medium">Controle técnico e prontuários digitais integrados.</p>
                 </div>
-                <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="h-11 flex items-center justify-center gap-2 bg-primary text-white font-black uppercase tracking-[0.05em] text-[11px] px-6 rounded-xl transition-all shadow-lg hover:shadow-primary/20 hover:scale-105 active:scale-95"
-                >
-                    <span className="material-symbols-outlined text-[18px]">add</span>
-                    Novo Acolhimento
-                </button>
+                {canAccess('children', 'create') && (
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="h-11 flex items-center justify-center gap-2 bg-primary text-white font-black uppercase tracking-[0.05em] text-[11px] px-6 rounded-xl transition-all shadow-lg hover:shadow-primary/20 hover:scale-105 active:scale-95"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">add</span>
+                        Novo Acolhimento
+                    </button>
+                )}
             </div>
 
             {/* Stats Row - Scaled down */}

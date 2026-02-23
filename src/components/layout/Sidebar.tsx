@@ -54,43 +54,39 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile }: SidebarProps) {
-    const { profile, organization } = useAuth();
+    const { profile, organization, canAccess } = useAuth();
     const { toggleTheme, isDark } = useTheme();
 
     const filteredNavItems = navItems.filter(item => {
-        if (!profile) return false;
+        // SaaS Admin always sees everything
+        if (profile?.role === 'saas_admin') return true;
 
-        // Admins see everything
-        if (profile.role === 'saas_admin') return true;
-
-        // Hide Admin Panel for non-saas_admins
+        // Hide Super Admin Panel for everyone else
         if (item.to === '/admin') return false;
 
-        // Admins see everything else
-        if (['admin', 'org_admin'].includes(profile.role)) return true;
+        // Dashboard is always visible to everyone logged in
+        if (item.to === '/dashboard') return true;
 
-        const role = profile.role || 'membro';
+        // Map sidebar items to permission modules
+        const permissionMap: Record<string, string> = {
+            '/dashboard/children': 'children',
+            '/dashboard/agenda': 'agenda',
+            '/dashboard/logbook': 'logbook',
+            '/dashboard/psychology': 'psychology',
+            '/dashboard/pedagogy': 'pedagogy',
+            '/dashboard/social': 'social',
+            '/dashboard/inventory': 'inventory',
+            '/dashboard/finance': 'finance',
+            '/dashboard/operational': 'operational'
+        };
 
-        // Base items for almost everyone
-        const baseItems = ['dashboard', 'child_care', 'calendar_month', 'edit_note'];
-
-        if (['technical', 'technician', 'pedagogue'].includes(role)) {
-            const allowed = [...baseItems];
-            if (role === 'technical' || role === 'technician') allowed.push('psychology', 'diversity_3');
-            if (role === 'pedagogue') allowed.push('school');
-            return allowed.includes(item.icon);
+        const moduleKey = permissionMap[item.to];
+        if (moduleKey) {
+            // Check 'view' permission for that module
+            return canAccess(moduleKey, 'view');
         }
 
-        if (role === 'educator') {
-            return baseItems.includes(item.icon);
-        }
-
-        if (role === 'operational') {
-            return [...baseItems, 'inventory_2', 'account_balance_wallet', 'construction'].includes(item.icon);
-        }
-
-        // Fallback for 'membro' or any other role: see basic items
-        return baseItems.includes(item.icon) || item.icon === 'dashboard';
+        return true;
     });
 
     const sidebarContent = (

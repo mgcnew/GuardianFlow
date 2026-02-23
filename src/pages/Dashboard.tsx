@@ -21,7 +21,11 @@ export function Dashboard() {
         queryKey: ['dashboardData', user?.id, profile?.organization_id],
         queryFn: async () => {
             if (!user || !profile?.organization_id) {
-                console.log('Skipping dashboard fetch: user or org_id missing', { user: !!user, orgId: profile?.organization_id });
+                console.log('[Dashboard] Skipping fetch: awaiting profile/org', {
+                    user: !!user,
+                    profile: !!profile,
+                    orgId: profile?.organization_id
+                });
                 return null;
             }
 
