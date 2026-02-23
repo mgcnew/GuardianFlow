@@ -48,7 +48,7 @@ const legalStatusConfig: Record<string, string> = {
 };
 
 export function ChildCard({ id, name, image, status, unit, age, timeInCare, legalStatus, lastUpdate, onEditProfile, onManageMedications, onViewDetails }: ChildCardProps) {
-    const { profile, canAccess } = useAuth();
+    const { canAccess } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
@@ -62,8 +62,6 @@ export function ChildCard({ id, name, image, status, unit, age, timeInCare, lega
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
-
-    const isAdmin = profile?.role === 'admin' || profile?.role === 'saas_admin' || profile?.role === 'org_admin';
 
     return (
         <div

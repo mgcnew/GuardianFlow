@@ -7,6 +7,7 @@ import { EditChildModal } from '../components/children/EditChildModal';
 import { MedicationsModal } from '../components/children/MedicationsModal';
 import { ChildDetailsModal } from '../components/children/ChildDetailsModal';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 interface Child {
     id: string;
