@@ -151,3 +151,16 @@ export function OperationalIcon({ className, isActive }: IconProps) {
         </div>
     );
 }
+
+export function SuperAdminIcon({ className, isActive }: IconProps) {
+    return (
+        <div className={clsx("relative flex items-center justify-center shrink-0", className)}>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                <path d="M12 2L4 5V10C4 15.55 7.41 20.74 12 22C16.59 20.74 20 15.55 20 10V5L12 2Z" stroke={isActive ? "#308ce8" : "currentColor"} strokeWidth="2" strokeOpacity={isActive ? "1" : "0.5"} />
+                <circle cx="12" cy="10" r="3" stroke={isActive ? "#308ce8" : "currentColor"} strokeWidth="2" strokeOpacity={isActive ? "0.8" : "0.4"} />
+                <path d="M7 18C7 15.7909 9.23858 14 12 14C14.7614 14 17 15.7909 17 18" stroke={isActive ? "#308ce8" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeOpacity={isActive ? "0.8" : "0.4"} />
+                {isActive && <path d="M12 10L12 22" stroke="#308ce8" strokeWidth="1" strokeDasharray="2 2" className="opacity-30" />}
+            </svg>
+        </div>
+    );
+}

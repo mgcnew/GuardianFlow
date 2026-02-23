@@ -65,18 +65,28 @@ export function SuperAdmin() {
             <header className="bg-white dark:bg-surface-dark border-b border-border-light dark:border-gray-800">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <img src="/logo.png" alt="Logo" className="h-12 md:h-14 w-auto" />
-                        <div className="hidden sm:block">
-                            <p className="text-[10px] font-bold text-primary uppercase tracking-widest">Painel Administrativo</p>
+                        <img src="/logo.png" alt="Logo" className="h-10 md:h-12 w-auto" />
+                        <div className="flex flex-col">
+                            <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">Painel SaaS</p>
+                            <p className="text-xs font-bold text-text-main dark:text-white">Admin Master</p>
                         </div>
                     </div>
-                    <button
-                        onClick={handleLogout}
-                        className="flex items-center gap-2 text-sm font-semibold text-text-secondary dark:text-gray-400 hover:text-red-500 transition-colors"
-                    >
-                        <span className="material-symbols-outlined text-lg">logout</span>
-                        Sair
-                    </button>
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => navigate('/dashboard')}
+                            className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/5 text-primary text-sm font-bold hover:bg-primary/10 transition-all"
+                        >
+                            <span className="material-symbols-outlined text-lg">dashboard</span>
+                            Ir para o Dashboard
+                        </button>
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center gap-2 text-sm font-semibold text-text-secondary dark:text-gray-400 hover:text-red-500 transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-lg">logout</span>
+                            Sair
+                        </button>
+                    </div>
                 </div>
             </header>
 
@@ -200,7 +210,8 @@ export function SuperAdmin() {
                                             <th className="px-6 py-4 text-xs font-bold text-text-secondary dark:text-gray-500 uppercase tracking-wider">Organização</th>
                                             <th className="px-6 py-4 text-xs font-bold text-text-secondary dark:text-gray-500 uppercase tracking-wider">Status</th>
                                             <th className="px-6 py-4 text-xs font-bold text-text-secondary dark:text-gray-500 uppercase tracking-wider">Plano</th>
-                                            <th className="px-6 py-4 text-xs font-bold text-text-secondary dark:text-gray-500 uppercase tracking-wider">Data de Cadastro</th>
+                                            <th className="px-6 py-4 text-xs font-bold text-text-secondary dark:text-gray-500 uppercase tracking-wider">Usuários</th>
+                                            <th className="px-6 py-4 text-xs font-bold text-text-secondary dark:text-gray-500 uppercase tracking-wider">Cadastro</th>
                                             <th className="px-6 py-4"></th>
                                         </tr>
                                     </thead>
@@ -251,6 +262,12 @@ export function SuperAdmin() {
                                                         <p className="text-sm font-semibold text-text-main dark:text-white">
                                                             {org.subscriptions?.[0]?.plan_id ? 'Profissional' : 'Social'}
                                                         </p>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex items-center gap-1.5">
+                                                            <span className="material-symbols-outlined text-[16px] text-text-secondary">group</span>
+                                                            <span className="text-sm font-bold text-text-main dark:text-white">--</span>
+                                                        </div>
                                                     </td>
                                                     <td className="px-6 py-4 text-sm text-text-secondary dark:text-gray-400 font-medium">
                                                         {new Date(org.created_at).toLocaleDateString('pt-BR')}

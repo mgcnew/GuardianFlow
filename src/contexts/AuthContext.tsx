@@ -86,8 +86,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     if (initialSession?.user) {
                         setSession(initialSession);
                         setUser(initialSession.user);
-                        // Start fetching in background, don't necessarily await if we want speed
-                        fetchProfile(initialSession.user.id, initialSession.user.email);
+                        // Await profile fetch to ensure correct role before unblocking the UI
+                        await fetchProfile(initialSession.user.id, initialSession.user.email);
                     } else {
                         setUser(null);
                         setSession(null);
@@ -104,7 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         initialize();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
             if (!mounted) return;
 
             if (_event === 'SIGNED_OUT') {
@@ -116,7 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             } else if (newSession?.user) {
                 setSession(newSession);
                 setUser(newSession.user);
-                fetchProfile(newSession.user.id, newSession.user.email);
+                await fetchProfile(newSession.user.id, newSession.user.email);
                 setLoading(false);
             } else {
                 setLoading(false);

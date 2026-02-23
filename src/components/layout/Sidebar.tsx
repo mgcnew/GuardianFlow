@@ -13,7 +13,8 @@ import {
     SocialWorkIcon,
     InventoryIcon,
     FinancialIcon,
-    OperationalIcon
+    OperationalIcon,
+    SuperAdminIcon
 } from '../shared/CustomIcons';
 
 const navItems = [
@@ -27,6 +28,7 @@ const navItems = [
     { icon: 'inventory_2', label: 'Estoque', to: '/dashboard/inventory' },
     { icon: 'account_balance_wallet', label: 'Financeiro', to: '/dashboard/finance' },
     { icon: 'construction', label: 'Operacional', to: '/dashboard/operational' },
+    { icon: 'admin_panel_settings', label: 'Painel Admin', to: '/admin' },
 ];
 
 // Map icon names to their respective components
@@ -41,6 +43,7 @@ const iconMap: { [key: string]: React.ElementType } = {
     inventory_2: InventoryIcon,
     account_balance_wallet: FinancialIcon,
     construction: OperationalIcon,
+    admin_panel_settings: SuperAdminIcon,
 };
 
 interface SidebarProps {
@@ -58,7 +61,13 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
         if (!profile) return false;
 
         // Admins see everything
-        if (['saas_admin', 'admin', 'org_admin'].includes(profile.role)) return true;
+        if (profile.role === 'saas_admin') return true;
+
+        // Hide Admin Panel for non-saas_admins
+        if (item.to === '/admin') return false;
+
+        // Admins see everything else
+        if (['admin', 'org_admin'].includes(profile.role)) return true;
 
         const role = profile.role || 'membro';
 
