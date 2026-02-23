@@ -45,7 +45,7 @@ export function Login() {
                 <div className="max-w-md text-center">
                     <div className="mb-6">
                         <img
-                            src="/src/assets/logo.png"
+                            src="/logo.png"
                             alt="Guardião Amigo"
                             className="h-28 md:h-32 w-auto mx-auto drop-shadow-xl object-contain"
                         />
@@ -84,7 +84,7 @@ export function Login() {
                     {/* Mobile logo — only visible on small screens */}
                     <div className="lg:hidden text-center mb-10">
                         <img
-                            src="/src/assets/logo.png"
+                            src="/logo.png"
                             alt="Guardião Amigo"
                             className="h-16 w-auto mx-auto drop-shadow-md object-contain"
                         />

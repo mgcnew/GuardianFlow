@@ -42,7 +42,7 @@ export function LandingPage() {
                 )}>
                     <div className="flex items-center shrink-0">
                         <img
-                            src="/src/assets/logo.png"
+                            src="/logo.png"
                             alt="Guardião Amigo"
                             className="h-12 md:h-16 w-auto object-contain drop-shadow-md brightness-105 transition-transform hover:scale-105"
                         />
@@ -244,7 +244,7 @@ export function LandingPage() {
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-16 lg:gap-24">
                     <div className="md:col-span-5">
                         <img
-                            src="/src/assets/logo.png"
+                            src="/logo.png"
                             alt="Guardião Amigo"
                             className="h-24 md:h-28 w-auto object-contain mb-8 grayscale hover:grayscale-0 transition-all duration-500 opacity-80 hover:opacity-100"
                         />

@@ -6,7 +6,7 @@ export function LoadingScreen() {
         <div className="fixed inset-0 flex flex-col items-center justify-center bg-background-light dark:bg-background-dark z-50 text-center px-6">
             <div className="mb-10 animate-pulse">
                 <img
-                    src="/src/assets/logo.png"
+                    src="/logo.png"
                     alt="Logo"
                     className="h-32 w-auto object-contain drop-shadow-2xl"
                 />

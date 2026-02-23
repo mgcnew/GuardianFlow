@@ -92,7 +92,7 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
                 isCollapsed && !isMobileOpen ? "py-4 px-2" : "py-0 px-0"
             )}>
                 <img
-                    src="/src/assets/logo.png"
+                    src="/logo.png"
                     alt="Logo"
                     className={clsx(
                         "object-contain transition-all duration-300",

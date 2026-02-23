@@ -65,7 +65,7 @@ export function SuperAdmin() {
             <header className="bg-white dark:bg-surface-dark border-b border-border-light dark:border-gray-800">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <img src="/src/assets/logo.png" alt="Logo" className="h-12 md:h-14 w-auto" />
+                        <img src="/logo.png" alt="Logo" className="h-12 md:h-14 w-auto" />
                         <div className="hidden sm:block">
                             <p className="text-[10px] font-bold text-primary uppercase tracking-widest">Painel Administrativo</p>
                         </div>
