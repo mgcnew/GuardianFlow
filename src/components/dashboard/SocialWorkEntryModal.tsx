@@ -91,7 +91,7 @@ export function SocialWorkEntryModal({ isOpen, onClose, initialChildId }: Social
 
     const saveMutation = useMutation({
         mutationFn: async () => {
-            if (!profile || !form.child_id) throw new Error('Dados incompletos');
+            if (!profile || !form.child_id) throw new Error('Dados incompletos. Certifique-se de selecionar um acolhido.');
 
             const { error } = await supabase.from('child_entries').insert({
                 child_id: form.child_id,
@@ -129,6 +129,10 @@ export function SocialWorkEntryModal({ isOpen, onClose, initialChildId }: Social
             setTimeout(() => {
                 onClose();
             }, 1000);
+        },
+        onError: (error: any) => {
+            console.error('Error saving social work entry:', error);
+            alert(`Erro ao salvar: ${error.message || 'Erro desconhecido'}`);
         }
     });
 

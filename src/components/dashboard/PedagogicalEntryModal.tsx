@@ -82,7 +82,7 @@ export function PedagogicalEntryModal({ isOpen, onClose, initialChildId }: Pedag
 
     const saveMutation = useMutation({
         mutationFn: async () => {
-            if (!profile || !form.child_id) throw new Error('Dados incompletos');
+            if (!profile || !form.child_id) throw new Error('Dados incompletos. Certifique-se de selecionar um aluno.');
 
             const { error } = await supabase.from('child_entries').insert({
                 child_id: form.child_id,
@@ -91,6 +91,7 @@ export function PedagogicalEntryModal({ isOpen, onClose, initialChildId }: Pedag
                 type: 'pedagogical',
                 title: form.title,
                 content: form.content,
+                category: form.category, // Use top-level category
                 next_appointment: form.next_appointment || null,
                 metadata: {
                     engagement: form.engagement,
@@ -107,6 +108,10 @@ export function PedagogicalEntryModal({ isOpen, onClose, initialChildId }: Pedag
             setTimeout(() => {
                 onClose();
             }, 1000);
+        },
+        onError: (error: any) => {
+            console.error('Error saving pedagogical entry:', error);
+            alert(`Erro ao salvar: ${error.message || 'Erro desconhecido'}`);
         }
     });
 

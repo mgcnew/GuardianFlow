@@ -248,7 +248,7 @@ export function PsychologicalEntryModal({ isOpen, onClose, initialChildId }: Psy
 
     const saveMutation = useMutation({
         mutationFn: async () => {
-            if (!profile || !form.child_id) throw new Error('Dados incompletos');
+            if (!profile || !form.child_id) throw new Error('Dados incompletos. Certifique-se de selecionar um paciente.');
 
             const { error } = await supabase.from('child_entries').insert({
                 child_id: form.child_id,
@@ -258,6 +258,7 @@ export function PsychologicalEntryModal({ isOpen, onClose, initialChildId }: Psy
                 title: form.title || 'Evolução Psicológica',
                 content: form.content,
                 urgency: form.urgency,
+                mood: form.mood, // Added top-level mood
                 next_appointment: form.next_appointment || null,
                 metadata: {
                     mood: form.mood,
@@ -279,6 +280,10 @@ export function PsychologicalEntryModal({ isOpen, onClose, initialChildId }: Psy
             setTimeout(() => {
                 onClose();
             }, 1000);
+        },
+        onError: (error: any) => {
+            console.error('Error saving psychological entry:', error);
+            alert(`Erro ao salvar: ${error.message || 'Erro desconhecido'}`);
         }
     });
 
