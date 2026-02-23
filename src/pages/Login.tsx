@@ -43,12 +43,13 @@ export function Login() {
             {/* Left Panel — Branding */}
             <div className="hidden lg:flex lg:w-1/2 bg-gray-50 dark:bg-gray-900/60 border-r border-border-light dark:border-gray-800 flex-col items-center justify-center px-12 relative">
                 <div className="max-w-md text-center">
-                    <div className="size-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-sm">
-                        <span className="material-symbols-outlined text-white text-4xl">shield_with_heart</span>
+                    <div className="mb-6">
+                        <img
+                            src="/src/assets/logo.png"
+                            alt="Guardião Amigo"
+                            className="h-28 md:h-32 w-auto mx-auto drop-shadow-xl object-contain"
+                        />
                     </div>
-                    <h2 className="text-3xl font-extrabold text-text-main dark:text-white tracking-tight mb-4">
-                        GuardianFlow
-                    </h2>
                     <p className="text-text-secondary dark:text-gray-400 font-medium leading-relaxed mb-10">
                         A tecnologia que cuida de quem mais precisa. Gerencie seu abrigo com eficiência, segurança e humanidade.
                     </p>
@@ -73,7 +74,7 @@ export function Login() {
 
                 {/* Footer on left panel */}
                 <div className="absolute bottom-8 text-xs text-text-secondary dark:text-gray-500 font-medium">
-                    © 2026 GuardianFlow. Todos os direitos reservados.
+                    © 2026 Guardião Amigo. Todos os direitos reservados.
                 </div>
             </div>
 
@@ -82,12 +83,12 @@ export function Login() {
                 <div className="w-full max-w-sm">
                     {/* Mobile logo — only visible on small screens */}
                     <div className="lg:hidden text-center mb-10">
-                        <div className="size-12 bg-primary rounded-xl flex items-center justify-center mx-auto mb-4 shadow-sm">
-                            <span className="material-symbols-outlined text-white text-2xl">shield_with_heart</span>
-                        </div>
-                        <span className="text-xl font-extrabold text-text-main dark:text-white tracking-tight">GuardianFlow</span>
+                        <img
+                            src="/src/assets/logo.png"
+                            alt="Guardião Amigo"
+                            className="h-16 w-auto mx-auto drop-shadow-md object-contain"
+                        />
                     </div>
-
                     {/* Header */}
                     <div className="mb-8">
                         <h1 className="text-2xl font-extrabold text-text-main dark:text-white tracking-tight mb-2">

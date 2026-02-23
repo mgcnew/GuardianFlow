@@ -11,7 +11,7 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'guardianflow-theme';
+const STORAGE_KEY = 'guardiao-amigo-theme';
 
 function getInitialTheme(): Theme {
     // 1. Check localStorage

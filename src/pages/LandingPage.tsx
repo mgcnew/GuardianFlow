@@ -40,11 +40,12 @@ export function LandingPage() {
                         ? "bg-white/90 backdrop-blur-md shadow-sm border border-slate-200 rounded-full"
                         : "bg-white/60 md:bg-transparent backdrop-blur-sm md:backdrop-blur-none rounded-2xl md:rounded-none"
                 )}>
-                    <div className="flex items-center gap-2 md:gap-3">
-                        <div className="size-8 md:size-9 bg-blue-600 rounded-lg flex items-center justify-center shadow-md shadow-blue-600/20 shrink-0">
-                            <span className="material-symbols-outlined text-white text-[18px] md:text-[22px]">shield_with_heart</span>
-                        </div>
-                        <span className="text-base md:text-xl font-black tracking-tight text-slate-900 font-display-new uppercase">GuardianFlow</span>
+                    <div className="flex items-center shrink-0">
+                        <img
+                            src="/src/assets/logo.png"
+                            alt="Guardião Amigo"
+                            className="h-12 md:h-16 w-auto object-contain drop-shadow-md brightness-105 transition-transform hover:scale-105"
+                        />
                     </div>
 
                     <nav className="hidden md:flex items-center gap-10">
@@ -187,7 +188,7 @@ export function LandingPage() {
                         <div className="flex-1 reveal order-1 lg:order-2">
                             <h2 className="font-serif text-3xl md:text-6xl font-medium text-slate-900 mb-6 md:mb-8 leading-tight">O espelho da sua<br className="hidden sm:block" />governança.</h2>
                             <p className="text-base md:text-lg text-slate-500 font-medium leading-relaxed mb-8 md:text-lg">
-                                O GuardianFlow não é apenas software, é o cartão de visita digital do seu rigor administrativo.
+                                O Guardião Amigo não é apenas software, é o cartão de visita digital do seu rigor administrativo.
                                 Quando o sistema opera, cada dado gerado é uma prova da qualidade do acolhimento da sua unidade.
                             </p>
                             <ul className="space-y-5">
@@ -242,12 +243,11 @@ export function LandingPage() {
             <footer className="py-24 px-6 md:px-16 bg-white border-t border-slate-100">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-16 lg:gap-24">
                     <div className="md:col-span-5">
-                        <div className="flex items-center gap-3 mb-8">
-                            <div className="size-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                                <span className="material-symbols-outlined text-white text-[18px]">shield_with_heart</span>
-                            </div>
-                            <span className="text-xl font-black tracking-tight text-slate-900 font-display-new uppercase">GuardianFlow</span>
-                        </div>
+                        <img
+                            src="/src/assets/logo.png"
+                            alt="Guardião Amigo"
+                            className="h-24 md:h-28 w-auto object-contain mb-8 grayscale hover:grayscale-0 transition-all duration-500 opacity-80 hover:opacity-100"
+                        />
                         <p className="text-[14px] text-slate-500 font-medium leading-relaxed max-w-sm mb-10">
                             Excelência tecnológica dedicada ao acolhimento institucional. O padrão ouro para monitoramento, segurança e direitos da infância.
                         </p>
@@ -274,7 +274,7 @@ export function LandingPage() {
                 </div>
 
                 <div className="max-w-7xl mx-auto mt-24 pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center text-[12px] font-bold text-slate-400 gap-4">
-                    <p>© 2026 GuardianFlow. Tecnologia para o Acolhimento Institucional.</p>
+                    <p>© 2026 Guardião Amigo. Tecnologia para o Acolhimento Institucional.</p>
                     <div className="flex gap-8">
                         <a href="#" className="hover:text-slate-900">Privacidade</a>
                         <a href="#" className="hover:text-slate-900">Certificações</a>

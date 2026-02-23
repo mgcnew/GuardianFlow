@@ -65,11 +65,8 @@ export function SuperAdmin() {
             <header className="bg-white dark:bg-surface-dark border-b border-border-light dark:border-gray-800">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="size-9 bg-primary rounded-lg flex items-center justify-center">
-                            <span className="material-symbols-outlined text-white text-xl">shield_with_heart</span>
-                        </div>
-                        <div>
-                            <h1 className="text-base font-extrabold text-text-main dark:text-white tracking-tight">GuardianFlow</h1>
+                        <img src="/src/assets/logo.png" alt="Logo" className="h-12 md:h-14 w-auto" />
+                        <div className="hidden sm:block">
                             <p className="text-[10px] font-bold text-primary uppercase tracking-widest">Painel Administrativo</p>
                         </div>
                     </div>
@@ -88,7 +85,7 @@ export function SuperAdmin() {
                 <div className="mb-8">
                     <h2 className="text-2xl font-extrabold text-text-main dark:text-white tracking-tight">Painel de Controle</h2>
                     <p className="text-sm text-text-secondary dark:text-gray-400 font-medium mt-1">
-                        Gerencie organizações, planos e acompanhe o crescimento do GuardianFlow.
+                        Gerencie organizações, planos e acompanhe o crescimento do Guardião Amigo.
                     </p>
                 </div>
 

@@ -143,7 +143,7 @@ export function Dashboard() {
                 <div className="size-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                     <span className="material-symbols-outlined text-4xl text-primary">analytics</span>
                 </div>
-                <h3 className="text-xl font-bold text-text-main dark:text-white mb-2">Bem-vindo ao GuardianFlow!</h3>
+                <h3 className="text-xl font-bold text-text-main dark:text-white mb-2">Bem-vindo ao Guardião Amigo!</h3>
                 <p className="text-text-secondary dark:text-gray-400 max-w-md mb-8">
                     Sua conta ainda não está vinculada a uma unidade de acolhimento.
                     Entre em contato com o administrador ou aguarde o convite.

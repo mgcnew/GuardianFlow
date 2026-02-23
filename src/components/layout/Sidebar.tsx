@@ -88,19 +88,17 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
         <>
             {/* Logo / Brand */}
             <div className={clsx(
-                "flex items-center gap-3 px-6 py-4 border-b border-border-light dark:border-gray-800 transition-all overflow-hidden",
-                isCollapsed && !isMobileOpen ? "justify-center px-2" : ""
+                "flex items-center justify-center border-b border-border-light dark:border-gray-800 transition-all overflow-hidden relative",
+                isCollapsed && !isMobileOpen ? "py-4 px-2" : "py-0 px-0"
             )}>
-                <div className="flex items-center justify-center bg-primary/10 rounded-full size-10 text-primary shrink-0">
-                    <span className="material-symbols-outlined">shield_person</span>
-                </div>
-                <div className={clsx(
-                    "flex flex-col transition-opacity duration-300",
-                    isCollapsed && !isMobileOpen ? "opacity-0 w-0 h-0 overflow-hidden" : "opacity-100"
-                )}>
-                    <h1 className="text-text-main dark:text-white text-base font-bold leading-normal truncate">GuardianFlow</h1>
-                    <p className="text-text-secondary dark:text-gray-400 text-xs font-normal leading-normal truncate">Gestão de Acolhimento</p>
-                </div>
+                <img
+                    src="/src/assets/logo.png"
+                    alt="Logo"
+                    className={clsx(
+                        "object-contain transition-all duration-300",
+                        isCollapsed && !isMobileOpen ? "h-11 w-[95%]" : "h-16 w-[75%]"
+                    )}
+                />
 
                 {/* Close button - mobile only */}
                 {isMobileOpen && (
@@ -114,17 +112,19 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
             </div>
 
             {/* Current Unit - Mobile Only */}
-            {isMobileOpen && (
-                <div className="px-6 py-3 border-b border-border-light dark:border-gray-800 bg-gray-50/10 dark:bg-gray-800/10">
-                    <label className="text-[9px] text-text-secondary dark:text-gray-400 font-black uppercase tracking-widest block mb-1 opacity-70">Unidade Atual</label>
-                    <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-primary text-[16px]">home_work</span>
-                        <span className="text-xs font-bold text-text-main dark:text-white truncate">
-                            {organization?.name || 'Carregando...'}
-                        </span>
+            {
+                isMobileOpen && (
+                    <div className="px-6 py-3 border-b border-border-light dark:border-gray-800 bg-gray-50/10 dark:bg-gray-800/10">
+                        <label className="text-[9px] text-text-secondary dark:text-gray-400 font-black uppercase tracking-widest block mb-1 opacity-70">Unidade Atual</label>
+                        <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-primary text-[16px]">home_work</span>
+                            <span className="text-xs font-bold text-text-main dark:text-white truncate">
+                                {organization?.name || 'Carregando...'}
+                            </span>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Navigation */}
             <nav className="flex-1 flex flex-col gap-2 p-4 overflow-y-auto no-scrollbar overflow-x-hidden">
