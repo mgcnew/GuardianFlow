@@ -18,7 +18,7 @@ import { EvolutionTab } from '../components/children/EvolutionTab';
 import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
 
-type ProfileTab = 'resumo' | 'historico' | 'saude' | 'documentos' | 'diario' | 'evolucao';
+type ProfileTab = 'resumo' | 'prontuario' | 'saude' | 'documentos' | 'diario' | 'evolucao';
 
 import { useAuth } from '../contexts/AuthContext';
 
@@ -124,7 +124,7 @@ export function ChildProfile() {
                             <FamilyContacts child={child} />
                         </>
                     )}
-                    {activeTab === 'historico' && <ChildHistoryTab childId={child.id} child={child} />}
+                    {activeTab === 'prontuario' && <ChildHistoryTab childId={child.id} child={child} />}
                     {activeTab === 'saude' && (hasRole(['saas_admin', 'admin', 'technical', 'educator']) ? <HealthOverview child={child} /> : <p className="text-red-500">Acesso Negado</p>)}
                     {activeTab === 'documentos' && (hasRole(['saas_admin', 'admin', 'technical']) ? <RecentDocuments /> : <p className="text-red-500">Acesso Negado</p>)}
                     {activeTab === 'diario' && <DiaryTab childId={child.id} />}

@@ -4,8 +4,8 @@ import { useAuth } from '../../contexts/AuthContext';
 
 interface ProfileHeaderProps {
     child: any;
-    activeTab: 'resumo' | 'historico' | 'saude' | 'documentos' | 'diario' | 'evolucao';
-    setActiveTab: (tab: 'resumo' | 'historico' | 'saude' | 'documentos' | 'diario' | 'evolucao') => void;
+    activeTab: 'resumo' | 'prontuario' | 'saude' | 'documentos' | 'diario' | 'evolucao';
+    setActiveTab: (tab: 'resumo' | 'prontuario' | 'saude' | 'documentos' | 'diario' | 'evolucao') => void;
     onEdit: () => void;
     onPrintPIA: () => void;
 }
@@ -22,7 +22,7 @@ export function ProfileHeader({ child, activeTab, setActiveTab, onEdit, onPrintP
         { id: 'resumo', label: 'Resumo', roles: ['saas_admin', 'admin', 'org_admin', 'technical', 'technician', 'pedagogue', 'educator', 'operational'] },
         { id: 'diario', label: 'Diário', roles: ['saas_admin', 'admin', 'org_admin', 'technical', 'technician', 'pedagogue', 'educator', 'operational'] },
         { id: 'evolucao', label: 'Evolução', roles: ['saas_admin', 'admin', 'org_admin', 'technical', 'technician', 'pedagogue'] },
-        { id: 'historico', label: 'Histórico', roles: ['saas_admin', 'admin', 'org_admin', 'technical', 'technician', 'pedagogue', 'educator', 'operational'] },
+        { id: 'prontuario', label: 'Prontuário', roles: ['saas_admin', 'admin', 'org_admin', 'technical', 'technician', 'pedagogue', 'educator', 'operational'] },
         { id: 'saude', label: 'Saúde', roles: ['saas_admin', 'admin', 'org_admin', 'technical', 'technician', 'pedagogue', 'educator'] },
         { id: 'documentos', label: 'Documentos', roles: ['saas_admin', 'admin', 'org_admin', 'technical', 'technician', 'pedagogue'] }
     ].filter(tab => profile && (['saas_admin', 'admin', 'org_admin'].includes(profile.role) || tab.roles.includes(profile.role)));
@@ -32,7 +32,7 @@ export function ProfileHeader({ child, activeTab, setActiveTab, onEdit, onPrintP
         diario: 'edit_note',
         atendimentos: 'diversity_3',
         evolucao: 'trending_up',
-        historico: 'history',
+        prontuario: 'clinical_notes',
         saude: 'health_and_safety',
         documentos: 'description',
     };
