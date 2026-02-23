@@ -255,8 +255,8 @@ export function Dashboard() {
             {/* Modals Summary */}
             {showMedSummary && createPortal(
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => !medToConfirm && setShowMedSummary(false)} />
-                    <div className="relative w-full max-w-lg bg-white dark:bg-surface-dark rounded-3xl shadow-2xl border border-white/20 overflow-hidden animate-in zoom-in-95 duration-200">
+                    <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={() => !medToConfirm && setShowMedSummary(false)} />
+                    <div className="relative w-full max-w-lg bg-white dark:bg-[#0D1117] rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden animate-in zoom-in-95 duration-200">
                         <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-primary/5">
                             <h3 className="font-black text-primary dark:text-blue-400 uppercase tracking-widest text-xs flex items-center gap-2">
                                 <span className="material-symbols-outlined text-lg">pill</span>
@@ -266,26 +266,26 @@ export function Dashboard() {
                                 <span className="material-symbols-outlined text-lg">close</span>
                             </button>
                         </div>
-                        <div className="max-h-[60vh] overflow-y-auto p-4 space-y-4">
+                        <div className="max-h-[60vh] overflow-y-auto p-4 space-y-4 bg-white dark:bg-[#0D1117]">
                             {activeMeds.length === 0 ? (
                                 <p className="text-center py-8 text-text-secondary dark:text-gray-500 font-medium">Nenhum medicamento ativo registrado.</p>
                             ) : (
                                 activeMeds.map((m: any) => (
-                                    <div key={m.id} className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-[2rem] border border-gray-100 dark:border-gray-700">
+                                    <div key={m.id} className="p-4 bg-gray-50 dark:bg-gray-900/40 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
                                         <div className="flex items-start justify-between mb-3">
                                             <div className="flex items-center gap-2">
-                                                <div className="size-8 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                                                <div className="size-8 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm border border-gray-100 dark:border-gray-700">
                                                     <span className="material-symbols-outlined text-blue-500 text-lg">medication</span>
                                                 </div>
                                                 <div>
-                                                    <p className="text-[10px] font-black text-text-main dark:text-white uppercase tracking-tight">{m.children?.full_name}</p>
-                                                    <p className="text-sm font-black text-primary dark:text-blue-400">{m.name} <span className="text-[11px] font-medium text-text-secondary">({m.dosage})</span></p>
+                                                    <p className="text-[10px] font-black text-text-main dark:text-gray-300 uppercase tracking-tight">{m.children?.full_name}</p>
+                                                    <p className="text-sm font-black text-primary dark:text-blue-400">{m.name} <span className="text-[11px] font-medium text-text-secondary dark:text-gray-500">({m.dosage})</span></p>
                                                 </div>
                                             </div>
                                             {m.next_dose && (
                                                 <span className={clsx(
                                                     "text-[9px] font-black px-2 py-0.5 rounded-full uppercase",
-                                                    m.next_dose.getTime() < new Date().getTime() ? "bg-red-100 text-red-600 animate-pulse" : "bg-blue-100 text-blue-600"
+                                                    m.next_dose.getTime() < new Date().getTime() ? "bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 animate-pulse" : "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400"
                                                 )}>
                                                     {m.next_dose.getTime() < new Date().getTime() ? 'Atrasado' : 'Próximo'}
                                                 </span>
@@ -294,8 +294,8 @@ export function Dashboard() {
 
                                         <div className="flex items-center justify-between gap-4">
                                             <div className="flex-1">
-                                                <p className="text-[9px] font-black text-text-secondary dark:text-gray-400 uppercase tracking-widest mb-0.5">Agendado para</p>
-                                                <p className="text-xs font-bold text-text-main dark:text-white">
+                                                <p className="text-[9px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest mb-0.5">Agendado para</p>
+                                                <p className="text-xs font-bold text-text-main dark:text-gray-200">
                                                     {m.next_dose ? format(m.next_dose, "HH:mm 'de' dd/MM", { locale: ptBR }) : m.frequency}
                                                 </p>
                                                 {m.instructions && <p className="text-[10px] text-text-secondary dark:text-gray-400 mt-1 italic line-clamp-1">{m.instructions}</p>}
@@ -304,7 +304,7 @@ export function Dashboard() {
                                             <button
                                                 onClick={() => setMedToConfirm(m)}
                                                 disabled={registerDoseMutation.isPending}
-                                                className="shrink-0 size-11 bg-primary text-white rounded-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
+                                                className="shrink-0 size-11 bg-primary text-white rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
                                                 title="Registrar Dose Agora"
                                             >
                                                 {registerDoseMutation.isPending && medToConfirm?.id === m.id ? (
@@ -318,8 +318,8 @@ export function Dashboard() {
                                 ))
                             )}
                         </div>
-                        <div className="p-4 bg-gray-50/50 border-t border-gray-100 dark:border-gray-800 flex justify-center">
-                            <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest flex items-center gap-1.5">
+                        <div className="p-4 bg-gray-50/50 dark:bg-gray-900/80 border-t border-gray-100 dark:border-gray-800 flex justify-center">
+                            <p className="text-[10px] font-bold text-text-secondary dark:text-gray-500 uppercase tracking-widest flex items-center gap-1.5">
                                 <span className="material-symbols-outlined text-sm">tips_and_updates</span>
                                 Clique no botão azul para confirmar a dose
                             </p>
@@ -332,11 +332,11 @@ export function Dashboard() {
             {/* Custom Confirmation Modal */}
             {medToConfirm && createPortal(
                 <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setMedToConfirm(null)} />
-                    <div className="relative w-full max-w-sm bg-white dark:bg-surface-dark rounded-[2.5rem] shadow-2xl border border-white/20 overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setMedToConfirm(null)} />
+                    <div className="relative w-full max-w-sm bg-white dark:bg-[#0D1117] rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
                         <div className="p-8 text-center">
-                            <div className="size-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
-                                <span className="material-symbols-outlined text-4xl text-primary animate-bounce">medication</span>
+                            <div className="size-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <span className="material-symbols-outlined text-3xl text-primary animate-bounce">medication</span>
                             </div>
 
                             <h4 className="text-xl font-black text-text-main dark:text-white mb-2 leading-tight">
@@ -344,7 +344,7 @@ export function Dashboard() {
                             </h4>
 
                             <p className="text-sm text-text-secondary dark:text-gray-400 mb-6">
-                                Você está confirmando que a medicação <span className="font-black text-primary dark:text-blue-400">{medToConfirm.name}</span> foi entregue para <span className="font-black text-text-main dark:text-white">{medToConfirm.children?.full_name}</span>?
+                                Você está confirmando que a medicação <span className="font-black text-primary dark:text-blue-400">{medToConfirm.name}</span> foi entregue para <span className="font-black text-text-main dark:text-gray-200">{medToConfirm.children?.full_name}</span>?
                             </p>
 
                             <div className="flex flex-col gap-3">
@@ -353,7 +353,7 @@ export function Dashboard() {
                                         registerDoseMutation.mutate(medToConfirm.id);
                                         setMedToConfirm(null);
                                     }}
-                                    className="w-full py-4 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95 flex items-center justify-center gap-2"
+                                    className="w-full py-4 bg-primary text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95 flex items-center justify-center gap-2"
                                 >
                                     <span className="material-symbols-outlined text-lg">check_circle</span>
                                     Sim, Confirmar Dose
@@ -361,7 +361,7 @@ export function Dashboard() {
 
                                 <button
                                     onClick={() => setMedToConfirm(null)}
-                                    className="w-full py-4 bg-gray-50 dark:bg-gray-800 text-text-secondary dark:text-gray-400 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-gray-100 dark:hover:bg-gray-700 transition-all active:scale-95"
+                                    className="w-full py-4 bg-gray-50 dark:bg-gray-800 text-text-secondary dark:text-gray-400 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-gray-100 dark:hover:bg-gray-700 transition-all active:scale-95"
                                 >
                                     Cancelar
                                 </button>
