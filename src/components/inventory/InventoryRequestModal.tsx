@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
+import { useLogger } from '../../hooks/useLogger';
 
 interface InventoryRequestModalProps {
     isOpen: boolean;
@@ -11,6 +12,7 @@ interface InventoryRequestModalProps {
 
 export function InventoryRequestModal({ isOpen, onClose }: InventoryRequestModalProps) {
     const { profile } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
 
@@ -40,8 +42,15 @@ export function InventoryRequestModal({ isOpen, onClose }: InventoryRequestModal
                 status: 'pending'
             };
 
-            const { error } = await supabase.from('inventory_requests').insert([payload]);
+            const { data, error } = await supabase.from('inventory_requests').insert([payload]).select().single();
             if (error) throw error;
+
+            if (data) {
+                logAction('CREATE', 'inventory_request', data.id, {
+                    item_name: formData.item_name,
+                    priority: formData.priority
+                });
+            }
 
             queryClient.invalidateQueries({ queryKey: ['inventoryDashboard'] });
             onClose();

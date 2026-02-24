@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
+import { useLogger } from '../../hooks/useLogger';
 import clsx from 'clsx';
 
 interface TransactionModalProps {
@@ -14,6 +15,7 @@ interface TransactionModalProps {
 
 export function TransactionModal({ isOpen, onClose, transaction, type = 'expense' }: TransactionModalProps) {
     const { profile } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
 
@@ -50,8 +52,20 @@ export function TransactionModal({ isOpen, onClose, transaction, type = 'expense
 
             if (transaction?.id) {
                 await supabase.from('financial_transactions').update(payload).eq('id', transaction.id);
+                logAction('UPDATE', 'financial_transaction', transaction.id, {
+                    description: formData.description,
+                    amount: payload.amount,
+                    type: formData.type
+                });
             } else {
-                await supabase.from('financial_transactions').insert([payload]);
+                const { data, error } = await supabase.from('financial_transactions').insert([payload]).select().single();
+                if (!error && data) {
+                    logAction('CREATE', 'financial_transaction', data.id, {
+                        description: formData.description,
+                        amount: payload.amount,
+                        type: formData.type
+                    });
+                }
             }
 
             queryClient.invalidateQueries({ queryKey: ['financialDashboard'] });

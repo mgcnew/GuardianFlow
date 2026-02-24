@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLogger } from '../../hooks/useLogger';
 import clsx from 'clsx';
 
 interface FamilyVisitModalProps {
@@ -21,6 +22,7 @@ const REACTIONS = [
 
 export function FamilyVisitModal({ isOpen, onClose, initialChildId }: FamilyVisitModalProps) {
     const { profile } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [isSuccess, setIsSuccess] = useState(false);
     const [childSearch, setChildSearch] = useState('');
@@ -97,6 +99,12 @@ export function FamilyVisitModal({ isOpen, onClose, initialChildId }: FamilyVisi
                 created_by: profile.id,
             });
             if (error) throw error;
+
+            logAction('CREATE', 'family_visit', form.child_id, {
+                visitor_name: form.visitor_name,
+                relationship: form.relationship,
+                visit_date: visitDateTime.toISOString()
+            });
         },
         onSuccess: () => {
             setIsSuccess(true);

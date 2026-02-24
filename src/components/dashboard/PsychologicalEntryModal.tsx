@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLogger } from '../../hooks/useLogger';
 import clsx from 'clsx';
 import { format } from 'date-fns';
 
@@ -70,6 +71,7 @@ const ATTENTION_OPTIONS = [
 
 export function PsychologicalEntryModal({ isOpen, onClose, initialChildId }: PsychologicalEntryModalProps) {
     const { profile, user } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [isSuccess, setIsSuccess] = useState(false);
     const [childSearch, setChildSearch] = useState('');
@@ -272,6 +274,12 @@ export function PsychologicalEntryModal({ isOpen, onClose, initialChildId }: Psy
             });
 
             if (error) throw error;
+
+            logAction('CREATE', 'psychological_entry', undefined, {
+                child_id: form.child_id,
+                title: form.title || 'Evolução Psicológica',
+                urgency: form.urgency
+            });
         },
         onSuccess: () => {
             setIsSuccess(true);

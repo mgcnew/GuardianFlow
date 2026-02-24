@@ -5,6 +5,8 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import clsx from 'clsx';
 import { createNotification } from '../../lib/notifications';
+import { useLogger } from '../../hooks/useLogger';
+
 
 const SOCIAL_CATEGORIES = [
     { id: 'atendimento', label: 'Atendimento', icon: 'diversity_3' },
@@ -27,6 +29,7 @@ interface SocialWorkEntryModalProps {
 
 export function SocialWorkEntryModal({ isOpen, onClose, initialChildId }: SocialWorkEntryModalProps) {
     const { profile } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [step, setStep] = useState(1);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -107,6 +110,13 @@ export function SocialWorkEntryModal({ isOpen, onClose, initialChildId }: Social
             });
 
             if (error) throw error;
+
+            logAction('CREATE', 'social_work_entry', undefined, {
+                child_id: form.child_id,
+                title: form.title,
+                category: form.category,
+                urgency: form.urgency
+            });
         },
         onSuccess: async () => {
             setIsSuccess(true);

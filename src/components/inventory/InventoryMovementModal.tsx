@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
+import { useLogger } from '../../hooks/useLogger';
 import clsx from 'clsx';
 
 interface InventoryMovementModalProps {
@@ -14,6 +15,7 @@ interface InventoryMovementModalProps {
 
 export function InventoryMovementModal({ isOpen, onClose, items, type }: InventoryMovementModalProps) {
     const { profile } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
 
@@ -45,6 +47,12 @@ export function InventoryMovementModal({ isOpen, onClose, items, type }: Invento
 
             const { error } = await supabase.from('inventory_movements').insert([payload]);
             if (error) throw error;
+
+            logAction('CREATE', 'inventory_movement', formData.item_id, {
+                type,
+                quantity: formData.quantity,
+                item_name: selectedItem?.name
+            });
 
             queryClient.invalidateQueries({ queryKey: ['inventoryDashboard'] });
             onClose();

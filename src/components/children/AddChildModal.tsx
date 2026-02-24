@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { DocumentUploadManager } from './DocumentUploadManager';
 import { createNotification } from '../../lib/notifications';
+import { useLogger } from '../../hooks/useLogger';
 
 interface AddChildModalProps {
     isOpen: boolean;
@@ -21,6 +22,7 @@ const sectionTitle = "text-xs font-black text-primary uppercase tracking-widest 
 
 export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
     const { user } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -167,6 +169,11 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
                 .single();
 
             if (insertError) throw insertError;
+
+            logAction('CREATE', 'child', newChild.id, {
+                full_name: formData.full_name,
+                admission_date: formData.admission_date
+            });
 
             // Send notification
             await createNotification({

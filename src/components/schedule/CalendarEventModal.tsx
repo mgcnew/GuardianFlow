@@ -6,6 +6,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { format } from 'date-fns';
 import clsx from 'clsx';
 import { createNotification } from '../../lib/notifications';
+import { useLogger } from '../../hooks/useLogger';
+
 
 interface CalendarEventModalProps {
     isOpen: boolean;
@@ -95,6 +97,7 @@ const PRIORITY_OPTIONS = [
 
 export function CalendarEventModal({ isOpen, onClose, selectedDate, eventToEdit, initialProfessionalId, initialType }: CalendarEventModalProps) {
     const { profile } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
 
     const [step, setStep] = useState<1 | 2 | 3>(1); // Step 3 represents "Outcome/Completion" mode
@@ -273,12 +276,24 @@ export function CalendarEventModal({ isOpen, onClose, selectedDate, eventToEdit,
                     .update(eventData)
                     .eq('id', eventToEdit.id);
                 if (error) throw error;
+                logAction('UPDATE', 'calendar_event', eventToEdit.id, {
+                    title: eventData.title,
+                    type: eventData.type,
+                    child_id: eventData.child_id
+                });
             } else {
                 eventData.created_by = profile?.id;
-                const { error } = await supabase
+                const { data: newEvent, error } = await supabase
                     .from('calendar_events')
-                    .insert([eventData]);
+                    .insert([eventData])
+                    .select()
+                    .single();
                 if (error) throw error;
+                logAction('CREATE', 'calendar_event', newEvent.id, {
+                    title: eventData.title,
+                    type: eventData.type,
+                    child_id: eventData.child_id
+                });
             }
 
             // 2. Create Log Entry if requested (Status completed + outcome details exist)
@@ -352,6 +367,10 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
         if (error) {
             alert('Erro ao excluir evento');
         } else {
+            logAction('DELETE', 'calendar_event', eventToEdit.id, {
+                title: eventToEdit.title,
+                child_id: eventToEdit.child_id
+            });
             await queryClient.invalidateQueries({ queryKey: ['calendar-events'] });
             onClose();
         }

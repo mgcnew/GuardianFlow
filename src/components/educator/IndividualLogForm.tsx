@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { createNotification } from '../../lib/notifications';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useLogger } from '../../hooks/useLogger';
 
 interface IndividualLogFormProps {
     isOpen: boolean;
@@ -43,6 +44,7 @@ const severityLevels = [
 
 export function IndividualLogForm({ isOpen, onClose, onSuccess }: IndividualLogFormProps) {
     const { user, profile } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [residents, setResidents] = useState<any[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -102,6 +104,12 @@ export function IndividualLogForm({ isOpen, onClose, onSuccess }: IndividualLogF
             });
 
             if (error) throw error;
+
+            logAction('CREATE', 'log', selectedResident.id, {
+                category: selectedCategory,
+                severity,
+                description: description.substring(0, 50) + '...'
+            });
 
             if (severity === 'critical' || severity === 'high' || selectedCategory === 'incident') {
                 await createNotification({

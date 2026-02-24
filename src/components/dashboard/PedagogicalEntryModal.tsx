@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLogger } from '../../hooks/useLogger';
 import clsx from 'clsx';
 
 interface PedagogicalEntryModalProps {
@@ -20,6 +21,7 @@ const CATEGORIES = [
 
 export function PedagogicalEntryModal({ isOpen, onClose, initialChildId }: PedagogicalEntryModalProps) {
     const { profile } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [step, setStep] = useState(1);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -100,6 +102,12 @@ export function PedagogicalEntryModal({ isOpen, onClose, initialChildId }: Pedag
             });
 
             if (error) throw error;
+
+            logAction('CREATE', 'pedagogical_entry', undefined, {
+                child_id: form.child_id,
+                title: form.title,
+                category: form.category
+            });
         },
         onSuccess: () => {
             setIsSuccess(true);

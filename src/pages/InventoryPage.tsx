@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useLogger } from '../hooks/useLogger';
 import { format, parseISO } from 'date-fns';
 
 import clsx from 'clsx';
@@ -15,6 +16,7 @@ type DashboardTab = 'overview' | 'stock' | 'movements' | 'requests';
 
 export function InventoryPage() {
     const { profile } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
 
@@ -64,6 +66,10 @@ export function InventoryPage() {
                 .update({ status, updated_at: new Date().toISOString() })
                 .eq('id', id);
             if (error) throw error;
+
+            logAction('UPDATE', 'inventory_request', id, {
+                status
+            });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['inventoryDashboard'] });

@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import clsx from 'clsx';
+import { useLogger } from '../../hooks/useLogger';
 
 interface Medication {
     id: string;
@@ -28,6 +29,7 @@ interface MedicationsManagerProps {
 
 export function MedicationsManager({ childId }: MedicationsManagerProps) {
     const { profile } = useAuth(); // profile needed for organization_id
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingMedication, setEditingMedication] = useState<Medication | null>(null);
@@ -69,6 +71,11 @@ export function MedicationsManager({ childId }: MedicationsManagerProps) {
                     organization_id: profile?.organization_id, // Ensure profile.organization_id is used
                 }]);
             if (error) throw error;
+            logAction('CREATE', 'medication', undefined, {
+                child_id: childId,
+                name: newMedication.name,
+                dosage: newMedication.dosage
+            });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['medications', childId] });
@@ -84,6 +91,10 @@ export function MedicationsManager({ childId }: MedicationsManagerProps) {
                 .update(medication)
                 .eq('id', editingMedication?.id);
             if (error) throw error;
+            logAction('UPDATE', 'medication', editingMedication?.id, {
+                child_id: childId,
+                name: medication.name
+            });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['medications', childId] });
@@ -97,6 +108,9 @@ export function MedicationsManager({ childId }: MedicationsManagerProps) {
         mutationFn: async (id: string) => {
             const { error } = await supabase.from('medications').delete().eq('id', id);
             if (error) throw error;
+            logAction('DELETE', 'medication', id, {
+                child_id: childId
+            });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['medications', childId] });
@@ -110,6 +124,9 @@ export function MedicationsManager({ childId }: MedicationsManagerProps) {
                 .update({ last_administration: new Date().toISOString() })
                 .eq('id', id);
             if (error) throw error;
+            logAction('DOSE_ADMINISTRATION', 'medication', id, {
+                child_id: childId
+            });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['medications', childId] });

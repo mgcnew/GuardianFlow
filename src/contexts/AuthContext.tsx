@@ -25,6 +25,7 @@ interface AuthContextType {
     refreshProfile: () => Promise<void>;
     isTrialExpired: boolean;
     isDemo: boolean;
+    sessionId: string | null;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -42,6 +43,7 @@ const AuthContext = createContext<AuthContextType>({
     refreshPermissions: async () => { },
     isTrialExpired: false,
     isDemo: false,
+    sessionId: null,
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -51,6 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [organization, setOrganization] = useState<Database['public']['Tables']['organizations']['Row'] | null>(null);
     const [permissions, setPermissions] = useState<Record<string, boolean>>({});
     const [loading, setLoading] = useState(true);
+    const [sessionId, setSessionId] = useState<string | null>(null);
 
     const fetchProfile = async (userId: string, email?: string) => {
         let profileFetched = false;
@@ -186,6 +189,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     console.log('[Auth] Refreshing profile from server for:', newSession.user.id);
                     await fetchProfile(newSession.user.id, newSession.user.email);
                     console.log('[Auth] Profile refresh complete');
+
+                    // Create session record asynchronously to avoid blocking auth
+                    setTimeout(async () => {
+                        try {
+                            const cachedProfileObj = JSON.parse(localStorage.getItem(`profile_${newSession.user.id}`) || '{}');
+                            const orgId = cachedProfileObj?.organization_id;
+                            if (orgId) {
+                                const { data: sessionData } = await supabase.from('user_sessions').insert({
+                                    user_id: newSession.user.id,
+                                    organization_id: orgId
+                                }).select().single();
+
+                                if (sessionData) {
+                                    setSessionId(sessionData.id);
+                                }
+                            }
+                        } catch (e) {
+                            console.error('Error creating session:', e);
+                        }
+                    }, 500);
+
                 } else {
                     setSession(null);
                     setUser(null);
@@ -254,6 +278,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (user) {
             localStorage.removeItem(`perms_${user.id}`);
             localStorage.removeItem(`profile_${user.id}`);
+
+            if (sessionId) {
+                await supabase.from('user_sessions').update({
+                    ended_at: new Date().toISOString()
+                }).eq('id', sessionId);
+            }
         }
         await supabase.auth.signOut();
     };
@@ -343,7 +373,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             user, session, profile, organization, permissions, loading,
             signOut, hasRole, canAccess,
             refreshOrganization, refreshProfile, refreshPermissions,
-            isTrialExpired, isDemo
+            isTrialExpired, isDemo, sessionId
         }}>
             {children}
         </AuthContext.Provider>

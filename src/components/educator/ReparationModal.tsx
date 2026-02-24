@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLogger } from '../../hooks/useLogger';
 import clsx from 'clsx';
 
 interface ReparationModalProps {
@@ -21,6 +22,7 @@ const REPARATION_TYPES = [
 
 export function ReparationModal({ isOpen, onClose, onSuccess }: ReparationModalProps) {
     const { user, profile } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [isSuccess, setIsSuccess] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -87,6 +89,11 @@ export function ReparationModal({ isOpen, onClose, onSuccess }: ReparationModalP
                 }]);
 
             if (error) throw error;
+
+            logAction('CREATE', 'educational_reparation', selectedChild.id, {
+                type: formData.type,
+                reason: formData.reason.substring(0, 50) + '...'
+            });
         },
         onSuccess: () => {
             setIsSuccess(true);

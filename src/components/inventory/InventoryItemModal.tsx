@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
+import { useLogger } from '../../hooks/useLogger';
 
 interface InventoryItemModalProps {
     isOpen: boolean;
@@ -12,6 +13,7 @@ interface InventoryItemModalProps {
 
 export function InventoryItemModal({ isOpen, onClose, item }: InventoryItemModalProps) {
     const { profile } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
 
@@ -37,8 +39,18 @@ export function InventoryItemModal({ isOpen, onClose, item }: InventoryItemModal
 
             if (item?.id) {
                 await supabase.from('inventory_items').update(payload).eq('id', item.id);
+                logAction('UPDATE', 'inventory_item', item.id, {
+                    name: formData.name,
+                    category: formData.category
+                });
             } else {
-                await supabase.from('inventory_items').insert([payload]);
+                const { data, error } = await supabase.from('inventory_items').insert([payload]).select().single();
+                if (!error && data) {
+                    logAction('CREATE', 'inventory_item', data.id, {
+                        name: formData.name,
+                        category: formData.category
+                    });
+                }
             }
 
             queryClient.invalidateQueries({ queryKey: ['inventoryDashboard'] });

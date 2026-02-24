@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLogger } from '../../hooks/useLogger';
 
 interface AdoptionProcessModalProps {
     isOpen: boolean;
@@ -24,6 +25,7 @@ const ADOPTION_STATUSES = [
 
 export function AdoptionProcessModal({ isOpen, onClose, childId, childName, existingProcess }: AdoptionProcessModalProps) {
     const { profile } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [isSuccess, setIsSuccess] = useState(false);
     const [childSearch, setChildSearch] = useState('');
@@ -112,9 +114,20 @@ export function AdoptionProcessModal({ isOpen, onClose, childId, childName, exis
             if (existingProcess?.id) {
                 const { error } = await supabase.from('adoption_processes').update(payload).eq('id', existingProcess.id);
                 if (error) throw error;
+                logAction('UPDATE', 'adoption_process', form.child_id, {
+                    adopter_name: form.adopter_name,
+                    status: form.status,
+                    process_id: existingProcess.id
+                });
             } else {
-                const { error } = await supabase.from('adoption_processes').insert(payload);
+                const { data: newProcess, error } = await supabase.from('adoption_processes').insert(payload).select().single();
                 if (error) throw error;
+
+                logAction('CREATE', 'adoption_process', form.child_id, {
+                    adopter_name: form.adopter_name,
+                    status: form.status,
+                    process_id: newProcess.id
+                });
 
                 // Also update child legal_status if needed
                 await supabase.from('children').update({ legal_status: 'em_processo_adocao' }).eq('id', form.child_id);

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLogger } from '../../hooks/useLogger';
 import clsx from 'clsx';
 
 interface HearingModalProps {
@@ -22,6 +23,7 @@ const HEARING_TYPES = [
 
 export function HearingModal({ isOpen, onClose, initialChildId }: HearingModalProps) {
     const { profile } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [isSuccess, setIsSuccess] = useState(false);
     const [childSearch, setChildSearch] = useState('');
@@ -83,6 +85,12 @@ export function HearingModal({ isOpen, onClose, initialChildId }: HearingModalPr
                 created_by: profile.id,
             });
             if (error) throw error;
+
+            logAction('CREATE', 'judicial_hearing', form.child_id, {
+                hearing_type: form.hearing_type,
+                hearing_date: hearingDateTime.toISOString(),
+                court: form.court
+            });
         },
         onSuccess: () => {
             setIsSuccess(true);

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLogger } from '../../hooks/useLogger';
 import clsx from 'clsx';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -15,6 +16,7 @@ interface ShiftReportFormProps {
 
 export function ShiftReportForm({ isOpen, onClose, onSuccess }: ShiftReportFormProps) {
     const { profile, user } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -165,6 +167,11 @@ export function ShiftReportForm({ isOpen, onClose, onSuccess }: ShiftReportFormP
             });
 
             if (error) throw error;
+
+            logAction('CREATE', 'shift_report', undefined, {
+                shift: formData.shift,
+                report_date: new Date().toISOString().split('T')[0]
+            });
         },
         onSuccess: () => {
             setIsSuccess(true);

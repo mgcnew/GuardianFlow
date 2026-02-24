@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
+import { useLogger } from '../../hooks/useLogger';
 
 interface CampaignModalProps {
     isOpen: boolean;
@@ -12,6 +13,7 @@ interface CampaignModalProps {
 
 export function CampaignModal({ isOpen, onClose, campaign }: CampaignModalProps) {
     const { profile } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
 
@@ -39,8 +41,18 @@ export function CampaignModal({ isOpen, onClose, campaign }: CampaignModalProps)
 
             if (campaign?.id) {
                 await supabase.from('financial_campaigns').update(payload).eq('id', campaign.id);
+                logAction('UPDATE', 'financial_campaign', campaign.id, {
+                    title: formData.title,
+                    goal_amount: payload.goal_amount
+                });
             } else {
-                await supabase.from('financial_campaigns').insert([payload]);
+                const { data, error } = await supabase.from('financial_campaigns').insert([payload]).select().single();
+                if (!error && data) {
+                    logAction('CREATE', 'financial_campaign', data.id, {
+                        title: formData.title,
+                        goal_amount: payload.goal_amount
+                    });
+                }
             }
 
             queryClient.invalidateQueries({ queryKey: ['financialDashboard'] });

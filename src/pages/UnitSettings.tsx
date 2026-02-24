@@ -5,6 +5,8 @@ import { supabase } from '../lib/supabase';
 import clsx from 'clsx';
 import { AddProfessionalModal } from '../components/settings/AddProfessionalModal';
 import { PermissionsSettings } from '../components/settings/PermissionsSettings';
+import { ActivityLogs } from '../components/settings/ActivityLogs';
+import { useLogger } from '../hooks/useLogger';
 
 interface OrgData {
     name: string;
@@ -24,8 +26,9 @@ interface OrgData {
 
 export function UnitSettings() {
     const { profile, refreshOrganization } = useAuth();
+    const { logAction } = useLogger();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [activeTab, setActiveTab] = useState<'unit' | 'team' | 'permissions'>((searchParams.get('tab') as any) || 'unit');
+    const [activeTab, setActiveTab] = useState<'unit' | 'team' | 'permissions' | 'logs'>((searchParams.get('tab') as any) || 'unit');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
@@ -150,6 +153,10 @@ export function UnitSettings() {
             alert('Erro ao salvar: ' + error.message);
         } else {
             setSaved(true);
+            logAction('UPDATE', 'organization', profile.organization_id, {
+                name: form.name,
+                capacity: form.capacity
+            });
             await refreshOrganization();
             setTimeout(() => setSaved(false), 3000);
         }
@@ -259,6 +266,23 @@ export function UnitSettings() {
                     <span className="material-symbols-outlined text-[20px]">security</span>
                     Permissões
                 </button>
+                {(profile?.role === 'saas_admin' || profile?.role === 'org_admin' || profile?.role === 'admin') && (
+                    <button
+                        onClick={() => {
+                            setActiveTab('logs');
+                            setSearchParams({ tab: 'logs' });
+                        }}
+                        className={clsx(
+                            "px-4 py-2 text-sm font-bold rounded-xl transition-all flex items-center gap-2 whitespace-nowrap",
+                            activeTab === 'logs'
+                                ? "bg-white dark:bg-surface-dark text-primary shadow-sm"
+                                : "text-text-secondary dark:text-gray-400 hover:text-text-main dark:hover:text-white"
+                        )}
+                    >
+                        <span className="material-symbols-outlined text-[20px]">history</span>
+                        Auditoria
+                    </button>
+                )}
             </div>
 
             {activeTab === 'unit' && (
@@ -485,6 +509,10 @@ export function UnitSettings() {
 
             {activeTab === 'permissions' && (
                 <PermissionsSettings />
+            )}
+
+            {activeTab === 'logs' && (
+                <ActivityLogs />
             )}
 
             <AddProfessionalModal

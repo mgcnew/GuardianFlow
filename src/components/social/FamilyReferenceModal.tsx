@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLogger } from '../../hooks/useLogger';
 import clsx from 'clsx';
 
 interface FamilyReferenceModalProps {
@@ -39,6 +40,7 @@ const STATUSES = [
 
 export function FamilyReferenceModal({ isOpen, onClose, childId, childName }: FamilyReferenceModalProps) {
     const { profile } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const [view, setView] = useState<'list' | 'form'>('list');
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -90,9 +92,19 @@ export function FamilyReferenceModal({ isOpen, onClose, childId, childName }: Fa
             if (editingId) {
                 const { error } = await supabase.from('family_references').update(payload).eq('id', editingId);
                 if (error) throw error;
+                logAction('UPDATE', 'family_reference', childId, {
+                    full_name: form.full_name,
+                    relationship: form.relationship,
+                    reference_id: editingId
+                });
             } else {
-                const { error } = await supabase.from('family_references').insert(payload);
+                const { data: newRef, error } = await supabase.from('family_references').insert(payload).select().single();
                 if (error) throw error;
+                logAction('CREATE', 'family_reference', childId, {
+                    full_name: form.full_name,
+                    relationship: form.relationship,
+                    reference_id: newRef.id
+                });
             }
         },
         onSuccess: () => {

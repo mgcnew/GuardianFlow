@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { MedicationsManager } from './MedicationsManager';
 import { DocumentUploadManager } from './DocumentUploadManager';
+import { useLogger } from '../../hooks/useLogger';
 
 interface EditChildModalProps {
     isOpen: boolean;
@@ -22,6 +23,7 @@ const sectionTitle = "text-xs font-black text-primary uppercase tracking-widest 
 
 export function EditChildModal({ isOpen, onClose, child, initialTab = 'basic' }: EditChildModalProps) {
     const { user } = useAuth();
+    const { logAction } = useLogger();
     const queryClient = useQueryClient();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -163,6 +165,11 @@ export function EditChildModal({ isOpen, onClose, child, initialTab = 'basic' }:
                 .eq('id', child.id);
 
             if (updateError) throw updateError;
+
+            logAction('UPDATE', 'child', child.id, {
+                full_name: formData.full_name,
+                updated_fields: Object.keys(payload)
+            });
 
             queryClient.invalidateQueries({ queryKey: ['child', child.id] });
             queryClient.invalidateQueries({ queryKey: ['children'] });
