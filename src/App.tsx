@@ -23,6 +23,7 @@ import { SuperAdmin } from './pages/admin/SuperAdmin';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LoadingScreen } from './components/shared/LoadingScreen';
 import { AdminProtectedRoute } from './components/shared/AdminProtectedRoute';
+import { TrialExpiredScreen } from './components/shared/TrialExpiredScreen';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,7 +35,7 @@ const queryClient = new QueryClient({
 });
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading: authLoading } = useAuth();
+  const { user, profile, isTrialExpired, loading: authLoading } = useAuth();
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
 
   React.useEffect(() => {
@@ -59,6 +60,11 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (loading) return <LoadingScreen />;
   if (!user) return <Navigate to="/" />;
+
+  // Block access if trial is expired, unless it's a saas_admin
+  if (isTrialExpired && profile?.role !== 'saas_admin') {
+    return <TrialExpiredScreen />;
+  }
 
   return <>{children}</>;
 }

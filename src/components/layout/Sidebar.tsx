@@ -54,7 +54,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile }: SidebarProps) {
-    const { profile, organization, canAccess } = useAuth();
+    const { profile, organization, canAccess, isTrialExpired } = useAuth();
     const { toggleTheme, isDark } = useTheme();
 
     const filteredNavItems = navItems.filter(item => {
@@ -131,7 +131,20 @@ export function Sidebar({ isCollapsed, toggleSidebar, isMobileOpen, closeMobile 
                 )
             }
 
-            {/* Navigation */}
+            {/* Trial Badge - if applicable */}
+            {!isCollapsed && profile?.trial_expires_at && (
+                <div className="mx-4 mb-2 p-3 rounded-xl bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/30">
+                    <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400 mb-1">
+                        <span className="material-symbols-outlined text-sm">timer</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest">Período de Teste</span>
+                    </div>
+                    <p className="text-[10px] text-orange-600/80 dark:text-orange-400/80 font-bold leading-tight">
+                        {isTrialExpired
+                            ? "Acesso expirado"
+                            : `Expira em: ${new Date(profile.trial_expires_at).toLocaleDateString()}`}
+                    </p>
+                </div>
+            )}
             <nav className="flex-1 flex flex-col gap-2 p-4 overflow-y-auto no-scrollbar overflow-x-hidden">
                 {filteredNavItems.map((item) => {
                     const IconComponent = iconMap[item.icon];

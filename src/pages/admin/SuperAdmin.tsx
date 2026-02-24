@@ -5,12 +5,15 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 
-type TabId = 'overview' | 'organizations' | 'plans';
+type TabId = 'overview' | 'organizations' | 'plans' | 'trials';
 
 export function SuperAdmin() {
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState<TabId>('overview');
-    const { signOut } = useAuth();
+    const [inviteEmail, setInviteEmail] = useState('');
+    const [inviteName, setInviteName] = useState('');
+    const [isInviting, setIsInviting] = useState(false);
+    const { profile, signOut } = useAuth();
     const navigate = useNavigate();
 
     const { data: orgs, isLoading: orgsLoading } = useQuery({
@@ -41,6 +44,36 @@ export function SuperAdmin() {
         }
     });
 
+    const { data: trials, refetch: refetchTrials } = useQuery({
+        queryKey: ['admin-trials'],
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select(`
+                    *,
+                    organization:organizations!profiles_organization_id_fkey(*)
+                `)
+                .not('trial_expires_at', 'is', null)
+                .order('trial_expires_at', { ascending: false });
+
+            if (error) throw error;
+            return data;
+        }
+    });
+
+    const { data: demoInvites, refetch: refetchInvites } = useQuery({
+        queryKey: ['admin-demo-invites'],
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from('invites')
+                .select('*')
+                .eq('role', 'org_admin')
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            return data;
+        }
+    });
+
     const activeOrgs = orgs?.filter(o => o.subscriptions?.[0]?.status === 'active').length || 0;
     const totalOrgs = orgs?.length || 0;
 
@@ -53,10 +86,58 @@ export function SuperAdmin() {
         navigate('/');
     };
 
+    const handleSendInvite = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!inviteEmail || !inviteName) return;
+
+        setIsInviting(true);
+        try {
+            // 1. Get Demo Org ID
+            const { data: demoOrg } = await supabase
+                .from('organizations')
+                .select('id')
+                .eq('is_demo', true)
+                .single();
+
+            if (!demoOrg) throw new Error('Unidade de demonstração não configurada.');
+
+            // 2. Create Invite
+            const { error } = await supabase
+                .from('invites')
+                .insert({
+                    email: inviteEmail,
+                    full_name: inviteName,
+                    role: 'org_admin',
+                    organization_id: demoOrg.id,
+                    created_by: profile?.id
+                });
+
+            if (error) throw error;
+
+            setInviteEmail('');
+            setInviteName('');
+            refetchInvites();
+            alert('Convite de demonstração enviado com sucesso!');
+        } catch (error: any) {
+            console.error('Erro ao convidar:', error);
+            alert(error.message);
+        } finally {
+            setIsInviting(false);
+        }
+    };
+
+    const handleDeleteInvite = async (id: string) => {
+        if (!confirm('Deseja cancelar este convite?')) return;
+        const { error } = await supabase.from('invites').delete().eq('id', id);
+        if (error) alert('Erro ao deletar');
+        else refetchInvites();
+    };
+
     const tabs: { id: TabId; label: string; icon: string }[] = [
         { id: 'overview', label: 'Visão Geral', icon: 'dashboard' },
         { id: 'organizations', label: 'Organizações', icon: 'corporate_fare' },
         { id: 'plans', label: 'Planos', icon: 'payments' },
+        { id: 'trials', label: 'Demonstração', icon: 'timer' },
     ];
 
     return (
@@ -273,9 +354,30 @@ export function SuperAdmin() {
                                                         {new Date(org.created_at).toLocaleDateString('pt-BR')}
                                                     </td>
                                                     <td className="px-6 py-4 text-right">
-                                                        <button className="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-text-secondary opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:text-white">
-                                                            <span className="material-symbols-outlined text-lg">more_horiz</span>
-                                                        </button>
+                                                        <div className="flex items-center justify-end gap-2">
+                                                            <button
+                                                                onClick={async () => {
+                                                                    const { error } = await supabase
+                                                                        .from('organizations')
+                                                                        .update({ is_demo: !org.is_demo })
+                                                                        .eq('id', org.id);
+                                                                    if (error) alert('Erro ao atualizar');
+                                                                    else window.location.reload(); // Simple refresh to update state
+                                                                }}
+                                                                className={clsx(
+                                                                    "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                                                                    org.is_demo
+                                                                        ? "bg-primary text-white"
+                                                                        : "bg-gray-100 dark:bg-gray-800 text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700"
+                                                                )}
+                                                                title={org.is_demo ? "Desativar modo Demo" : "Ativar modo Demo"}
+                                                            >
+                                                                {org.is_demo ? 'É Demo' : 'Set Demo'}
+                                                            </button>
+                                                            <button className="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-text-secondary hover:bg-primary hover:text-white transition-all">
+                                                                <span className="material-symbols-outlined text-lg">more_horiz</span>
+                                                            </button>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))
@@ -317,6 +419,129 @@ export function SuperAdmin() {
                                     Nenhum plano cadastrado ainda.
                                 </div>
                             )}
+                        </div>
+                    </div>
+                )}
+                {activeTab === 'trials' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Invite Form */}
+                        <div className="lg:col-span-1 border border-primary/20 bg-primary/5 rounded-[32px] p-8">
+                            <h3 className="text-xl font-black text-text-main dark:text-white mb-2">Convidar para Demo</h3>
+                            <p className="text-sm text-text-secondary dark:text-gray-400 mb-6 font-medium">
+                                O convidado terá acesso de **Gestor (org_admin)** à unidade de demonstração por 7 dias.
+                            </p>
+
+                            <form onSubmit={handleSendInvite} className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-text-secondary dark:text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Nome Completo</label>
+                                    <input
+                                        required
+                                        type="text"
+                                        value={inviteName}
+                                        onChange={e => setInviteName(e.target.value)}
+                                        className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-border-light dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                                        placeholder="Ex: João Silva"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-text-secondary dark:text-gray-500 uppercase tracking-widest mb-1.5 ml-1">E-mail</label>
+                                    <input
+                                        required
+                                        type="email"
+                                        value={inviteEmail}
+                                        onChange={e => setInviteEmail(e.target.value)}
+                                        className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-border-light dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                                        placeholder="email@exemplo.com"
+                                    />
+                                </div>
+                                <button
+                                    disabled={isInviting}
+                                    className="w-full bg-primary text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 shadow-lg shadow-primary/20"
+                                >
+                                    {isInviting ? 'Enviando...' : 'Gerar Convite de 7 Dias'}
+                                </button>
+                            </form>
+                        </div>
+
+                        {/* Recent Trials List */}
+                        <div className="lg:col-span-2 space-y-6">
+                            <div className="rounded-[32px] bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 overflow-hidden shadow-sm">
+                                <div className="px-8 py-6 border-b border-border-light dark:border-gray-800 flex items-center justify-between">
+                                    <h3 className="text-lg font-black text-text-main dark:text-white">Demos Ativas</h3>
+                                    <div className="flex items-center gap-4">
+                                        <button
+                                            onClick={() => refetchTrials()}
+                                            className="text-text-secondary hover:text-primary transition-colors flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest"
+                                        >
+                                            <span className="material-symbols-outlined text-[14px]">refresh</span>
+                                            Atualizar
+                                        </button>
+                                        <span className="bg-primary/10 text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase">7 Dias Máx.</span>
+                                    </div>
+                                </div>
+                                <div className="divide-y divide-border-light dark:divide-gray-800">
+                                    {trials?.length === 0 ? (
+                                        <div className="px-8 py-12 text-center text-text-secondary dark:text-gray-500 font-medium">
+                                            Nenhum teste ativo no momento.
+                                        </div>
+                                    ) : (
+                                        trials?.map((trial: any) => {
+                                            const daysLeft = Math.ceil((new Date(trial.trial_expires_at).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                                            return (
+                                                <div key={trial.id} className="px-8 py-5 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-all">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="size-12 rounded-2xl bg-slate-100 dark:bg-gray-800 flex items-center justify-center text-text-secondary dark:text-gray-400">
+                                                            <span className="material-symbols-outlined">person</span>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-black text-text-main dark:text-white leading-tight">{trial.full_name}</p>
+                                                            <p className="text-xs text-text-secondary dark:text-gray-500 font-medium">{trial.email || 'Usuário Trial'}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <span className={clsx(
+                                                            "text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-widest",
+                                                            daysLeft > 0 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                                                        )}>
+                                                            {daysLeft > 0 ? `${daysLeft} dias restantes` : 'Expirado'}
+                                                        </span>
+                                                        <p className="text-[10px] text-text-secondary dark:text-gray-500 mt-1 font-bold">Expira: {new Date(trial.trial_expires_at).toLocaleDateString()}</p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Pending Invites */}
+                            <div className="rounded-[32px] bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 overflow-hidden shadow-sm">
+                                <div className="px-8 py-6 border-b border-border-light dark:border-gray-800">
+                                    <h3 className="text-lg font-black text-text-main dark:text-white">Convites Pendentes</h3>
+                                </div>
+                                <div className="divide-y divide-border-light dark:divide-gray-800">
+                                    {(demoInvites || []).filter((inv: any) => inv.status === 'pending').length === 0 ? (
+                                        <div className="px-8 py-12 text-center text-text-secondary dark:text-gray-500 font-medium">
+                                            Nenhum convite pendente.
+                                        </div>
+                                    ) : (
+                                        (demoInvites || []).filter((inv: any) => inv.status === 'pending').map((invite: any) => (
+                                            <div key={invite.id} className="px-8 py-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-all">
+                                                <div>
+                                                    <p className="text-sm font-black text-text-main dark:text-white">{invite.full_name}</p>
+                                                    <p className="text-xs text-text-secondary dark:text-gray-500 font-mono">{invite.email}</p>
+                                                </div>
+                                                <button
+                                                    onClick={() => handleDeleteInvite(invite.id)}
+                                                    className="size-8 rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
+                                                >
+                                                    <span className="material-symbols-outlined text-sm">delete</span>
+                                                </button>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}

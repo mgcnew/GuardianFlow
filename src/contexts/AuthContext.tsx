@@ -7,6 +7,7 @@ type Role = 'saas_admin' | 'admin' | 'technical' | 'educator' | 'operational' | 
 
 interface Profile extends Omit<Database['public']['Tables']['profiles']['Row'], 'role'> {
     role: Role;
+    trial_expires_at?: string | null;
 }
 
 interface AuthContextType {
@@ -19,9 +20,9 @@ interface AuthContextType {
     signOut: () => Promise<void>;
     hasRole: (roles: Role[]) => boolean;
     canAccess: (module: string, action: string) => boolean;
-    refreshOrganization: () => Promise<void>;
-    refreshProfile: () => Promise<void>;
     refreshPermissions: () => Promise<void>;
+    isTrialExpired: boolean;
+    isDemo: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -37,6 +38,8 @@ const AuthContext = createContext<AuthContextType>({
     refreshOrganization: async () => { },
     refreshProfile: async () => { },
     refreshPermissions: async () => { },
+    isTrialExpired: false,
+    isDemo: false,
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -316,17 +319,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const canAccess = (module: string, action: string) => {
         if (!profile) return false;
+
+        // If trial is expired, block all write/sensitive actions
+        // In the next step we will add a global redirect, but this is a safety layer
+        if (isTrialExpired && !['saas_admin'].includes(profile.role)) return false;
+
         // Admins always have access
         if (['saas_admin', 'org_admin', 'admin'].includes(profile.role)) return true;
 
         return permissions[`${module}:${action}`] || false;
     };
 
+    const isTrialExpired = profile?.trial_expires_at
+        ? new Date(profile.trial_expires_at) < new Date()
+        : false;
+
+    const isDemo = (organization as any)?.is_demo || false;
+
     return (
         <AuthContext.Provider value={{
             user, session, profile, organization, permissions, loading,
             signOut, hasRole, canAccess,
-            refreshOrganization, refreshProfile, refreshPermissions
+            refreshOrganization, refreshProfile, refreshPermissions,
+            isTrialExpired, isDemo
         }}>
             {children}
         </AuthContext.Provider>
