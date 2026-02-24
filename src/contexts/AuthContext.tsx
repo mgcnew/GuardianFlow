@@ -21,6 +21,8 @@ interface AuthContextType {
     hasRole: (roles: Role[]) => boolean;
     canAccess: (module: string, action: string) => boolean;
     refreshPermissions: () => Promise<void>;
+    refreshOrganization: () => Promise<void>;
+    refreshProfile: () => Promise<void>;
     isTrialExpired: boolean;
     isDemo: boolean;
 }

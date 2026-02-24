@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { clsx } from 'clsx';
 
 export function DemoRequest() {
     const navigate = useNavigate();
