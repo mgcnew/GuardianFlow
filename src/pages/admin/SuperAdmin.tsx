@@ -5,7 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 
-type TabId = 'overview' | 'organizations' | 'plans' | 'trials';
+type TabId = 'overview' | 'organizations' | 'plans' | 'trials' | 'leads';
 
 export function SuperAdmin() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -74,6 +74,34 @@ export function SuperAdmin() {
         }
     });
 
+    const { data: leads, refetch: refetchLeads } = useQuery({
+        queryKey: ['admin-leads'],
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from('demo_requests')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            return data;
+        }
+    });
+
+    const handleProcessLead = async (lead: any) => {
+        setInviteEmail(lead.email);
+        setInviteName(lead.full_name);
+        setActiveTab('trials');
+        // Optional: mark lead as approved/processed
+        await supabase.from('demo_requests').update({ status: 'approved' }).eq('id', lead.id);
+        refetchLeads();
+    };
+
+    const handleDeleteLead = async (id: string) => {
+        if (!confirm('Deseja excluir esta solicitação?')) return;
+        const { error } = await supabase.from('demo_requests').delete().eq('id', id);
+        if (error) alert('Erro ao deletar');
+        else refetchLeads();
+    };
+
     const activeOrgs = orgs?.filter(o => o.subscriptions?.[0]?.status === 'active').length || 0;
     const totalOrgs = orgs?.length || 0;
 
@@ -137,7 +165,8 @@ export function SuperAdmin() {
         { id: 'overview', label: 'Visão Geral', icon: 'dashboard' },
         { id: 'organizations', label: 'Organizações', icon: 'corporate_fare' },
         { id: 'plans', label: 'Planos', icon: 'payments' },
-        { id: 'trials', label: 'Demonstração', icon: 'timer' },
+        { id: 'trials', label: 'Demos Ativas', icon: 'timer' },
+        { id: 'leads', label: 'Leads / Interesses', icon: 'contact_mail' },
     ];
 
     return (
@@ -542,6 +571,93 @@ export function SuperAdmin() {
                                     )}
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'leads' && (
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 className="text-xl font-black text-text-main dark:text-white uppercase tracking-tight">Novas Solicitações</h3>
+                                <p className="text-sm text-text-secondary dark:text-gray-400 font-medium leading-none mt-1">Contatos interessados na demonstração via Landing Page.</p>
+                            </div>
+                            <button
+                                onClick={() => refetchLeads()}
+                                className="size-11 rounded-2xl bg-white dark:bg-surface-dark border border-border-light dark:border-gray-800 flex items-center justify-center text-text-secondary hover:text-primary transition-all shadow-sm active:scale-95"
+                            >
+                                <span className="material-symbols-outlined">refresh</span>
+                            </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-4">
+                            {leads?.length === 0 ? (
+                                <div className="bg-white dark:bg-surface-dark rounded-[32px] p-20 border border-border-light dark:border-gray-800 text-center shadow-sm">
+                                    <div className="size-20 bg-slate-50 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6 text-text-secondary">
+                                        <span className="material-symbols-outlined text-4xl">inbox_customize</span>
+                                    </div>
+                                    <p className="text-lg font-black text-text-main dark:text-white uppercase tracking-wide">Caixa de entrada vazia</p>
+                                    <p className="text-sm text-text-secondary dark:text-gray-500 font-medium mt-2 max-w-xs mx-auto leading-relaxed">
+                                        Assim que alguém solicitar uma demonstração no site, os dados aparecerão aqui em tempo real.
+                                    </p>
+                                </div>
+                            ) : (
+                                leads?.map((lead: any) => (
+                                    <div key={lead.id} className="bg-white dark:bg-surface-dark rounded-[32px] p-8 border border-border-light dark:border-gray-800 flex flex-col md:flex-row md:items-center justify-between gap-8 hover:shadow-xl hover:shadow-primary/5 transition-all group overflow-hidden relative">
+                                        {lead.status === 'pending' && (
+                                            <div className="absolute top-0 left-0 w-1.5 h-full bg-orange-500" />
+                                        )}
+
+                                        <div className="flex items-start gap-6">
+                                            <div className="size-16 rounded-[24px] bg-primary/5 flex items-center justify-center text-primary shrink-0 group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                                                <span className="material-symbols-outlined text-4xl">contact_page</span>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <div className="flex items-center gap-3">
+                                                    <h4 className="text-xl font-black text-text-main dark:text-white tracking-tight leading-none uppercase">{lead.full_name}</h4>
+                                                    {lead.status === 'pending' && (
+                                                        <span className="px-3 py-1 rounded-full bg-orange-500 text-white text-[9px] font-black uppercase tracking-widest shadow-lg shadow-orange-500/20">Pendente</span>
+                                                    )}
+                                                </div>
+                                                <div className="flex flex-wrap items-center gap-y-2 gap-x-6">
+                                                    <span className="flex items-center gap-2 text-[13px] text-text-secondary dark:text-gray-400 font-bold">
+                                                        <span className="material-symbols-outlined text-lg text-primary">mail</span>
+                                                        {lead.email}
+                                                    </span>
+                                                    <span className="flex items-center gap-2 text-[13px] text-text-secondary dark:text-gray-400 font-bold">
+                                                        <span className="material-symbols-outlined text-lg text-primary">phone</span>
+                                                        {lead.phone}
+                                                    </span>
+                                                    <span className="flex items-center gap-2 text-[13px] text-text-secondary dark:text-gray-400 font-bold">
+                                                        <span className="material-symbols-outlined text-lg text-primary">apartment</span>
+                                                        {lead.institution}
+                                                    </span>
+                                                </div>
+                                                <p className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-[0.2em] mt-2">
+                                                    Registrado: {new Date(lead.created_at).toLocaleString('pt-BR')}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-4 border-t md:border-t-0 pt-6 md:pt-0">
+                                            <button
+                                                onClick={() => handleDeleteLead(lead.id)}
+                                                className="size-12 rounded-2xl hover:bg-red-50 hover:text-red-500 text-text-secondary dark:text-gray-500 transition-all flex items-center justify-center"
+                                                title="Rejeitar solicitação"
+                                            >
+                                                <span className="material-symbols-outlined">delete_sweep</span>
+                                            </button>
+                                            <button
+                                                onClick={() => handleProcessLead(lead)}
+                                                className="flex-1 md:flex-none flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 dark:bg-primary text-white rounded-[20px] font-black text-xs uppercase tracking-widest hover:brightness-110 shadow-xl shadow-primary/20 transition-all active:scale-[0.98] group/btn"
+                                            >
+                                                <span>Liberar Acesso Demo</span>
+                                                <span className="material-symbols-outlined text-xl transition-transform group-hover/btn:translate-x-1">rocket_launch</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
                 )}

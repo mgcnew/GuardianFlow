@@ -56,7 +56,7 @@ export function LandingPage() {
 
                     <div className="flex items-center gap-1 md:gap-3">
                         <button onClick={() => navigate('/login')} className="px-3 md:px-5 py-2 text-[12px] md:text-[13px] font-bold text-slate-700 hover:text-blue-600 transition-colors">Entrar</button>
-                        <button onClick={() => navigate('/login')} className="hidden sm:block px-5 lg:px-7 py-2 md:py-2.5 bg-slate-900 text-white text-[12px] md:text-[13px] font-bold rounded-full hover:bg-blue-600 shadow-lg shadow-slate-900/10 transition-all active:scale-95">Solicitar Acesso</button>
+                        <button onClick={() => navigate('/request-demo')} className="hidden sm:block px-5 lg:px-7 py-2 md:py-2.5 bg-slate-900 text-white text-[12px] md:text-[13px] font-bold rounded-full hover:bg-blue-600 shadow-lg shadow-slate-900/10 transition-all active:scale-95">Solicitar Acesso</button>
                     </div>
                 </div>
             </header>
@@ -83,7 +83,7 @@ export function LandingPage() {
                         </p>
 
                         <div className="reveal flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4">
-                            <button onClick={() => navigate('/login')} className="w-full sm:w-auto px-8 md:px-12 py-3.5 md:py-5 bg-blue-600 text-white text-[14px] md:text-[16px] font-bold rounded-full shadow-2xl shadow-blue-600/30 hover:bg-blue-700 hover:scale-[1.02] transition-all active:scale-95">
+                            <button onClick={() => navigate('/request-demo')} className="w-full sm:w-auto px-8 md:px-12 py-3.5 md:py-5 bg-blue-600 text-white text-[14px] md:text-[16px] font-bold rounded-full shadow-2xl shadow-blue-600/30 hover:bg-blue-700 hover:scale-[1.02] transition-all active:scale-95">
                                 Ver Demonstração Completa
                             </button>
                             <button className="w-full sm:w-auto px-8 md:px-12 py-3.5 md:py-5 bg-white text-slate-900 text-[14px] md:text-[16px] font-bold rounded-full border-2 border-slate-900 hover:bg-slate-50 transition-all">
@@ -223,7 +223,7 @@ export function LandingPage() {
                             </p>
 
                             <div className="reveal flex flex-col sm:flex-row gap-4 w-full justify-center">
-                                <button onClick={() => navigate('/login')} className="px-12 py-5 bg-blue-600 text-white text-[16px] font-bold rounded-full hover:bg-blue-500 shadow-2xl shadow-blue-600/30 transition-all hover:scale-105 active:scale-95">
+                                <button onClick={() => navigate('/request-demo')} className="px-12 py-5 bg-blue-600 text-white text-[16px] font-bold rounded-full hover:bg-blue-500 shadow-2xl shadow-blue-600/30 transition-all hover:scale-105 active:scale-95">
                                     Começar Adesão Gratuita
                                 </button>
                                 <button className="px-12 py-5 bg-slate-800 text-white text-[16px] font-bold rounded-full hover:bg-slate-700 transition-all">

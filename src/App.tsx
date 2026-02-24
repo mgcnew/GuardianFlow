@@ -20,6 +20,7 @@ import { InventoryPage } from './pages/InventoryPage';
 import { FinancialDashboard } from './pages/FinancialDashboard';
 import { OperationalDashboard } from './pages/OperationalDashboard';
 import { SuperAdmin } from './pages/admin/SuperAdmin';
+import { DemoRequest } from './pages/DemoRequest';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LoadingScreen } from './components/shared/LoadingScreen';
 import { AdminProtectedRoute } from './components/shared/AdminProtectedRoute';
@@ -78,6 +79,7 @@ function App() {
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/request-demo" element={<DemoRequest />} />
 
               <Route path="/admin" element={
                 <AdminProtectedRoute>
