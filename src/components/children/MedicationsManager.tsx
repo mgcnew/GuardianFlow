@@ -63,19 +63,23 @@ export function MedicationsManager({ childId }: MedicationsManagerProps) {
 
     const createMutation = useMutation({
         mutationFn: async (newMedication: any) => {
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from('medications')
                 .insert([{
                     ...newMedication,
                     child_id: childId,
-                    organization_id: profile?.organization_id, // Ensure profile.organization_id is used
-                }]);
+                    organization_id: profile?.organization_id,
+                }])
+                .select()
+                .single();
             if (error) throw error;
-            logAction('CREATE', 'medication', undefined, {
-                child_id: childId,
-                name: newMedication.name,
-                dosage: newMedication.dosage
-            });
+            if (data) {
+                logAction('CREATE', 'medication', data.id, {
+                    child_id: childId,
+                    name: newMedication.name,
+                    dosage: newMedication.dosage
+                });
+            }
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['medications', childId] });

@@ -70,7 +70,8 @@ export function ActivityLogs() {
             'LOGIN': 'Fez Login',
             'LOGOUT': 'Fez Logout',
             'EXPORT': 'Exportou Dados',
-            'VIEW': 'Visualizou'
+            'VIEW': 'Visualizou',
+            'DOSE_ADMINISTRATION': 'Registrou Dose'
         };
         return dict[action.toUpperCase()] || action;
     };
