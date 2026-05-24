@@ -105,6 +105,7 @@ export function CalendarEventModal({ isOpen, onClose, selectedDate, eventToEdit,
     const [step, setStep] = useState<1 | 2 | 3>(1); // Step 3 represents "Outcome/Completion" mode
     const [activeTab, setActiveTab] = useState<'details' | 'outcome'>('details');
     const [isSuccess, setIsSuccess] = useState(false);
+    const [confirmingDelete, setConfirmingDelete] = useState(false);
     const [childSearch, setChildSearch] = useState('');
     const [showChildList, setShowChildList] = useState(false);
     const [formData, setFormData] = useState({
@@ -177,6 +178,7 @@ export function CalendarEventModal({ isOpen, onClose, selectedDate, eventToEdit,
             setActiveTab('details');
             setChildSearch('');
             setShowChildList(false);
+            setConfirmingDelete(false);
             return;
         }
 
@@ -361,7 +363,11 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
 
     const handleDelete = async () => {
         if (!eventToEdit) return;
-        if (!confirm('Tem certeza que deseja excluir este evento?')) return;
+        if (!confirmingDelete) {
+            setConfirmingDelete(true);
+            return;
+        }
+        setConfirmingDelete(false);
         const { error } = await supabase
             .from('calendar_events')
             .delete()
@@ -387,10 +393,10 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
     if (!isOpen) return null;
 
     return createPortal(
-        <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-surface-dark rounded-3xl w-full max-w-xl shadow-xl animate-in zoom-in-95 duration-300 overflow-hidden flex flex-col relative max-h-[92vh]">
+        <div className="fixed inset-0 z-[999] flex items-end sm:items-center sm:p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+            <div className="bg-white dark:bg-surface-dark rounded-t-3xl sm:rounded-3xl w-full max-w-xl sm:mx-auto shadow-xl animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-300 overflow-hidden flex flex-col relative max-h-[92vh]">
                 {/* Header with Stepper Dots */}
-                <div className="px-6 py-4 flex items-center justify-between border-b border-gray-50 dark:border-gray-800">
+                <div className="px-5 py-4 flex items-center justify-between border-b border-border-light dark:border-gray-800">
                     <div className="flex items-center gap-3">
                         <div className={clsx("size-10 rounded-xl flex items-center justify-center", selectedEventType.bg)}>
                             <span className={clsx("material-symbols-outlined text-2xl", selectedEventType.color)}>{selectedEventType.icon}</span>
@@ -451,13 +457,13 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                 {isSuccess && (
                     <div className="absolute inset-0 z-[110] bg-white dark:bg-surface-dark flex flex-col items-center justify-center animate-in fade-in">
                         <div className="size-20 bg-green-50 rounded-full flex items-center justify-center text-green-500 mb-4 scale-in">
-                            <span className="material-symbols-outlined text-4xl">check_rounded</span>
+                            <span className="material-symbols-outlined text-4xl">check_circle</span>
                         </div>
                         <h3 className="text-xl font-bold">Evento {eventToEdit ? 'Atualizado' : 'Agendado'}</h3>
                     </div>
                 )}
 
-                <div className="flex-1 overflow-y-auto p-6">
+                <div className="flex-1 overflow-y-auto p-5 no-scrollbar">
                     {activeTab === 'details' ? (
                         <>
                             {/* Step 1: Who and What */}
@@ -470,7 +476,7 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                                             <input
                                                 type="text"
                                                 placeholder="Pesquisar acolhido..."
-                                                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl outline-none focus:border-primary/30 transition-all font-bold text-sm"
+                                                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-800/50 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:border-primary/50 transition-all font-bold text-base sm:text-sm"
                                                 value={childSearch}
                                                 onChange={(e) => {
                                                     setChildSearch(e.target.value);
@@ -526,10 +532,10 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                                                     key={type.id}
                                                     onClick={() => setFormData({ ...formData, type: type.id })}
                                                     className={clsx(
-                                                        "flex flex-col items-center gap-2 p-3 rounded-2xl border-2 transition-all text-center",
+                                                        "flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all text-center",
                                                         formData.type === type.id
                                                             ? "border-primary bg-primary/5 text-primary"
-                                                            : "border-gray-50 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 text-text-secondary hover:bg-gray-100"
+                                                            : "border-border-light dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-800"
                                                     )}
                                                 >
                                                     <span className="material-symbols-outlined text-xl">{type.icon}</span>
@@ -548,7 +554,7 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                                         <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2 block px-1">Título do Evento</label>
                                         <input
                                             type="text"
-                                            className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl outline-none focus:border-primary/50 font-bold text-sm"
+                                            className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-800/50 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:border-primary/50 font-bold text-base sm:text-sm"
                                             placeholder="Ex: Consulta Médica, Reunião..."
                                             value={formData.title}
                                             onChange={e => setFormData({ ...formData, title: e.target.value })}
@@ -560,7 +566,7 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                                             <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1">Data</label>
                                             <input
                                                 type="date"
-                                                className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl outline-none focus:border-primary/50 font-bold text-sm"
+                                                className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-800/50 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:border-primary/50 font-bold text-base sm:text-sm"
                                                 value={formData.start_date}
                                                 onChange={e => setFormData({ ...formData, start_date: e.target.value, end_date: e.target.value })}
                                             />
@@ -569,7 +575,7 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                                             <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1">Início</label>
                                             <input
                                                 type="time"
-                                                className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl outline-none focus:border-primary/50 font-bold text-sm"
+                                                className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-800/50 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:border-primary/50 font-bold text-base sm:text-sm"
                                                 value={formData.start_time}
                                                 onChange={e => setFormData({ ...formData, start_time: e.target.value })}
                                             />
@@ -582,7 +588,7 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                                             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">location_on</span>
                                             <input
                                                 type="text"
-                                                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl outline-none focus:border-primary/50 font-bold text-sm"
+                                                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-800/50 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:border-primary/50 font-bold text-base sm:text-sm"
                                                 placeholder="Local do evento..."
                                                 value={formData.location}
                                                 onChange={e => setFormData({ ...formData, location: e.target.value })}
@@ -605,8 +611,8 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                                                     className={clsx(
                                                         "py-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1",
                                                         formData.priority === p.id
-                                                            ? `border-current ${p.color} bg-gray-50 dark:bg-gray-900`
-                                                            : "border-gray-50 dark:border-gray-800 text-text-secondary bg-gray-50 dark:bg-gray-900"
+                                                            ? `border-current ${p.color} bg-gray-50 dark:bg-gray-800/50`
+                                                            : "border-border-light dark:border-gray-700 text-text-secondary bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800"
                                                     )}
                                                 >
                                                     <div className={clsx("size-1.5 rounded-full mb-1", p.dot)} />
@@ -623,7 +629,7 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                                             <select
                                                 value={formData.professional_id}
                                                 onChange={e => setFormData({ ...formData, professional_id: e.target.value })}
-                                                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl outline-none focus:border-primary/50 font-bold text-sm appearance-none"
+                                                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-800/50 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:border-primary/50 font-bold text-base sm:text-sm appearance-none"
                                             >
                                                 <option value="">Nenhum definido</option>
                                                 {professionals?.map(p => (
@@ -638,7 +644,7 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                                         <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2 block px-1">Descrição Adicional</label>
                                         <textarea
                                             rows={3}
-                                            className="w-full p-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl outline-none focus:border-primary/30 text-sm font-medium resize-none shadow-inner"
+                                            className="w-full p-4 bg-gray-50 dark:bg-gray-800/50 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:border-primary/50 text-sm font-medium resize-none"
                                             placeholder="Detalhes que ajudem a equipe..."
                                             value={formData.description}
                                             onChange={e => setFormData({ ...formData, description: e.target.value })}
@@ -649,14 +655,14 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                         </>
                     ) : (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-2 duration-300">
-                            <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-2xl border border-blue-100 dark:border-blue-800/50 flex items-start gap-3">
+                            <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50 flex items-start gap-3">
                                 <span className="material-symbols-outlined text-blue-600 dark:text-blue-400">info</span>
                                 <p className="text-[11px] text-blue-800 dark:text-blue-300 font-medium leading-relaxed">
                                     Preencha o relato da realização do evento. Ao marcar como concluído, os dados serão enviados ao prontuário do acolhido.
                                 </p>
                             </div>
 
-                            <div className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                            <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-border-light dark:border-gray-700 flex items-center justify-between">
                                 <div className="space-y-0.5">
                                     <span className="text-xs font-bold text-text-main uppercase tracking-tight">Status do Evento</span>
                                     <p className="text-[10px] text-text-secondary">O evento já foi realizado?</p>
@@ -690,7 +696,7 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                                             <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1">Prescrições / Orientações</label>
                                             <textarea
                                                 rows={3}
-                                                className="w-full p-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl outline-none focus:border-primary/30 text-sm font-medium resize-none shadow-inner"
+                                                className="w-full p-4 bg-gray-50 dark:bg-gray-800/50 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:border-primary/50 text-sm font-medium resize-none"
                                                 value={formData.outcome_details.prescriptions}
                                                 onChange={e => setFormData({ ...formData, outcome_details: { ...formData.outcome_details, prescriptions: e.target.value } })}
                                                 placeholder="Dados da receita, recomendações..."
@@ -700,7 +706,7 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                                             <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1">Recomendações e Retornos</label>
                                             <textarea
                                                 rows={2}
-                                                className="w-full p-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl outline-none focus:border-primary/30 text-sm font-medium resize-none shadow-inner"
+                                                className="w-full p-4 bg-gray-50 dark:bg-gray-800/50 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:border-primary/50 text-sm font-medium resize-none"
                                                 value={formData.outcome_details.recommendations}
                                                 onChange={e => setFormData({ ...formData, outcome_details: { ...formData.outcome_details, recommendations: e.target.value } })}
                                                 placeholder="Quando deve voltar? O que fazer?"
@@ -712,7 +718,7 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                                         <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1">Relato do Evento</label>
                                         <textarea
                                             rows={6}
-                                            className="w-full p-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl outline-none focus:border-primary/30 text-sm font-medium resize-none shadow-inner"
+                                            className="w-full p-4 bg-gray-50 dark:bg-gray-800/50 border border-border-light dark:border-gray-700 rounded-xl outline-none focus:border-primary/50 text-sm font-medium resize-none"
                                             value={formData.outcome_details.notes}
                                             onChange={e => setFormData({ ...formData, outcome_details: { ...formData.outcome_details, notes: e.target.value } })}
                                             placeholder="Descreva como foi o evento, behavior, acontecimentos..."
@@ -725,29 +731,36 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                 </div>
 
                 {/* Footer Navigation */}
-                <div className="p-6 border-t border-gray-50 dark:border-gray-800 flex items-center justify-between gap-3">
+                <div className="p-5 border-t border-border-light dark:border-gray-800 flex items-center justify-between gap-3">
                     <div className="flex gap-2">
                         {eventToEdit && !isSuccess && (
                             <button
                                 onClick={handleDelete}
-                                className="size-12 rounded-xl border border-gray-100 text-red-500 hover:bg-red-50 transition-all flex items-center justify-center"
+                                onBlur={() => setConfirmingDelete(false)}
+                                className={clsx(
+                                    "h-11 rounded-xl border transition-all flex items-center justify-center gap-1.5 px-3 text-[10px] font-black uppercase tracking-wider",
+                                    confirmingDelete
+                                        ? "border-red-500 bg-red-500 text-white"
+                                        : "border-border-light dark:border-gray-700 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                )}
                                 title="Excluir Evento"
                             >
-                                <span className="material-symbols-outlined">delete</span>
+                                <span className="material-symbols-outlined text-[18px]">delete</span>
+                                {confirmingDelete && <span>Confirmar?</span>}
                             </button>
                         )}
 
                         {(activeTab === 'details' && step > 1) ? (
                             <button
                                 onClick={() => setStep((s) => s - 1 as 1 | 2 | 3)}
-                                className="px-6 py-3 rounded-xl border border-gray-100 text-sm font-bold text-text-secondary hover:bg-gray-50 transition-all"
+                                className="h-11 px-5 rounded-xl border border-border-light dark:border-gray-700 text-sm font-bold text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
                             >
                                 Voltar
                             </button>
                         ) : (
                             <button
                                 onClick={onClose}
-                                className="px-6 py-3 rounded-xl border border-gray-100 text-sm font-bold text-text-secondary hover:bg-gray-50 transition-all"
+                                className="h-11 px-5 rounded-xl border border-border-light dark:border-gray-700 text-sm font-bold text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
                             >
                                 Cancelar
                             </button>
@@ -759,7 +772,7 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                             <button
                                 onClick={() => setStep((s) => s + 1 as 1 | 2 | 3)}
                                 disabled={!canProceed()}
-                                className="h-10 px-8 rounded-xl bg-primary text-white text-sm font-bold hover:brightness-110 active:scale-95 shadow-sm transition-all disabled:opacity-50 flex items-center gap-2"
+                                className="h-11 px-8 rounded-xl bg-primary text-white text-sm font-bold hover:brightness-110 active:scale-95 shadow-sm transition-all disabled:opacity-50 flex items-center gap-2"
                             >
                                 Próximo
                                 <span className="material-symbols-outlined text-lg">arrow_forward</span>
@@ -769,7 +782,7 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                                 onClick={() => mutation.mutate(formData)}
                                 disabled={mutation.isPending || (activeTab === 'details' && step === 1 && !formData.child_id && !formData.for_all_children && !eventToEdit)}
                                 className={clsx(
-                                    "h-10 px-8 rounded-xl text-white text-sm font-bold hover:brightness-110 active:scale-95 shadow-sm transition-all disabled:opacity-50 flex items-center gap-2",
+                                    "h-11 px-8 rounded-xl text-white text-sm font-bold hover:brightness-110 active:scale-95 shadow-sm transition-all disabled:opacity-50 flex items-center gap-2",
                                     activeTab === 'outcome' ? "bg-green-600" : "bg-primary"
                                 )}
                             >

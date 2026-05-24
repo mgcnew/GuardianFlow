@@ -144,7 +144,7 @@ export function Schedule() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
                 <div>
                     <div className="flex items-center gap-3">
-                        <h1 className="text-2xl font-bold text-text-main dark:text-white font-display">Agenda</h1>
+                        <h1 className="text-xl font-black text-text-main dark:text-white font-display">Agenda</h1>
                         {isLoading && (
                             <span className="size-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                         )}
@@ -182,7 +182,7 @@ export function Schedule() {
                 <div className={clsx("flex flex-col bg-white dark:bg-surface-dark rounded-3xl shadow-sm border border-border-light dark:border-gray-800 overflow-hidden", view === 'day' ? 'lg:col-span-3' : 'lg:col-span-2')}>
                     {/* Calendar Controls */}
                     <div className="flex items-center justify-between p-6 border-b border-border-light dark:border-gray-800">
-                        <h2 className="text-lg font-bold text-text-main dark:text-white font-display capitalize">
+                        <h2 className="text-base font-bold text-text-main dark:text-white font-display capitalize">
                             {view === 'day'
                                 ? format(currentDate, "d 'de' MMMM, yyyy", { locale: ptBR })
                                 : format(currentDate, 'MMMM yyyy', { locale: ptBR })}
@@ -204,7 +204,7 @@ export function Schedule() {
                     </div>
 
                     {/* Content */}
-                    <div className="flex-1 overflow-auto custom-scrollbar">
+                    <div className="flex-1 overflow-auto no-scrollbar">
                         {view === 'month' && (
                             <div className="h-full flex flex-col">
                                 <div className="grid grid-cols-7 border-b border-border-light dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/20">
@@ -389,7 +389,7 @@ export function Schedule() {
                     <div className="space-y-6 flex flex-col h-full overflow-hidden">
                         <div className="bg-white dark:bg-surface-dark rounded-3xl p-6 shadow-sm border border-border-light dark:border-gray-800 flex flex-col h-full overflow-hidden">
                             <div className="flex items-center justify-between mb-4 shrink-0">
-                                <h3 className="text-lg font-bold text-text-main dark:text-white font-display">
+                                <h3 className="text-[11px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest">
                                     {isSameDay(selectedDate, new Date()) ? 'Hoje' : format(selectedDate, "d 'de' MMMM", { locale: ptBR })}
                                 </h3>
                                 <button
@@ -401,7 +401,7 @@ export function Schedule() {
                                 </button>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-3">
+                            <div className="flex-1 overflow-y-auto no-scrollbar pr-2 space-y-3">
                                 {getEventsForDay(selectedDate).length === 0 ? (
                                     <div className="flex flex-col items-center justify-center h-40 text-text-secondary dark:text-gray-400">
                                         <p className="text-sm">Sem eventos.</p>
