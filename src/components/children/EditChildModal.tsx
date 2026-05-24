@@ -236,7 +236,7 @@ export function EditChildModal({ isOpen, onClose, child, initialTab = 'basic' }:
                                 onClick={() => setActiveTab(tab.id)}
                                 title={tab.label}
                                 className={clsx(
-                                    "flex-1 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 min-h-[52px] sm:min-h-[44px] px-1 sm:px-3 transition-all border-b-2 active:scale-95",
+                                    "flex-1 flex flex-col items-center justify-center gap-0.5 min-h-[52px] px-1 transition-all border-b-2 active:scale-95",
                                     isActive
                                         ? "border-primary text-primary"
                                         : "border-transparent text-text-secondary dark:text-gray-500 hover:text-text-main dark:hover:text-white hover:border-gray-200 dark:hover:border-gray-700"
@@ -244,20 +244,15 @@ export function EditChildModal({ isOpen, onClose, child, initialTab = 'basic' }:
                             >
                                 <span className={clsx(
                                     "material-symbols-outlined transition-all duration-200",
-                                    isActive ? "text-[22px] sm:text-[15px]" : "text-[20px] sm:text-[15px]"
+                                    isActive ? "text-[22px]" : "text-[20px]"
                                 )}>
                                     {tab.icon}
                                 </span>
-                                {/* Mobile: only show label on active tab */}
                                 <span className={clsx(
-                                    "sm:hidden text-[7px] font-black uppercase tracking-wider leading-none transition-all duration-200",
+                                    "text-[7px] font-black uppercase tracking-wider leading-none transition-all duration-200",
                                     isActive ? "opacity-100 max-h-4" : "opacity-0 max-h-0 overflow-hidden"
                                 )}>
                                     {tab.short}
-                                </span>
-                                {/* Desktop: always show full label */}
-                                <span className="hidden sm:inline text-[9px] font-black uppercase tracking-widest">
-                                    {tab.label}
                                 </span>
                             </button>
                         );
