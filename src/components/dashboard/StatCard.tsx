@@ -8,95 +8,113 @@ interface StatCardProps {
     variant?: 'default' | 'warning' | 'danger' | 'success' | 'info' | 'purple';
     isLoading?: boolean;
     onInfoClick?: () => void;
+    progress?: number;
 }
 
-export function StatCard({ icon, title, value, subValue, variant = 'default', isLoading, onInfoClick }: StatCardProps) {
+export function StatCard({ icon, title, value, subValue, variant = 'default', isLoading, onInfoClick, progress }: StatCardProps) {
     const styles = {
         default: {
-            container: 'bg-white dark:bg-surface-dark border-border-light dark:border-gray-800',
-            border: 'border-l-4 border-l-transparent',
-            bgIcon: 'bg-primary-light dark:bg-primary/20 text-primary dark:text-primary',
-            badge: 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400',
+            iconBg: 'bg-primary/10 dark:bg-primary/20',
+            iconColor: 'text-primary',
+            decor: 'bg-primary/5 dark:bg-primary/10',
+            bar: 'bg-primary',
         },
         info: {
-            container: 'bg-blue-50/50 dark:bg-surface-dark border-blue-100 dark:border-gray-800',
-            border: 'border-l-4 border-l-blue-400',
-            bgIcon: 'bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
-            badge: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
+            iconBg: 'bg-blue-100 dark:bg-blue-500/20',
+            iconColor: 'text-blue-600 dark:text-blue-400',
+            decor: 'bg-blue-50 dark:bg-blue-900/20',
+            bar: 'bg-blue-500',
         },
         warning: {
-            container: 'bg-amber-50/50 dark:bg-surface-dark border-amber-100 dark:border-gray-800',
-            border: 'border-l-4 border-l-amber-400',
-            bgIcon: 'bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400',
-            badge: 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400',
+            iconBg: 'bg-amber-100 dark:bg-amber-500/20',
+            iconColor: 'text-amber-600 dark:text-amber-400',
+            decor: 'bg-amber-50 dark:bg-amber-900/20',
+            bar: 'bg-amber-500',
         },
         danger: {
-            container: 'bg-red-50/50 dark:bg-surface-dark border-red-100 dark:border-gray-800',
-            border: 'border-l-4 border-l-red-500',
-            bgIcon: 'bg-red-100 dark:bg-red-500/20 text-red-500 dark:text-red-400',
-            badge: 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400',
+            iconBg: 'bg-red-100 dark:bg-red-500/20',
+            iconColor: 'text-red-500 dark:text-red-400',
+            decor: 'bg-red-50 dark:bg-red-900/20',
+            bar: 'bg-red-500',
         },
         success: {
-            container: 'bg-emerald-50/50 dark:bg-surface-dark border-emerald-100 dark:border-gray-800',
-            border: 'border-l-4 border-l-emerald-500',
-            bgIcon: 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400',
-            badge: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400',
+            iconBg: 'bg-emerald-100 dark:bg-emerald-500/20',
+            iconColor: 'text-emerald-600 dark:text-emerald-400',
+            decor: 'bg-emerald-50 dark:bg-emerald-900/20',
+            bar: 'bg-emerald-500',
         },
         purple: {
-            container: 'bg-purple-50/50 dark:bg-surface-dark border-purple-100 dark:border-gray-800',
-            border: 'border-l-4 border-l-purple-500',
-            bgIcon: 'bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400',
-            badge: 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
-        }
+            iconBg: 'bg-purple-100 dark:bg-purple-500/20',
+            iconColor: 'text-purple-600 dark:text-purple-400',
+            decor: 'bg-purple-50 dark:bg-purple-900/20',
+            bar: 'bg-purple-500',
+        },
     };
 
-    const currentStyle = styles[variant];
+    const s = styles[variant];
+
+    const progressBarColor =
+        progress !== undefined
+            ? progress > 85 ? 'bg-red-500'
+            : progress > 65 ? 'bg-amber-500'
+            : s.bar
+        : s.bar;
 
     return (
-        <div className={clsx(
-            "p-4 sm:p-5 rounded-2xl border shadow-sm flex flex-col justify-between min-h-[110px] sm:h-32 hover:shadow-md transition-all active:scale-[0.98]",
-            currentStyle.container,
-            currentStyle.border
-        )}>
-            <div className="flex justify-between items-start">
-                <div className={clsx("p-2 rounded-lg", currentStyle.bgIcon)}>
-                    <span className="material-symbols-outlined">{icon}</span>
+        <div className="relative bg-white dark:bg-surface-dark rounded-3xl border border-gray-100 dark:border-gray-800 p-5 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col justify-between min-h-[140px]">
+            {/* Decorative background circle */}
+            <div className={clsx("absolute -right-5 -top-5 size-24 rounded-full opacity-60", s.decor)} />
+
+            {/* Top row: icon + actions */}
+            <div className="relative z-10 flex items-start justify-between mb-4">
+                <div className={clsx("size-12 rounded-2xl flex items-center justify-center shadow-sm", s.iconBg)}>
+                    <span className={clsx("material-symbols-outlined text-[22px]", s.iconColor)}>{icon}</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                     {variant === 'warning' && (
-                        <span className="text-xs font-bold text-orange-600 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded-full">Alerta</span>
-                    )}
-                    {variant === 'default' && typeof subValue === 'string' && subValue.includes('+') && (
-                        <span className="flex items-center text-xs font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full">
-                            <span className="material-symbols-outlined text-[14px] mr-1">trending_up</span> {subValue}
+                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
+                            Alerta
                         </span>
                     )}
                     {onInfoClick && (
                         <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onInfoClick();
-                            }}
-                            className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-text-secondary dark:text-gray-400 transition-colors"
+                            onClick={(e) => { e.stopPropagation(); onInfoClick(); }}
+                            className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         >
-                            <span className="material-symbols-outlined text-base">info</span>
+                            <span className="material-symbols-outlined text-[18px] text-text-secondary dark:text-gray-500">info</span>
                         </button>
                     )}
                 </div>
             </div>
-            <div>
-                <h3 className="text-text-secondary dark:text-gray-400 text-sm font-medium">{title}</h3>
-                <div className="flex items-baseline gap-2">
-                    <p className={clsx(
-                        "text-text-main dark:text-white text-2xl font-bold",
-                        isLoading && "animate-pulse opacity-50"
-                    )}>{isLoading ? '...' : value}</p>
-                    {subValue && typeof subValue === 'string' && !subValue.includes('+') && (
-                        <p className={clsx("text-[10px] font-black uppercase tracking-widest", variant === 'danger' ? 'text-red-500' : 'text-text-secondary dark:text-gray-500')}>
-                            {subValue}
+
+            {/* Bottom: value + title + optional progress */}
+            <div className="relative z-10">
+                <p className={clsx(
+                    "text-4xl font-black text-text-main dark:text-white tracking-tight leading-none",
+                    isLoading && "animate-pulse opacity-40"
+                )}>
+                    {isLoading ? '—' : value}
+                </p>
+                <p className="text-[9px] font-black uppercase tracking-[0.15em] text-text-secondary dark:text-gray-500 mt-1.5">
+                    {title}
+                </p>
+                {subValue && typeof subValue === 'string' && (
+                    <p className="text-xs text-text-secondary dark:text-gray-400 mt-0.5 truncate">{subValue}</p>
+                )}
+
+                {progress !== undefined && (
+                    <div className="mt-3">
+                        <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                            <div
+                                className={clsx("h-full rounded-full transition-all duration-700", progressBarColor)}
+                                style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+                            />
+                        </div>
+                        <p className="text-[9px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest mt-1">
+                            {Math.round(progress)}% ocupado
                         </p>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
         </div>
     );

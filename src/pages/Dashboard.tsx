@@ -129,16 +129,22 @@ export function Dashboard() {
     if (isLoading || isProfileLoading) {
         return (
             <div className="space-y-4 sm:space-y-6 w-full animate-pulse">
+                {/* Greeting Skeleton */}
+                <div className="flex items-end justify-between">
+                    <div className="space-y-1.5">
+                        <div className="h-2.5 w-16 bg-gray-200 dark:bg-gray-700/50 rounded-full" />
+                        <div className="h-7 w-32 bg-gray-200 dark:bg-gray-700/50 rounded-lg" />
+                    </div>
+                    <div className="h-7 w-36 bg-gray-100 dark:bg-gray-800 rounded-xl hidden sm:block" />
+                </div>
                 {/* Stats Skeleton */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                     {[1, 2, 3, 4].map(i => (
-                        <div key={i} className="h-[110px] sm:h-32 bg-white/50 dark:bg-surface-dark/50 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col justify-between p-4 sm:p-5">
-                            <div className="flex justify-between items-start">
-                                <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700/50"></div>
-                            </div>
+                        <div key={i} className="h-[140px] bg-white/50 dark:bg-surface-dark/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col justify-between p-5">
+                            <div className="w-12 h-12 rounded-2xl bg-gray-200 dark:bg-gray-700/50" />
                             <div>
-                                <div className="w-1/2 h-3 bg-gray-200 dark:bg-gray-700/50 rounded-full mb-2"></div>
-                                <div className="w-1/3 h-6 bg-gray-200 dark:bg-gray-700/50 rounded-full"></div>
+                                <div className="w-1/3 h-8 bg-gray-200 dark:bg-gray-700/50 rounded-lg mb-1.5" />
+                                <div className="w-1/2 h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full" />
                             </div>
                         </div>
                     ))}
@@ -211,18 +217,39 @@ export function Dashboard() {
 
     const { stats, logs, staff, activeMeds, judicialOrders } = dashboardData;
 
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
+    const firstName = profile?.full_name?.split(' ')[0] || 'Gestor';
+    const todayLabel = format(new Date(), "EEEE',' d 'de' MMMM", { locale: ptBR });
+    const capacityPct = stats.capacity > 0 ? Math.round((stats.totalChildren / stats.capacity) * 100) : 0;
+
     return (
         <div className="space-y-4 sm:space-y-6">
+            {/* Greeting header */}
+            <div className="flex items-end justify-between">
+                <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary dark:text-gray-500 mb-0.5">
+                        {greeting}
+                    </p>
+                    <h1 className="text-2xl font-black text-text-main dark:text-white tracking-tight leading-none">
+                        {firstName}
+                    </h1>
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary dark:text-gray-500 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 rounded-xl capitalize hidden sm:block">
+                    {todayLabel}
+                </span>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <StatCard
-                    icon="group"
+                    icon="child_care"
                     title="Total de Acolhidos"
                     value={stats.totalChildren}
                     subValue={`Ativos: ${stats.activeChildren}`}
                     variant="info"
                 />
                 <StatCard
-                    icon="pill"
+                    icon="medication"
                     title="Próxima Medicação"
                     value={stats.medsCount > 0 && activeMeds[0].next_dose ? format(activeMeds[0].next_dose, 'HH:mm') : stats.medsCount}
                     subValue={stats.medsCount > 0 ? (activeMeds[0].next_dose ? `${activeMeds[0].name} (${activeMeds[0].children?.full_name?.split(' ')[0]})` : `${activeMeds[0].name}`) : "Nenhuma ativa"}
@@ -230,19 +257,20 @@ export function Dashboard() {
                     onInfoClick={() => setShowMedSummary(true)}
                 />
                 <StatCard
-                    icon="gavel"
+                    icon="balance"
                     title="Ordens Judiciais"
                     value={stats.judicialCount}
-                    subValue={`${stats.judicialCount} Processos ativos`}
+                    subValue={`${stats.judicialCount} processos ativos`}
                     variant="danger"
                     onInfoClick={() => setShowJudicialSummary(true)}
                 />
                 <StatCard
-                    icon="bed"
+                    icon="king_bed"
                     title="Vagas Disponíveis"
                     value={Math.max(0, stats.capacity - stats.totalChildren)}
                     subValue={`Capacidade: ${stats.capacity}`}
                     variant="purple"
+                    progress={capacityPct}
                 />
             </div>
 
