@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import clsx from 'clsx';
 import { createNotification } from '../../lib/notifications';
 import { useLogger } from '../../hooks/useLogger';
@@ -30,6 +31,7 @@ interface SocialWorkEntryModalProps {
 export function SocialWorkEntryModal({ isOpen, onClose, initialChildId }: SocialWorkEntryModalProps) {
     const { profile } = useAuth();
     const { logAction } = useLogger();
+    const { toast } = useToast();
     const queryClient = useQueryClient();
     const [step, setStep] = useState(1);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -142,7 +144,7 @@ export function SocialWorkEntryModal({ isOpen, onClose, initialChildId }: Social
         },
         onError: (error: any) => {
             console.error('Error saving social work entry:', error);
-            alert(`Erro ao salvar: ${error.message || 'Erro desconhecido'}`);
+            toast(`Erro ao salvar: ${error.message || 'Erro desconhecido'}`, 'error');
         }
     });
 

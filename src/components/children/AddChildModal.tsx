@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import { DocumentUploadManager } from './DocumentUploadManager';
 import { createNotification } from '../../lib/notifications';
 import { useLogger } from '../../hooks/useLogger';
+import { useToast } from '../../contexts/ToastContext';
 
 interface AddChildModalProps {
     isOpen: boolean;
@@ -15,14 +16,44 @@ interface AddChildModalProps {
 
 type TabType = 'basic' | 'origin' | 'docs' | 'health' | 'institutional';
 
+const TABS = [
+    { id: 'basic' as TabType, label: 'Dados Pessoais', short: 'Pessoal', icon: 'person' },
+    { id: 'origin' as TabType, label: 'Procedência', short: 'Origem', icon: 'location_on' },
+    { id: 'health' as TabType, label: 'Saúde & Perfil', short: 'Saúde', icon: 'health_and_safety' },
+    { id: 'docs' as TabType, label: 'Documentos', short: 'Docs', icon: 'folder' },
+    { id: 'institutional' as TabType, label: 'Institucional', short: 'Gestão', icon: 'account_balance' },
+];
+
 // ─── Reusable styled components ──────────────────────────
-const inputClass = "w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-border-light dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all dark:text-white font-medium";
-const labelClass = "text-xs font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest";
+const inputClass = "w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-800/50 border border-border-light dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all dark:text-white font-medium text-base sm:text-sm";
+const labelClass = "text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest";
 const sectionTitle = "text-xs font-black text-primary uppercase tracking-widest flex items-center gap-2 pb-2 border-b border-primary/10";
+
+function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) {
+    return (
+        <button
+            type="button"
+            onClick={() => onChange(!checked)}
+            className="flex items-center justify-between w-full gap-4 py-0.5 group"
+        >
+            <span className="text-sm font-bold text-text-main dark:text-white">{label}</span>
+            <span className={clsx(
+                "relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0",
+                checked ? "bg-primary" : "bg-gray-200 dark:bg-gray-700"
+            )}>
+                <span className={clsx(
+                    "absolute top-0.5 size-5 bg-white rounded-full shadow transition-all duration-200",
+                    checked ? "translate-x-5" : "translate-x-0.5"
+                )} />
+            </span>
+        </button>
+    );
+}
 
 export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
     const { user } = useAuth();
     const { logAction } = useLogger();
+    const { toast } = useToast();
     const queryClient = useQueryClient();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -118,7 +149,7 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
         if (!user) return;
 
         if (!formData.full_name || !formData.date_of_birth || !formData.unit) {
-            alert('Por favor, preencha todos os campos obrigatórios (*)');
+            toast('Preencha todos os campos obrigatórios (*)', 'warning');
             setActiveTab('basic');
             return;
         }
@@ -221,7 +252,7 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
             resetForm();
         } catch (error: any) {
             console.error(error);
-            alert('Erro ao salvar: ' + error.message);
+            toast('Erro ao salvar: ' + error.message, 'error');
         } finally {
             setLoading(false);
         }
@@ -273,47 +304,61 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
         other: 'Local / Instituição de Origem',
     };
 
+    const currentTabIdx = TABS.findIndex(t => t.id === activeTab);
+
     return createPortal(
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-surface-dark w-full max-w-4xl h-full sm:h-auto sm:max-h-[92vh] rounded-none sm:rounded-3xl shadow-2xl border-none sm:border sm:border-border-light dark:sm:border-gray-800 overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
+        <div className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+            <div className="bg-white dark:bg-surface-dark w-full max-w-2xl h-[92vh] sm:h-auto sm:max-h-[92vh] rounded-t-3xl sm:rounded-3xl shadow-2xl border-none sm:border sm:border-border-light dark:sm:border-gray-800 overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-300">
 
                 {/* Header */}
-                <div className="flex-shrink-0 px-4 sm:px-8 py-3 sm:py-5 border-b border-border-light dark:border-gray-800 flex items-center justify-between bg-white/50 dark:bg-gray-800/50 backdrop-blur-md sticky top-0 z-10">
-                    <div>
-                        <h3 className="text-base sm:text-2xl font-black text-text-main dark:text-white font-display tracking-tight truncate">Novo Acolhimento</h3>
-                        <p className="text-[9px] sm:text-sm text-text-secondary dark:text-gray-400 font-display">Informações completas do prontuário.</p>
+                <div className="flex-shrink-0 px-4 sm:px-8 py-3 sm:py-5 border-b border-border-light dark:border-gray-800 bg-white/50 dark:bg-gray-800/50 backdrop-blur-md sticky top-0 z-10">
+                    <div className="flex items-center justify-between mb-2.5">
+                        <div>
+                            <h3 className="text-base sm:text-xl font-black text-text-main dark:text-white font-display tracking-tight">Novo Acolhimento</h3>
+                            <p className="text-[9px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest mt-0.5">
+                                Passo {currentTabIdx + 1}/5 — {TABS[currentTabIdx].label}
+                            </p>
+                        </div>
+                        <button onClick={onClose} className="size-9 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition-colors active:scale-95 flex-shrink-0">
+                            <span className="material-symbols-outlined text-text-secondary dark:text-gray-400">close</span>
+                        </button>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors active:scale-95">
-                        <span className="material-symbols-outlined text-text-secondary dark:text-gray-400">close</span>
-                    </button>
+                    {/* Step progress bar */}
+                    <div className="flex gap-1">
+                        {TABS.map((tab, i) => (
+                            <div
+                                key={tab.id}
+                                className={clsx(
+                                    "h-1 flex-1 rounded-full transition-all duration-300",
+                                    i < currentTabIdx ? "bg-primary" :
+                                    i === currentTabIdx ? "bg-primary" :
+                                    "bg-gray-200 dark:bg-gray-700"
+                                )}
+                                style={i === currentTabIdx ? { opacity: 1 } : i < currentTabIdx ? {} : { opacity: 0.4 }}
+                            />
+                        ))}
+                    </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex-shrink-0 flex border-b border-border-light dark:border-gray-800 px-4 sm:px-8 bg-white dark:bg-surface-dark overflow-x-auto no-scrollbar scroll-smooth">
-                    <div className="flex min-w-max sm:min-w-full">
-                        {[
-                            { id: 'basic', label: 'Dados Pessoais', icon: 'person' },
-                            { id: 'origin', label: 'Procedência', icon: 'location_on' },
-                            { id: 'health', label: 'Saúde & Perfil', icon: 'health_and_safety' },
-                            { id: 'docs', label: 'Documentos', icon: 'folder' },
-                            { id: 'institutional', label: 'Institucional', icon: 'account_balance' },
-                        ].map((tab) => (
-                            <button
-                                key={tab.id}
-                                type="button"
-                                onClick={() => setActiveTab(tab.id as TabType)}
-                                className={clsx(
-                                    "flex-1 flex items-center justify-center gap-1.5 whitespace-nowrap py-3.5 px-3 text-[9px] sm:text-[10px] font-black transition-all border-b-2 uppercase tracking-widest font-display active:scale-95",
-                                    activeTab === tab.id
-                                        ? "border-primary text-primary"
-                                        : "border-transparent text-text-secondary dark:text-gray-500 hover:text-text-main dark:hover:text-white hover:border-gray-200 dark:hover:border-gray-700"
-                                )}
-                            >
-                                <span className="material-symbols-outlined text-sm">{tab.icon}</span>
-                                {tab.label}
-                            </button>
-                        ))}
-                    </div>
+                <div className="flex-shrink-0 flex border-b border-border-light dark:border-gray-800 px-2 sm:px-6 bg-white dark:bg-surface-dark overflow-x-auto no-scrollbar scroll-smooth">
+                    {TABS.map((tab) => (
+                        <button
+                            key={tab.id}
+                            type="button"
+                            onClick={() => setActiveTab(tab.id)}
+                            className={clsx(
+                                "flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 whitespace-nowrap min-h-[52px] px-1 sm:px-3 text-[8px] sm:text-[9px] font-black transition-all border-b-2 uppercase tracking-widest active:scale-95",
+                                activeTab === tab.id
+                                    ? "border-primary text-primary"
+                                    : "border-transparent text-text-secondary dark:text-gray-500 hover:text-text-main dark:hover:text-white hover:border-gray-200 dark:hover:border-gray-700"
+                            )}
+                        >
+                            <span className="material-symbols-outlined text-[18px] sm:text-[14px]">{tab.icon}</span>
+                            <span className="sm:hidden">{tab.short}</span>
+                            <span className="hidden sm:inline">{tab.label}</span>
+                        </button>
+                    ))}
                 </div>
 
                 {/* Content */}
@@ -339,7 +384,7 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
                                                 </div>
                                             )}
                                             <div className="absolute inset-0 bg-black/40 opacity-100 sm:opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                                                <span className="text-white text-[10px] font-bold uppercase">Trocar</span>
+                                                <span className="text-white text-[10px] font-bold uppercase">{photoPreview ? 'Trocar' : 'Adicionar'}</span>
                                             </div>
                                         </div>
                                         <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
@@ -608,10 +653,7 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
 
                                 {/* Disability */}
                                 <div className="p-4 rounded-2xl bg-gray-50/50 dark:bg-gray-800/20 border border-gray-100 dark:border-gray-800 space-y-3">
-                                    <label className="flex items-center gap-3 cursor-pointer">
-                                        <input type="checkbox" className="w-4 h-4 rounded text-primary focus:ring-primary border-gray-300" checked={formData.has_disability} onChange={(e) => updateField('has_disability', e.target.checked)} />
-                                        <span className="text-sm font-bold text-text-main dark:text-white font-display">Possui Deficiência</span>
-                                    </label>
+                                    <Toggle checked={formData.has_disability} onChange={(v) => updateField('has_disability', v)} label="Possui Deficiência" />
                                     {formData.has_disability && (
                                         <select className={`${inputClass} animate-in fade-in duration-200`} value={formData.disability_type} onChange={(e) => updateField('disability_type', e.target.value)}>
                                             <option value="">Selecione o tipo</option>
@@ -627,10 +669,7 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
 
                                 {/* Chronic Disease */}
                                 <div className="p-4 rounded-2xl bg-gray-50/50 dark:bg-gray-800/20 border border-gray-100 dark:border-gray-800 space-y-3">
-                                    <label className="flex items-center gap-3 cursor-pointer">
-                                        <input type="checkbox" className="w-4 h-4 rounded text-primary focus:ring-primary border-gray-300" checked={formData.has_chronic_disease} onChange={(e) => updateField('has_chronic_disease', e.target.checked)} />
-                                        <span className="text-sm font-bold text-text-main dark:text-white font-display">Doença Crônica</span>
-                                    </label>
+                                    <Toggle checked={formData.has_chronic_disease} onChange={(v) => updateField('has_chronic_disease', v)} label="Doença Crônica" />
                                     {formData.has_chronic_disease && (
                                         <input type="text" className={`${inputClass} animate-in fade-in duration-200`} placeholder="Descreva a doença..." value={formData.chronic_disease_details} onChange={(e) => updateField('chronic_disease_details', e.target.value)} />
                                     )}
@@ -638,10 +677,7 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
 
                                 {/* Pregnancy */}
                                 <div className="p-4 rounded-2xl bg-gray-50/50 dark:bg-gray-800/20 border border-gray-100 dark:border-gray-800 space-y-3">
-                                    <label className="flex items-center gap-3 cursor-pointer">
-                                        <input type="checkbox" className="w-4 h-4 rounded text-primary focus:ring-primary border-gray-300" checked={formData.is_pregnant} onChange={(e) => updateField('is_pregnant', e.target.checked)} />
-                                        <span className="text-sm font-bold text-text-main dark:text-white font-display">Gestante</span>
-                                    </label>
+                                    <Toggle checked={formData.is_pregnant} onChange={(v) => updateField('is_pregnant', v)} label="Gestante" />
                                     {formData.is_pregnant && (
                                         <div className="space-y-1 animate-in fade-in duration-200">
                                             <label className={labelClass}>Semanas de Gestação</label>
@@ -656,10 +692,7 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
                                     Vícios & Substâncias
                                 </h4>
                                 <div className="p-4 rounded-2xl bg-red-50/50 dark:bg-red-900/10 border border-red-100 dark:border-red-800/30 space-y-3">
-                                    <label className="flex items-center gap-3 cursor-pointer">
-                                        <input type="checkbox" className="w-4 h-4 rounded text-red-500 focus:ring-red-500 border-gray-300" checked={formData.has_addictions} onChange={(e) => updateField('has_addictions', e.target.checked)} />
-                                        <span className="text-sm font-bold text-text-main dark:text-white font-display">Uso de Substâncias / Vícios</span>
-                                    </label>
+                                    <Toggle checked={formData.has_addictions} onChange={(v) => updateField('has_addictions', v)} label="Uso de Substâncias / Vícios" />
                                     {formData.has_addictions && (
                                         <div className="space-y-3 animate-in fade-in duration-200">
                                             <select className={inputClass} value={formData.addiction_details} onChange={(e) => updateField('addiction_details', e.target.value)}>
@@ -711,16 +744,10 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="p-4 rounded-2xl bg-red-50/50 dark:bg-red-900/10 border border-red-100 dark:border-red-800/30">
-                                        <label className="flex items-center gap-3 cursor-pointer">
-                                            <input type="checkbox" className="w-4 h-4 rounded text-red-500 focus:ring-red-500 border-gray-300" checked={formData.has_suicidal_ideation} onChange={(e) => updateField('has_suicidal_ideation', e.target.checked)} />
-                                            <span className="text-sm font-bold text-text-main dark:text-white font-display">Ideação Suicida</span>
-                                        </label>
+                                        <Toggle checked={formData.has_suicidal_ideation} onChange={(v) => updateField('has_suicidal_ideation', v)} label="Ideação Suicida" />
                                     </div>
                                     <div className="p-4 rounded-2xl bg-red-50/50 dark:bg-red-900/10 border border-red-100 dark:border-red-800/30">
-                                        <label className="flex items-center gap-3 cursor-pointer">
-                                            <input type="checkbox" className="w-4 h-4 rounded text-red-500 focus:ring-red-500 border-gray-300" checked={formData.has_self_harm} onChange={(e) => updateField('has_self_harm', e.target.checked)} />
-                                            <span className="text-sm font-bold text-text-main dark:text-white font-display">Automutilação</span>
-                                        </label>
+                                        <Toggle checked={formData.has_self_harm} onChange={(v) => updateField('has_self_harm', v)} label="Automutilação" />
                                     </div>
                                 </div>
 
@@ -870,39 +897,32 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
                 </div>
 
                 {/* Footer */}
-                <div className="flex-shrink-0 px-4 sm:px-8 py-4 sm:py-5 border-t border-border-light dark:border-gray-800 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md flex items-center justify-between gap-3">
+                <div className="flex-shrink-0 px-4 sm:px-6 py-4 border-t border-border-light dark:border-gray-800 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md flex items-center justify-between gap-3">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-4 py-3 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-text-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all active:scale-95"
+                        className="size-12 flex items-center justify-center text-text-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all active:scale-95"
+                        title="Cancelar"
                     >
-                        Cancelar
+                        <span className="material-symbols-outlined text-[20px]">close</span>
                     </button>
-                    <div className="flex items-center gap-2 sm:gap-3">
-                        {activeTab !== 'basic' && (
+                    <div className="flex items-center gap-2">
+                        {currentTabIdx > 0 && (
                             <button
                                 type="button"
-                                onClick={() => {
-                                    const tabs: TabType[] = ['basic', 'origin', 'health', 'docs', 'institutional'];
-                                    const currentIdx = tabs.indexOf(activeTab);
-                                    if (currentIdx > 0) setActiveTab(tabs[currentIdx - 1]);
-                                }}
-                                className="px-4 py-3 bg-gray-100 dark:bg-gray-800 text-text-main dark:text-white text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl transition-all active:scale-95 flex items-center gap-2"
+                                onClick={() => setActiveTab(TABS[currentTabIdx - 1].id)}
+                                className="size-12 bg-gray-100 dark:bg-gray-800 text-text-main dark:text-white rounded-xl transition-all active:scale-95 flex items-center justify-center"
+                                title="Anterior"
                             >
-                                <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-                                <span className="hidden sm:inline">Anterior</span>
+                                <span className="material-symbols-outlined text-[20px]">arrow_back</span>
                             </button>
                         )}
 
-                        {activeTab !== 'institutional' ? (
+                        {currentTabIdx < TABS.length - 1 ? (
                             <button
                                 type="button"
-                                onClick={() => {
-                                    const tabs: TabType[] = ['basic', 'origin', 'health', 'docs', 'institutional'];
-                                    const currentIdx = tabs.indexOf(activeTab);
-                                    if (currentIdx < tabs.length - 1) setActiveTab(tabs[currentIdx + 1]);
-                                }}
-                                className="px-6 py-3 bg-primary/10 text-primary text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl hover:bg-primary hover:text-white transition-all active:scale-95 flex items-center gap-2"
+                                onClick={() => setActiveTab(TABS[currentTabIdx + 1].id)}
+                                className="h-12 px-6 bg-primary/10 text-primary text-xs font-black uppercase tracking-widest rounded-xl hover:bg-primary hover:text-white transition-all active:scale-95 flex items-center gap-2"
                             >
                                 Próximo
                                 <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -912,7 +932,7 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
                                 form="add-child-form"
                                 type="submit"
                                 disabled={loading}
-                                className="h-12 px-8 bg-primary text-white text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl hover:bg-primary/90 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 shadow-sm"
+                                className="h-12 px-6 bg-primary text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-primary/90 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 shadow-sm"
                             >
                                 {loading ? (
                                     <>

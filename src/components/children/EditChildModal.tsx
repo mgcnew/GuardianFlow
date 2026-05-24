@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import { MedicationsManager } from './MedicationsManager';
 import { DocumentUploadManager } from './DocumentUploadManager';
 import { useLogger } from '../../hooks/useLogger';
+import { useToast } from '../../contexts/ToastContext';
 
 interface EditChildModalProps {
     isOpen: boolean;
@@ -24,6 +25,7 @@ const sectionTitle = "text-xs font-black text-primary uppercase tracking-widest 
 export function EditChildModal({ isOpen, onClose, child, initialTab = 'basic' }: EditChildModalProps) {
     const { user } = useAuth();
     const { logAction } = useLogger();
+    const { toast } = useToast();
     const queryClient = useQueryClient();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -118,7 +120,7 @@ export function EditChildModal({ isOpen, onClose, child, initialTab = 'basic' }:
         if (!user || !child) return;
 
         if (!formData.full_name || !formData.date_of_birth || !formData.unit) {
-            alert('Por favor, preencha todos os campos obrigatórios (*)');
+            toast('Preencha todos os campos obrigatórios (*)', 'warning');
             setActiveTab('basic');
             return;
         }
@@ -176,7 +178,7 @@ export function EditChildModal({ isOpen, onClose, child, initialTab = 'basic' }:
             onClose();
         } catch (error: any) {
             console.error(error);
-            alert('Erro ao atualizar: ' + error.message);
+            toast('Erro ao atualizar: ' + error.message, 'error');
         } finally {
             setLoading(false);
         }

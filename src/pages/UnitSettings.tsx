@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { supabase } from '../lib/supabase';
 import clsx from 'clsx';
 import { AddProfessionalModal } from '../components/settings/AddProfessionalModal';
@@ -27,6 +28,7 @@ interface OrgData {
 export function UnitSettings() {
     const { profile, refreshOrganization } = useAuth();
     const { logAction } = useLogger();
+    const { toast } = useToast();
     const [searchParams, setSearchParams] = useSearchParams();
     const [activeTab, setActiveTab] = useState<'unit' | 'team' | 'permissions' | 'logs'>((searchParams.get('tab') as any) || 'unit');
     const [loading, setLoading] = useState(true);
@@ -150,7 +152,7 @@ export function UnitSettings() {
         setSaving(false);
         if (error) {
             console.error('Error updating organization:', error);
-            alert('Erro ao salvar: ' + error.message);
+            toast('Erro ao salvar: ' + error.message, 'error');
         } else {
             setSaved(true);
             logAction('UPDATE', 'organization', profile.organization_id, {

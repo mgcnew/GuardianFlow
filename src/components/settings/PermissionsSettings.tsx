@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import type { Role } from '../../contexts/AuthContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { supabase } from '../../lib/supabase';
 
 interface PermissionAction {
@@ -128,6 +129,7 @@ const ROLES: { id: Role; label: string; icon: string }[] = [
 
 export function PermissionsSettings() {
     const { profile, refreshPermissions } = useAuth();
+    const { toast } = useToast();
     const [selectedRole, setSelectedRole] = useState<Role>('educator');
     const [permissions, setPermissions] = useState<Record<string, boolean>>({});
     const [loading, setLoading] = useState(true);
@@ -213,7 +215,7 @@ export function PermissionsSettings() {
             setTimeout(() => setSaved(false), 3000);
         } catch (error: any) {
             console.error('Error saving permissions:', error);
-            alert('Erro ao salvar permissões: ' + error.message);
+            toast('Erro ao salvar permissões: ' + error.message, 'error');
         } finally {
             setSaving(false);
         }

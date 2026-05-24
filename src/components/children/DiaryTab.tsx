@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import clsx from 'clsx';
 
 interface DiaryTabProps {
@@ -27,6 +28,7 @@ const CATEGORY_OPTIONS = [
 
 export function DiaryTab({ childId }: DiaryTabProps) {
     const { profile } = useAuth();
+    const { toast } = useToast();
     const queryClient = useQueryClient();
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [filterCategory, setFilterCategory] = useState<string>('all');
@@ -74,7 +76,7 @@ export function DiaryTab({ childId }: DiaryTabProps) {
             setForm({ category: 'general', title: '', content: '', mood: '', urgency: 'low' });
             setIsFormOpen(false);
         },
-        onError: (err: any) => alert('Erro ao salvar: ' + err.message),
+        onError: (err: any) => toast('Erro ao salvar: ' + err.message, 'error'),
     });
 
     const filteredEntries = (entries || []).filter(

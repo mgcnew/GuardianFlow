@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -11,6 +12,7 @@ interface AppointmentsTabProps {
 
 export function AppointmentsTab({ childId }: AppointmentsTabProps) {
     const { profile } = useAuth();
+    const { toast } = useToast();
     const queryClient = useQueryClient();
     const [isFormOpen, setIsFormOpen] = useState(false);
 
@@ -53,9 +55,9 @@ export function AppointmentsTab({ childId }: AppointmentsTabProps) {
             queryClient.invalidateQueries({ queryKey: ['child-appointments', childId] });
             setForm({ type: 'social_work', title: '', content: '', next_appointment: '' });
             setIsFormOpen(false);
-            alert('Registro de assistência social salvo!');
+            toast('Registro de assistência social salvo!', 'success');
         },
-        onError: (err: any) => alert('Erro: ' + err.message),
+        onError: (err: any) => toast('Erro: ' + err.message, 'error'),
     });
 
     return (

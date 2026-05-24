@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 
@@ -14,6 +15,7 @@ export function SuperAdmin() {
     const [inviteName, setInviteName] = useState('');
     const [isInviting, setIsInviting] = useState(false);
     const { profile, signOut } = useAuth();
+    const { toast } = useToast();
     const navigate = useNavigate();
 
     const { data: orgs, isLoading: orgsLoading } = useQuery({
@@ -98,7 +100,7 @@ export function SuperAdmin() {
     const handleDeleteLead = async (id: string) => {
         if (!confirm('Deseja excluir esta solicitação?')) return;
         const { error } = await supabase.from('demo_requests').delete().eq('id', id);
-        if (error) alert('Erro ao deletar');
+        if (error) toast('Erro ao deletar', 'error');
         else refetchLeads();
     };
 
@@ -145,10 +147,10 @@ export function SuperAdmin() {
             setInviteEmail('');
             setInviteName('');
             refetchInvites();
-            alert('Convite de demonstração enviado com sucesso!');
+            toast('Convite de demonstração enviado com sucesso!', 'success');
         } catch (error: any) {
             console.error('Erro ao convidar:', error);
-            alert(error.message);
+            toast(error.message, 'error');
         } finally {
             setIsInviting(false);
         }
@@ -157,7 +159,7 @@ export function SuperAdmin() {
     const handleDeleteInvite = async (id: string) => {
         if (!confirm('Deseja cancelar este convite?')) return;
         const { error } = await supabase.from('invites').delete().eq('id', id);
-        if (error) alert('Erro ao deletar');
+        if (error) toast('Erro ao deletar', 'error');
         else refetchInvites();
     };
 
@@ -390,7 +392,7 @@ export function SuperAdmin() {
                                                                         .from('organizations')
                                                                         .update({ is_demo: !org.is_demo })
                                                                         .eq('id', org.id);
-                                                                    if (error) alert('Erro ao atualizar');
+                                                                    if (error) toast('Erro ao atualizar', 'error');
                                                                     else window.location.reload(); // Simple refresh to update state
                                                                 }}
                                                                 className={clsx(

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 
 interface Document {
     id: string;
@@ -21,6 +22,7 @@ interface DocumentUploadManagerProps {
 
 export function DocumentUploadManager({ childId, pendingFiles = [], onAddPendingFile, onRemovePendingFile }: DocumentUploadManagerProps) {
     const { user, profile } = useAuth();
+    const { toast } = useToast();
     const queryClient = useQueryClient();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -123,7 +125,7 @@ export function DocumentUploadManager({ childId, pendingFiles = [], onAddPending
             setSelectedType('other');
         } catch (error: any) {
             console.error('Error uploading document:', error);
-            alert('Erro ao enviar documento: ' + error.message);
+            toast('Erro ao enviar documento: ' + error.message, 'error');
         } finally {
             setUploading(false);
         }
@@ -147,7 +149,7 @@ export function DocumentUploadManager({ childId, pendingFiles = [], onAddPending
             queryClient.invalidateQueries({ queryKey: ['child_documents', childId] });
         } catch (error: any) {
             console.error('Error deleting document:', error);
-            alert('Erro ao excluir documento: ' + error.message);
+            toast('Erro ao excluir documento: ' + error.message, 'error');
         }
     };
 

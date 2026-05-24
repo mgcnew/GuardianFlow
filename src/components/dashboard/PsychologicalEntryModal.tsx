@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLogger } from '../../hooks/useLogger';
+import { useToast } from '../../contexts/ToastContext';
 import clsx from 'clsx';
 import { format } from 'date-fns';
 
@@ -70,6 +71,7 @@ const ATTENTION_OPTIONS = [
 ];
 
 export function PsychologicalEntryModal({ isOpen, onClose, initialChildId }: PsychologicalEntryModalProps) {
+    const { toast } = useToast();
     const { profile, user } = useAuth();
     const { logAction } = useLogger();
     const queryClient = useQueryClient();
@@ -291,7 +293,7 @@ export function PsychologicalEntryModal({ isOpen, onClose, initialChildId }: Psy
         },
         onError: (error: any) => {
             console.error('Error saving psychological entry:', error);
-            alert(`Erro ao salvar: ${error.message || 'Erro desconhecido'}`);
+            toast(`Erro ao salvar: ${error.message || 'Erro desconhecido'}`, 'error');
         }
     });
 

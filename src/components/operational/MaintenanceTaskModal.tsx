@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { format, parseISO } from 'date-fns';
 import { createPortal } from 'react-dom';
 
@@ -13,6 +14,7 @@ interface MaintenanceTaskModalProps {
 
 export function MaintenanceTaskModal({ isOpen, onClose, task }: MaintenanceTaskModalProps) {
     const { profile } = useAuth();
+    const { toast } = useToast();
     const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
 
@@ -181,7 +183,7 @@ export function MaintenanceTaskModal({ isOpen, onClose, task }: MaintenanceTaskM
             queryClient.invalidateQueries({ queryKey: ['maintenanceTasks'] });
             onClose();
         } catch (error: any) {
-            alert('Erro ao salvar tarefa: ' + error.message);
+            toast('Erro ao salvar tarefa: ' + error.message, 'error');
         } finally {
             setLoading(false);
         }

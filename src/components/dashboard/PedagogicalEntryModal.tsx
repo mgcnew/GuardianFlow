@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLogger } from '../../hooks/useLogger';
+import { useToast } from '../../contexts/ToastContext';
 import clsx from 'clsx';
 
 interface PedagogicalEntryModalProps {
@@ -20,6 +21,7 @@ const CATEGORIES = [
 ];
 
 export function PedagogicalEntryModal({ isOpen, onClose, initialChildId }: PedagogicalEntryModalProps) {
+    const { toast } = useToast();
     const { profile } = useAuth();
     const { logAction } = useLogger();
     const queryClient = useQueryClient();
@@ -119,7 +121,7 @@ export function PedagogicalEntryModal({ isOpen, onClose, initialChildId }: Pedag
         },
         onError: (error: any) => {
             console.error('Error saving pedagogical entry:', error);
-            alert(`Erro ao salvar: ${error.message || 'Erro desconhecido'}`);
+            toast(`Erro ao salvar: ${error.message || 'Erro desconhecido'}`, 'error');
         }
     });
 

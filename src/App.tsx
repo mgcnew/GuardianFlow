@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
 import { LoadingScreen } from './components/shared/LoadingScreen';
 import { AdminProtectedRoute } from './components/shared/AdminProtectedRoute';
 import { TrialExpiredScreen } from './components/shared/TrialExpiredScreen';
@@ -77,6 +78,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
+        <ToastProvider>
         <AuthProvider>
           <BrowserRouter>
             <Routes>
@@ -119,6 +121,7 @@ function App() {
             </Routes>
           </BrowserRouter>
         </AuthProvider>
+        </ToastProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

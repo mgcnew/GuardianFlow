@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { supabase } from '../../lib/supabase';
 import { format } from 'date-fns';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
@@ -15,6 +16,7 @@ interface SchoolMeetingModalProps {
 
 export function SchoolMeetingModal({ isOpen, onClose, initialChildId, childrenList }: SchoolMeetingModalProps) {
     const { profile } = useAuth();
+    const { toast } = useToast();
     const queryClient = useQueryClient();
     const [step, setStep] = useState(1);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -85,7 +87,7 @@ export function SchoolMeetingModal({ isOpen, onClose, initialChildId, childrenLi
             }, 1000);
         },
         onError: (error: any) => {
-            alert(`Erro ao salvar: ${error.message}`);
+            toast(`Erro ao salvar: ${error.message}`, 'error');
         }
     });
 
