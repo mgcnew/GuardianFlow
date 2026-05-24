@@ -9,9 +9,11 @@ interface StatCardProps {
     isLoading?: boolean;
     onInfoClick?: () => void;
     progress?: number;
+    onClick?: () => void;
+    active?: boolean;
 }
 
-export function StatCard({ icon, title, value, subValue, variant = 'default', isLoading, onInfoClick, progress }: StatCardProps) {
+export function StatCard({ icon, title, value, subValue, variant = 'default', isLoading, onInfoClick, progress, onClick, active }: StatCardProps) {
     const styles = {
         default: {
             iconBg: 'bg-primary/10 dark:bg-primary/20',
@@ -61,7 +63,14 @@ export function StatCard({ icon, title, value, subValue, variant = 'default', is
         : s.bar;
 
     return (
-        <div className="relative bg-white dark:bg-surface-dark rounded-3xl border border-gray-100 dark:border-gray-800 p-5 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col justify-between min-h-[140px]">
+        <div
+            onClick={onClick}
+            className={clsx(
+                "relative bg-white dark:bg-surface-dark rounded-3xl border p-5 shadow-sm transition-all overflow-hidden flex flex-col justify-between min-h-[140px]",
+                onClick ? "cursor-pointer hover:shadow-md active:scale-[0.98]" : "hover:shadow-md",
+                active ? "border-primary/30 ring-2 ring-primary/10" : "border-gray-100 dark:border-gray-800"
+            )}
+        >
             {/* Decorative background circle */}
             <div className={clsx("absolute -right-5 -top-5 size-24 rounded-full opacity-60", s.decor)} />
 

@@ -6,6 +6,7 @@ import { AddChildModal } from '../components/children/AddChildModal';
 import { EditChildModal } from '../components/children/EditChildModal';
 import { MedicationsModal } from '../components/children/MedicationsModal';
 import { ChildDetailsModal } from '../components/children/ChildDetailsModal';
+import { StatCard } from '../components/dashboard/StatCard';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -114,19 +115,27 @@ export function ChildrenList() {
 
     if (isLoading) {
         return (
-            <div className="space-y-6 animate-pulse p-4">
+            <div className="space-y-6 animate-pulse">
                 <div className="flex justify-between items-center">
                     <div className="space-y-2">
                         <div className="h-6 w-48 bg-slate-200 dark:bg-slate-800 rounded-lg" />
                         <div className="h-4 w-64 bg-slate-100 dark:bg-slate-900 rounded-lg" />
                     </div>
-                    <div className="h-10 w-40 bg-slate-200 dark:bg-slate-800 rounded-xl" />
+                    <div className="h-11 w-40 bg-slate-200 dark:bg-slate-800 rounded-xl" />
                 </div>
-                <div className="grid grid-cols-4 gap-4">
-                    {[1, 2, 3, 4].map(i => <div key={i} className="h-28 bg-slate-100 dark:bg-slate-900 rounded-[24px]" />)}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[1, 2, 3, 4].map(i => (
+                        <div key={i} className="h-[140px] bg-white/50 dark:bg-surface-dark/50 rounded-3xl border border-slate-100 dark:border-gray-800 p-5 flex flex-col justify-between">
+                            <div className="size-12 rounded-2xl bg-slate-200 dark:bg-slate-700/50" />
+                            <div>
+                                <div className="h-8 w-1/3 bg-slate-200 dark:bg-slate-700/50 rounded-lg mb-1.5" />
+                                <div className="h-2.5 w-1/2 bg-slate-100 dark:bg-slate-800 rounded-full" />
+                            </div>
+                        </div>
+                    ))}
                 </div>
-                <div className="grid grid-cols-4 gap-4">
-                    {[1, 2, 3, 4].map(i => <div key={i} className="h-72 bg-slate-100 dark:bg-slate-900 rounded-[24px]" />)}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map(i => <div key={i} className="h-72 bg-white/50 dark:bg-surface-dark/50 rounded-[20px] border border-slate-100 dark:border-gray-800" />)}
                 </div>
             </div>
         );
@@ -155,36 +164,40 @@ export function ChildrenList() {
                 )}
             </div>
 
-            {/* Stats Row - Scaled down */}
+            {/* Stats Row */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                    { label: 'Total Geral', value: stats.total, icon: 'groups', color: 'blue' },
-                    { label: 'Urgências', value: stats.urgent, icon: 'bolt', color: 'rose' },
-                    { label: 'Efetivados', value: stats.active, icon: 'verified', color: 'emerald' },
-                    { label: 'Processamento', value: stats.pending, icon: 'hourglass_top', color: 'amber' },
-                ].map((stat) => (
-                    <div key={stat.label} className={clsx(
-                        "group bg-white dark:bg-surface-dark rounded-[24px] border border-slate-100 dark:border-gray-800 p-5 transition-all duration-300 hover:shadow-md",
-                    )}>
-                        <div className="flex justify-between items-start mb-3">
-                            <div className={clsx(
-                                "size-10 rounded-xl flex items-center justify-center",
-                                stat.color === 'blue' && "bg-blue-500 text-white",
-                                stat.color === 'rose' && "bg-rose-500 text-white",
-                                stat.color === 'emerald' && "bg-emerald-500 text-white",
-                                stat.color === 'amber' && "bg-amber-500 text-white"
-                            )}>
-                                <span className="material-symbols-outlined text-xl">{stat.icon}</span>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-2xl font-black text-text-main dark:text-white leading-none tracking-tighter">{stat.value}</p>
-                            </div>
-                        </div>
-                        <p className="text-[9px] font-black uppercase tracking-[0.15em] text-text-secondary dark:text-gray-500">
-                            {stat.label}
-                        </p>
-                    </div>
-                ))}
+                <StatCard
+                    icon="groups"
+                    title="Total Geral"
+                    value={stats.total}
+                    variant="info"
+                    active={activeTab === 'all'}
+                    onClick={() => { setActiveTab('all'); setCurrentPage(1); }}
+                />
+                <StatCard
+                    icon="bolt"
+                    title="Urgências"
+                    value={stats.urgent}
+                    variant="danger"
+                    active={activeTab === 'urgent'}
+                    onClick={() => { setActiveTab('urgent'); setCurrentPage(1); }}
+                />
+                <StatCard
+                    icon="verified"
+                    title="Efetivados"
+                    value={stats.active}
+                    variant="success"
+                    active={activeTab === 'active'}
+                    onClick={() => { setActiveTab('active'); setCurrentPage(1); }}
+                />
+                <StatCard
+                    icon="hourglass_top"
+                    title="Processamento"
+                    value={stats.pending}
+                    variant="warning"
+                    active={activeTab === 'pending'}
+                    onClick={() => { setActiveTab('pending'); setCurrentPage(1); }}
+                />
             </div>
 
             {/* Filter & Search Bar - Scaled down */}
