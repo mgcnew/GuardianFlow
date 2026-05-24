@@ -1,30 +1,33 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { MainLayout } from './components/layout/MainLayout';
-import { Dashboard } from './pages/Dashboard';
-import { ChildrenList } from './pages/ChildrenList';
-import { ChildProfile } from './pages/ChildProfile';
-import { EducatorLogbook } from './pages/EducatorLogbook';
-import { Schedule } from './pages/Schedule';
-
-import { UnitSettings } from './pages/UnitSettings';
-import { UserProfile } from './pages/UserProfile';
-import { Login } from './pages/Login';
-import { LandingPage } from './pages/LandingPage';
-import { PsychologistDashboard } from './pages/PsychologistDashboard';
-import { PedagogueDashboard } from './pages/PedagogueDashboard';
-import { SocialWorkDashboard } from './pages/SocialWorkDashboard';
-import { InventoryPage } from './pages/InventoryPage';
-import { FinancialDashboard } from './pages/FinancialDashboard';
-import { OperationalDashboard } from './pages/OperationalDashboard';
-import { SuperAdmin } from './pages/admin/SuperAdmin';
-import { DemoRequest } from './pages/DemoRequest';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LoadingScreen } from './components/shared/LoadingScreen';
 import { AdminProtectedRoute } from './components/shared/AdminProtectedRoute';
 import { TrialExpiredScreen } from './components/shared/TrialExpiredScreen';
+
+// Always loaded — needed before auth resolves
+import { Login } from './pages/Login';
+import { LandingPage } from './pages/LandingPage';
+import { DemoRequest } from './pages/DemoRequest';
+
+// Lazy-loaded — split into separate chunks
+const MainLayout             = lazy(() => import('./components/layout/MainLayout').then(m => ({ default: m.MainLayout })));
+const Dashboard              = lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
+const ChildrenList           = lazy(() => import('./pages/ChildrenList').then(m => ({ default: m.ChildrenList })));
+const ChildProfile           = lazy(() => import('./pages/ChildProfile').then(m => ({ default: m.ChildProfile })));
+const EducatorLogbook        = lazy(() => import('./pages/EducatorLogbook').then(m => ({ default: m.EducatorLogbook })));
+const Schedule               = lazy(() => import('./pages/Schedule').then(m => ({ default: m.Schedule })));
+const UnitSettings           = lazy(() => import('./pages/UnitSettings').then(m => ({ default: m.UnitSettings })));
+const UserProfile            = lazy(() => import('./pages/UserProfile').then(m => ({ default: m.UserProfile })));
+const PsychologistDashboard  = lazy(() => import('./pages/PsychologistDashboard').then(m => ({ default: m.PsychologistDashboard })));
+const PedagogueDashboard     = lazy(() => import('./pages/PedagogueDashboard').then(m => ({ default: m.PedagogueDashboard })));
+const SocialWorkDashboard    = lazy(() => import('./pages/SocialWorkDashboard').then(m => ({ default: m.SocialWorkDashboard })));
+const InventoryPage          = lazy(() => import('./pages/InventoryPage').then(m => ({ default: m.InventoryPage })));
+const FinancialDashboard     = lazy(() => import('./pages/FinancialDashboard').then(m => ({ default: m.FinancialDashboard })));
+const OperationalDashboard   = lazy(() => import('./pages/OperationalDashboard').then(m => ({ default: m.OperationalDashboard })));
+const SuperAdmin             = lazy(() => import('./pages/admin/SuperAdmin').then(m => ({ default: m.SuperAdmin })));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -83,28 +86,32 @@ function App() {
 
               <Route path="/admin" element={
                 <AdminProtectedRoute>
-                  <SuperAdmin />
+                  <Suspense fallback={<LoadingScreen />}>
+                    <SuperAdmin />
+                  </Suspense>
                 </AdminProtectedRoute>
               } />
 
               <Route path="/dashboard" element={
                 <ProtectedRoute>
-                  <MainLayout />
+                  <Suspense fallback={<LoadingScreen />}>
+                    <MainLayout />
+                  </Suspense>
                 </ProtectedRoute>
               }>
-                <Route index element={<Dashboard />} />
-                <Route path="children" element={<ChildrenList />} />
-                <Route path="children/:id" element={<ChildProfile />} />
-                <Route path="agenda" element={<Schedule />} />
-                <Route path="logbook" element={<EducatorLogbook />} />
-                <Route path="settings" element={<UnitSettings />} />
-                <Route path="psychology" element={<PsychologistDashboard />} />
-                <Route path="pedagogy" element={<PedagogueDashboard />} />
-                <Route path="social" element={<SocialWorkDashboard />} />
-                <Route path="inventory" element={<InventoryPage />} />
-                <Route path="finance" element={<FinancialDashboard />} />
-                <Route path="operational" element={<OperationalDashboard />} />
-                <Route path="profile" element={<UserProfile />} />
+                <Route index element={<Suspense fallback={<LoadingScreen />}><Dashboard /></Suspense>} />
+                <Route path="children" element={<Suspense fallback={<LoadingScreen />}><ChildrenList /></Suspense>} />
+                <Route path="children/:id" element={<Suspense fallback={<LoadingScreen />}><ChildProfile /></Suspense>} />
+                <Route path="agenda" element={<Suspense fallback={<LoadingScreen />}><Schedule /></Suspense>} />
+                <Route path="logbook" element={<Suspense fallback={<LoadingScreen />}><EducatorLogbook /></Suspense>} />
+                <Route path="settings" element={<Suspense fallback={<LoadingScreen />}><UnitSettings /></Suspense>} />
+                <Route path="psychology" element={<Suspense fallback={<LoadingScreen />}><PsychologistDashboard /></Suspense>} />
+                <Route path="pedagogy" element={<Suspense fallback={<LoadingScreen />}><PedagogueDashboard /></Suspense>} />
+                <Route path="social" element={<Suspense fallback={<LoadingScreen />}><SocialWorkDashboard /></Suspense>} />
+                <Route path="inventory" element={<Suspense fallback={<LoadingScreen />}><InventoryPage /></Suspense>} />
+                <Route path="finance" element={<Suspense fallback={<LoadingScreen />}><FinancialDashboard /></Suspense>} />
+                <Route path="operational" element={<Suspense fallback={<LoadingScreen />}><OperationalDashboard /></Suspense>} />
+                <Route path="profile" element={<Suspense fallback={<LoadingScreen />}><UserProfile /></Suspense>} />
                 <Route path="*" element={<div>Not Found</div>} />
               </Route>
 
