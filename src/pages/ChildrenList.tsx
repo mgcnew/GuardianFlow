@@ -38,6 +38,8 @@ export function ChildrenList() {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState<'all' | 'urgent' | 'active' | 'pending'>('all');
     const [sortBy, setSortBy] = useState<'name' | 'age' | 'time'>('name');
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -99,6 +101,9 @@ export function ChildrenList() {
             if (sortBy === 'time') return calculateTimeInCareDays(b.admission_date) - calculateTimeInCareDays(a.admission_date);
             return 0;
         });
+
+    const totalPages = Math.ceil(filteredChildren.length / PAGE_SIZE);
+    const paginatedChildren = filteredChildren.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
     const stats = {
         total: children?.length || 0,
@@ -191,7 +196,7 @@ export function ChildrenList() {
                         placeholder="Pesquisar acolhido..."
                         type="text"
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                     />
                 </div>
 
@@ -204,7 +209,7 @@ export function ChildrenList() {
                     ].map((tab) => (
                         <button
                             key={tab.id}
-                            onClick={() => setActiveTab(tab.id as any)}
+                            onClick={() => { setActiveTab(tab.id as any); setCurrentPage(1); }}
                             className={clsx(
                                 "px-4 py-2 rounded-[12px] text-[10px] font-black uppercase tracking-wider whitespace-nowrap transition-all",
                                 activeTab === tab.id
@@ -221,7 +226,7 @@ export function ChildrenList() {
                     <span className="material-symbols-outlined text-slate-400 text-[18px]">sort</span>
                     <select
                         value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value as any)}
+                        onChange={(e) => { setSortBy(e.target.value as any); setCurrentPage(1); }}
                         className="bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-white focus:ring-0 outline-none p-0 cursor-pointer"
                     >
                         <option value="name">A-Z</option>
@@ -239,36 +244,83 @@ export function ChildrenList() {
                     </div>
                     <h3 className="text-xl font-black text-text-main dark:text-white mb-2 font-display">Nenhum resultado.</h3>
                     <button
-                        onClick={() => { setSearchQuery(''); setActiveTab('all'); }}
+                        onClick={() => { setSearchQuery(''); setActiveTab('all'); setCurrentPage(1); }}
                         className="text-primary text-[10px] font-black uppercase tracking-widest hover:underline"
                     >
                         Resetar Filtros
                     </button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredChildren.map((child, idx) => (
-                        <div key={child.id} className="animate-in fade-in slide-in-from-bottom-2 duration-500" style={{ animationDelay: `${idx * 40}ms`, animationFillMode: 'both' }}>
-                            <ChildCard
-                                id={child.id}
-                                name={child.full_name}
-                                image={child.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(child.full_name)}&background=random&color=fff`}
-                                status={child.status as any}
-                                unit={child.unit || 'Acolhimento'}
-                                age={calculateAge(child.date_of_birth)}
-                                timeInCare={formatTimeInCare(child.admission_date)}
-                                legalStatus={child.legal_status || 'A definir'}
-                                lastUpdate="Registrado"
-                                onEditProfile={() => {
-                                    setEditingChild(child);
-                                    setEditModalTab('basic');
-                                }}
-                                onManageMedications={() => setMedicationChild(child)}
-                                onViewDetails={() => setViewChildId(child.id)}
-                            />
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {paginatedChildren.map((child, idx) => (
+                            <div key={child.id} className="animate-in fade-in slide-in-from-bottom-2 duration-500" style={{ animationDelay: `${idx * 40}ms`, animationFillMode: 'both' }}>
+                                <ChildCard
+                                    id={child.id}
+                                    name={child.full_name}
+                                    image={child.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(child.full_name)}&background=random&color=fff`}
+                                    status={child.status as any}
+                                    unit={child.unit || 'Acolhimento'}
+                                    age={calculateAge(child.date_of_birth)}
+                                    timeInCare={formatTimeInCare(child.admission_date)}
+                                    legalStatus={child.legal_status || 'A definir'}
+                                    lastUpdate="Registrado"
+                                    onEditProfile={() => {
+                                        setEditingChild(child);
+                                        setEditModalTab('basic');
+                                    }}
+                                    onManageMedications={() => setMedicationChild(child)}
+                                    onViewDetails={() => setViewChildId(child.id)}
+                                />
+                            </div>
+                        ))}
+                    </div>
+
+                    {totalPages > 1 && (
+                        <div className="flex items-center justify-between pt-4">
+                            <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
+                                {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredChildren.length)} de {filteredChildren.length}
+                            </p>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => { setCurrentPage(p => p - 1); window.scrollTo(0, 0); }}
+                                    disabled={currentPage === 1}
+                                    className="size-9 rounded-xl border border-slate-100 dark:border-gray-800 flex items-center justify-center text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 transition-all"
+                                >
+                                    <span className="material-symbols-outlined text-lg">chevron_left</span>
+                                </button>
+                                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                                    .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                                    .reduce<(number | string)[]>((acc, p, i, arr) => {
+                                        if (i > 0 && (p as number) - (arr[i - 1] as number) > 1) acc.push('…');
+                                        acc.push(p);
+                                        return acc;
+                                    }, [])
+                                    .map((p, i) => p === '…' ? (
+                                        <span key={`ellipsis-${i}`} className="size-9 flex items-center justify-center text-[11px] text-text-secondary">…</span>
+                                    ) : (
+                                        <button
+                                            key={p}
+                                            onClick={() => { setCurrentPage(p as number); window.scrollTo(0, 0); }}
+                                            className={clsx(
+                                                "size-9 rounded-xl text-[11px] font-black transition-all",
+                                                currentPage === p ? "bg-primary text-white shadow-md shadow-primary/20" : "border border-slate-100 dark:border-gray-800 text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800"
+                                            )}
+                                        >
+                                            {p}
+                                        </button>
+                                    ))}
+                                <button
+                                    onClick={() => { setCurrentPage(p => p + 1); window.scrollTo(0, 0); }}
+                                    disabled={currentPage === totalPages}
+                                    className="size-9 rounded-xl border border-slate-100 dark:border-gray-800 flex items-center justify-center text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 transition-all"
+                                >
+                                    <span className="material-symbols-outlined text-lg">chevron_right</span>
+                                </button>
+                            </div>
                         </div>
-                    ))}
-                </div>
+                    )}
+                </>
             )}
 
             <AddChildModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
