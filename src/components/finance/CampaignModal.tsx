@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLogger } from '../../hooks/useLogger';
+import { useToast } from '../../contexts/ToastContext';
 
 interface CampaignModalProps {
     isOpen: boolean;
@@ -14,6 +15,7 @@ interface CampaignModalProps {
 export function CampaignModal({ isOpen, onClose, campaign }: CampaignModalProps) {
     const { profile } = useAuth();
     const { logAction } = useLogger();
+    const { toast } = useToast();
     const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
 
@@ -59,7 +61,7 @@ export function CampaignModal({ isOpen, onClose, campaign }: CampaignModalProps)
             onClose();
         } catch (error) {
             console.error('Error saving campaign:', error);
-            alert('Erro ao salvar campanha.');
+            toast('Erro ao salvar campanha.', 'error');
         } finally {
             setLoading(false);
         }

@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import clsx from 'clsx';
 import { createNotification } from '../../lib/notifications';
 import { useLogger } from '../../hooks/useLogger';
+import { useToast } from '../../contexts/ToastContext';
 
 
 interface CalendarEventModalProps {
@@ -98,6 +99,7 @@ const PRIORITY_OPTIONS = [
 export function CalendarEventModal({ isOpen, onClose, selectedDate, eventToEdit, initialProfessionalId, initialType }: CalendarEventModalProps) {
     const { profile } = useAuth();
     const { logAction } = useLogger();
+    const { toast } = useToast();
     const queryClient = useQueryClient();
 
     const [step, setStep] = useState<1 | 2 | 3>(1); // Step 3 represents "Outcome/Completion" mode
@@ -326,7 +328,7 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
                     if (logError) {
                         console.error('Error creating log:', logError);
                         // Don't throw here to avoid blocking event save, just warn
-                        alert('Evento salvo, mas houve um erro ao criar o registro no diário.');
+                        toast('Evento salvo, mas houve um erro ao criar o registro no diário.', 'warning');
                     }
                 }
             }
@@ -353,7 +355,7 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
         },
         onError: (error: any) => {
             console.error('Error saving event:', error);
-            alert('Erro ao salvar evento: ' + (error.message || 'Verifique sua conexão'));
+            toast('Erro ao salvar evento: ' + (error.message || 'Verifique sua conexão'), 'error');
         }
     });
 
@@ -365,7 +367,7 @@ ${data.outcome_details.notes ? `\n> Observações: ${data.outcome_details.notes}
             .delete()
             .eq('id', eventToEdit.id);
         if (error) {
-            alert('Erro ao excluir evento');
+            toast('Erro ao excluir evento', 'error');
         } else {
             logAction('DELETE', 'calendar_event', eventToEdit.id, {
                 title: eventToEdit.title,

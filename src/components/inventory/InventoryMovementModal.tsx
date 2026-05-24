@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLogger } from '../../hooks/useLogger';
+import { useToast } from '../../contexts/ToastContext';
 import clsx from 'clsx';
 
 interface InventoryMovementModalProps {
@@ -16,6 +17,7 @@ interface InventoryMovementModalProps {
 export function InventoryMovementModal({ isOpen, onClose, items, type }: InventoryMovementModalProps) {
     const { profile } = useAuth();
     const { logAction } = useLogger();
+    const { toast } = useToast();
     const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
 
@@ -58,7 +60,7 @@ export function InventoryMovementModal({ isOpen, onClose, items, type }: Invento
             onClose();
         } catch (error) {
             console.error('Error recording movement:', error);
-            alert('Erro ao registrar movimentação.');
+            toast('Erro ao registrar movimentação.', 'error');
         } finally {
             setLoading(false);
         }

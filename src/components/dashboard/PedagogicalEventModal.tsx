@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { format } from 'date-fns';
 import clsx from 'clsx';
 import { createNotification } from '../../lib/notifications';
@@ -82,6 +83,7 @@ const ENGAGEMENT_LEVELS = [
 
 export function PedagogicalEventModal({ isOpen, onClose, selectedDate, eventToEdit, initialType }: PedagogicalEventModalProps) {
     const { profile } = useAuth();
+    const { toast } = useToast();
     const queryClient = useQueryClient();
 
     const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -302,14 +304,14 @@ ${data.outcome_details.notes || 'Nenhuma observação adicional.'}
         },
         onError: (error: any) => {
             console.error('Error saving pedagogical event:', error);
-            alert('Erro ao salvar atividade: ' + (error.message || 'Tente novamente'));
+            toast('Erro ao salvar atividade: ' + (error.message || 'Tente novamente'), 'error');
         }
     });
 
     const handleDelete = async () => {
         if (!eventToEdit || !confirm('Deseja excluir esta atividade da agenda?')) return;
         const { error } = await supabase.from('calendar_events').delete().eq('id', eventToEdit.id);
-        if (error) alert('Erro ao excluir');
+        if (error) toast('Erro ao excluir', 'error');
         else {
             await queryClient.invalidateQueries({ queryKey: ['pedagogical-calendar-events'] });
             onClose();

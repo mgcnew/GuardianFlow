@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useToast } from '../contexts/ToastContext';
 
 export function DemoRequest() {
     const navigate = useNavigate();
+    const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [formData, setFormData] = useState({
@@ -26,7 +28,7 @@ export function DemoRequest() {
             setIsSuccess(true);
         } catch (error: any) {
             console.error('Erro ao enviar solicitação:', error);
-            alert('Ocorreu um erro ao enviar sua solicitação. Por favor, tente novamente.');
+            toast('Ocorreu um erro ao enviar sua solicitação. Por favor, tente novamente.', 'error');
         } finally {
             setIsSubmitting(false);
         }

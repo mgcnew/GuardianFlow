@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLogger } from '../../hooks/useLogger';
+import { useToast } from '../../contexts/ToastContext';
 
 interface InventoryRequestModalProps {
     isOpen: boolean;
@@ -13,6 +14,7 @@ interface InventoryRequestModalProps {
 export function InventoryRequestModal({ isOpen, onClose }: InventoryRequestModalProps) {
     const { profile } = useAuth();
     const { logAction } = useLogger();
+    const { toast } = useToast();
     const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
 
@@ -56,7 +58,7 @@ export function InventoryRequestModal({ isOpen, onClose }: InventoryRequestModal
             onClose();
         } catch (error) {
             console.error('Error creating request:', error);
-            alert('Erro ao criar pedido.');
+            toast('Erro ao criar pedido.', 'error');
         } finally {
             setLoading(false);
         }

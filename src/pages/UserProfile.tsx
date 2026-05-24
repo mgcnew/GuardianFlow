@@ -1,9 +1,11 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
+import { useToast } from '../contexts/ToastContext';
 
 export function UserProfile() {
     const { user, profile, refreshProfile } = useAuth();
+    const { toast } = useToast();
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -44,7 +46,7 @@ export function UserProfile() {
 
         if (uploadError) {
             console.error('Upload error:', uploadError);
-            alert('Erro ao subir foto: ' + uploadError.message);
+            toast('Erro ao subir foto: ' + uploadError.message, 'error');
         } else {
             const { data: urlData } = supabase.storage
                 .from('avatars')
@@ -98,9 +100,10 @@ export function UserProfile() {
 
         setSaving(false);
         if (error) {
-            alert('Erro ao salvar: ' + error.message);
+            toast('Erro ao salvar: ' + error.message, 'error');
         } else {
             setSaved(true);
+            toast('Perfil salvo com sucesso!', 'success');
             await refreshProfile();
             setTimeout(() => setSaved(false), 3000);
         }
@@ -327,7 +330,7 @@ export function UserProfile() {
                             onClick={async () => {
                                 if (userEmail) {
                                     await supabase.auth.resetPasswordForEmail(userEmail);
-                                    alert('E-mail de redefinição enviado!');
+                                    toast('E-mail de redefinição enviado!', 'success');
                                 }
                             }}
                             className="h-12 px-6 border border-border-light dark:border-gray-700 text-text-main dark:text-white text-sm font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex-shrink-0 shadow-sm font-display"

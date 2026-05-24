@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLogger } from '../../hooks/useLogger';
+import { useToast } from '../../contexts/ToastContext';
 import clsx from 'clsx';
 
 interface TransactionModalProps {
@@ -16,6 +17,7 @@ interface TransactionModalProps {
 export function TransactionModal({ isOpen, onClose, transaction, type = 'expense' }: TransactionModalProps) {
     const { profile } = useAuth();
     const { logAction } = useLogger();
+    const { toast } = useToast();
     const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
 
@@ -72,7 +74,7 @@ export function TransactionModal({ isOpen, onClose, transaction, type = 'expense
             onClose();
         } catch (error) {
             console.error('Error saving transaction:', error);
-            alert('Erro ao salvar transação financeira.');
+            toast('Erro ao salvar transação financeira.', 'error');
         } finally {
             setLoading(false);
         }

@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 
 export function Login() {
     const { user, loading: authLoading } = useAuth();
+    const { toast } = useToast();
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -30,7 +32,7 @@ export function Login() {
                     password,
                 });
                 if (error) throw error;
-                alert('Check your email for the confirmation link!');
+                toast('Verifique seu e-mail para confirmar o cadastro!', 'success');
             } else {
                 const { error } = await supabase.auth.signInWithPassword({
                     email,

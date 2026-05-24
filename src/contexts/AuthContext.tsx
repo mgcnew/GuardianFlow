@@ -231,7 +231,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             console.log('[Auth] Initializing...');
             // Safety timeout: ensure loading is ALWAYS false after 6 seconds maximum
             const safetyTimeout = setTimeout(() => {
-                if (mounted && loading) {
+                if (mounted) {
                     console.warn('[Auth] Initialization safety timeout hit');
                     setLoading(false);
                 }
