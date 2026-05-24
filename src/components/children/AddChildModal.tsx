@@ -341,24 +341,40 @@ export function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
                 </div>
 
                 {/* Tabs */}
-                <div className="flex-shrink-0 flex border-b border-border-light dark:border-gray-800 px-2 sm:px-6 bg-white dark:bg-surface-dark overflow-x-auto no-scrollbar scroll-smooth">
-                    {TABS.map((tab) => (
-                        <button
-                            key={tab.id}
-                            type="button"
-                            onClick={() => setActiveTab(tab.id)}
-                            className={clsx(
-                                "flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 whitespace-nowrap min-h-[52px] px-1 sm:px-3 text-[8px] sm:text-[9px] font-black transition-all border-b-2 uppercase tracking-widest active:scale-95",
-                                activeTab === tab.id
-                                    ? "border-primary text-primary"
-                                    : "border-transparent text-text-secondary dark:text-gray-500 hover:text-text-main dark:hover:text-white hover:border-gray-200 dark:hover:border-gray-700"
-                            )}
-                        >
-                            <span className="material-symbols-outlined text-[18px] sm:text-[14px]">{tab.icon}</span>
-                            <span className="sm:hidden">{tab.short}</span>
-                            <span className="hidden sm:inline">{tab.label}</span>
-                        </button>
-                    ))}
+                <div className="flex-shrink-0 flex border-b border-border-light dark:border-gray-800 bg-white dark:bg-surface-dark">
+                    {TABS.map((tab) => {
+                        const isActive = activeTab === tab.id;
+                        return (
+                            <button
+                                key={tab.id}
+                                type="button"
+                                onClick={() => setActiveTab(tab.id)}
+                                title={tab.label}
+                                className={clsx(
+                                    "flex-1 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 min-h-[52px] sm:min-h-[44px] px-1 sm:px-3 transition-all border-b-2 active:scale-95",
+                                    isActive
+                                        ? "border-primary text-primary"
+                                        : "border-transparent text-text-secondary dark:text-gray-500 hover:text-text-main dark:hover:text-white hover:border-gray-200 dark:hover:border-gray-700"
+                                )}
+                            >
+                                <span className={clsx(
+                                    "material-symbols-outlined transition-all duration-200",
+                                    isActive ? "text-[22px] sm:text-[15px]" : "text-[20px] sm:text-[15px]"
+                                )}>
+                                    {tab.icon}
+                                </span>
+                                <span className={clsx(
+                                    "sm:hidden text-[7px] font-black uppercase tracking-wider leading-none transition-all duration-200",
+                                    isActive ? "opacity-100 max-h-4" : "opacity-0 max-h-0 overflow-hidden"
+                                )}>
+                                    {tab.short}
+                                </span>
+                                <span className="hidden sm:inline text-[9px] font-black uppercase tracking-widest">
+                                    {tab.label}
+                                </span>
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* Content */}
