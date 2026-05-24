@@ -10,6 +10,16 @@ interface EmergencyModalProps {
     onClose: () => void;
 }
 
+const inputClass = "w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-800/50 border border-border-light dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-red-500/20 focus:border-red-400 outline-none transition-all dark:text-white font-medium text-base sm:text-sm";
+const labelClass = "text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest";
+
+const emergencyPhones = [
+    { name: 'SAMU', phone: '192', icon: 'medical_services', color: 'bg-red-500' },
+    { name: 'Bombeiros', phone: '193', icon: 'local_fire_department', color: 'bg-orange-500' },
+    { name: 'Polícia', phone: '190', icon: 'local_police', color: 'bg-blue-600' },
+    { name: 'Cons. Tutelar', phone: '(ver sistema)', icon: 'gavel', color: 'bg-purple-600' },
+];
+
 export function EmergencyModal({ isOpen, onClose }: EmergencyModalProps) {
     const { profile } = useAuth();
     const [type, setType] = useState<'individual' | 'collective' | null>(null);
@@ -17,7 +27,6 @@ export function EmergencyModal({ isOpen, onClose }: EmergencyModalProps) {
     const [reason, setReason] = useState('');
     const [isTriggered, setIsTriggered] = useState(false);
 
-    // Fetch children for selection
     const { data: children } = useQuery({
         queryKey: ['children-emergency', profile?.organization_id],
         queryFn: async () => {
@@ -36,171 +45,187 @@ export function EmergencyModal({ isOpen, onClose }: EmergencyModalProps) {
 
     const handleTrigger = () => {
         setIsTriggered(true);
-        // Future logic for notifications would go here
         setTimeout(() => {
             onClose();
             setIsTriggered(false);
             setType(null);
             setSelectedChildId('');
             setReason('');
-        }, 3000);
+        }, 4000);
     };
 
-    const emergencyPhones = [
-        { name: 'SAMU', phone: '192', icon: 'medical_services', color: 'bg-red-500' },
-        { name: 'Bombeiros', phone: '193', icon: 'fire_truck', color: 'bg-orange-600' },
-        { name: 'Polícia', phone: '190', icon: 'local_police', color: 'bg-blue-600' },
-        { name: 'Conselho Tutelar', phone: '(Clique para ver)', icon: 'gavel', color: 'bg-purple-600' },
-    ];
+    const canTrigger = !!type && !!reason && (type !== 'individual' || !!selectedChildId);
 
     return createPortal(
-        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-red-950/40 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-surface-dark w-full max-w-lg rounded-[2.5rem] shadow-2xl border-4 border-red-500/10 overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-300 max-h-[90vh]">
+        <div className="fixed inset-0 z-[100000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+            <div className="bg-white dark:bg-surface-dark w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl sm:border sm:border-border-light dark:sm:border-gray-800 overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-300 max-h-[90vh]">
 
-                {/* Compact Header */}
-                <div className="p-6 bg-red-600 text-white relative">
-                    <div className="absolute top-0 right-0 p-4 opacity-5">
-                        <span className="material-symbols-outlined text-[100px]">emergency</span>
-                    </div>
+                {/* Red accent stripe */}
+                <div className="h-1 w-full bg-red-500 flex-shrink-0" />
 
-                    <div className="relative z-10 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="size-11 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center animate-pulse">
-                                <span className="material-symbols-outlined text-2xl">emergency_home</span>
-                            </div>
-                            <div>
-                                <h1 className="text-xl font-black uppercase tracking-tight leading-none">Protocolo de Crise</h1>
-                                <p className="text-[10px] text-red-100 font-bold uppercase mt-1 tracking-widest opacity-80">Acionamento de Emergência</p>
-                            </div>
+                {/* Header */}
+                <div className="flex-shrink-0 px-5 py-4 border-b border-border-light dark:border-gray-800 bg-white/50 dark:bg-gray-800/50 backdrop-blur-md flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="size-10 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center relative">
+                            <span className="material-symbols-outlined text-[20px] text-red-600 dark:text-red-400">emergency_home</span>
+                            <span className="absolute -top-0.5 -right-0.5 size-2.5 bg-red-500 rounded-full border-2 border-white dark:border-surface-dark animate-pulse" />
                         </div>
-                        <button onClick={onClose} className="size-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
-                            <span className="material-symbols-outlined text-xl">close</span>
-                        </button>
+                        <div>
+                            <h2 className="text-sm font-black text-text-main dark:text-white tracking-tight leading-none">Protocolo de Crise</h2>
+                            <p className="text-[10px] font-black text-red-500 uppercase tracking-widest mt-0.5">Acionamento de Emergência</p>
+                        </div>
                     </div>
+                    <button
+                        onClick={onClose}
+                        className="size-9 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors active:scale-95"
+                    >
+                        <span className="material-symbols-outlined text-[20px] text-text-secondary dark:text-gray-400">close</span>
+                    </button>
                 </div>
 
+                {/* Content */}
                 {isTriggered ? (
-                    <div className="p-10 text-center animate-in zoom-in-95">
-                        <div className="size-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center text-red-600 mx-auto mb-5">
-                            <span className="material-symbols-outlined text-4xl animate-ping">priority_high</span>
+                    <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in zoom-in-95 duration-300 gap-5">
+                        <div className="size-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                            <span className="material-symbols-outlined text-4xl text-red-600">check_circle</span>
                         </div>
-                        <h3 className="text-xl font-black text-red-600 mb-2 uppercase">ALERTA ENVIADO!</h3>
-                        <p className="text-xs text-text-secondary dark:text-gray-400 font-bold mb-8">Protocolo ativado. Contate suporte externo se necessário.</p>
+                        <div>
+                            <h3 className="text-lg font-black text-text-main dark:text-white mb-1">Alerta Ativado</h3>
+                            <p className="text-xs text-text-secondary dark:text-gray-400 font-medium">Protocolo registrado. Contate suporte externo se necessário.</p>
+                        </div>
 
-                        <div className="grid grid-cols-2 gap-3">
-                            {emergencyPhones.slice(0, 4).map(phone => (
-                                <div key={phone.name} className="p-3 rounded-2xl border border-red-100 dark:border-red-900/40 bg-red-50/50 dark:bg-red-900/10 transition-all">
-                                    <span className="text-[9px] font-black text-red-700 dark:text-red-400 uppercase block mb-1">{phone.name}</span>
-                                    <span className="text-base font-black text-text-main dark:text-white leading-none">{phone.phone}</span>
-                                </div>
+                        <div className="w-full grid grid-cols-2 gap-2">
+                            {emergencyPhones.map(phone => (
+                                <a
+                                    key={phone.name}
+                                    href={`tel:${phone.phone}`}
+                                    className="flex items-center gap-2.5 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-border-light dark:border-gray-700 hover:border-red-300 dark:hover:border-red-700 transition-colors"
+                                >
+                                    <div className={clsx("size-7 rounded-lg flex items-center justify-center text-white shrink-0", phone.color)}>
+                                        <span className="material-symbols-outlined text-[14px]">{phone.icon}</span>
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className={labelClass + " mb-0.5"}>{phone.name}</p>
+                                        <p className="text-xs font-black text-text-main dark:text-white leading-none">{phone.phone}</p>
+                                    </div>
+                                </a>
                             ))}
                         </div>
                     </div>
                 ) : (
-                    <div className="overflow-y-auto no-scrollbar">
-                        <div className="p-6 space-y-6">
-                            {/* 1. Escolha do Tipo - More compact cards */}
-                            <div className="space-y-3">
-                                <label className="text-[9px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest px-1 block">Tipo de Ocorrência</label>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <button
-                                        onClick={() => setType('individual')}
-                                        className={clsx(
-                                            "p-4 rounded-2xl border-2 transition-all flex items-center gap-3",
-                                            type === 'individual'
-                                                ? "bg-red-50 dark:bg-red-900/20 border-red-500 text-red-600"
-                                                : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-red-200"
-                                        )}
-                                    >
-                                        <div className={clsx("size-10 rounded-xl flex items-center justify-center", type === 'individual' ? "bg-red-500 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-400")}>
-                                            <span className="material-symbols-outlined text-xl">person</span>
-                                        </div>
-                                        <span className="font-black uppercase text-[11px] tracking-tight">Individual</span>
-                                    </button>
-                                    <button
-                                        onClick={() => setType('collective')}
-                                        className={clsx(
-                                            "p-4 rounded-2xl border-2 transition-all flex items-center gap-3",
-                                            type === 'collective'
-                                                ? "bg-red-50 dark:bg-red-900/20 border-red-500 text-red-600"
-                                                : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-red-200"
-                                        )}
-                                    >
-                                        <div className={clsx("size-10 rounded-xl flex items-center justify-center", type === 'collective' ? "bg-red-500 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-400")}>
-                                            <span className="material-symbols-outlined text-xl">groups</span>
-                                        </div>
-                                        <span className="font-black uppercase text-[11px] tracking-tight">Coletivo</span>
-                                    </button>
+                    <div className="flex-1 overflow-y-auto no-scrollbar">
+                        <div className="p-5 space-y-5">
+
+                            {/* Tipo */}
+                            <div className="space-y-2">
+                                <label className={labelClass}>Tipo de Ocorrência</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {[
+                                        { id: 'individual', label: 'Individual', icon: 'person', desc: 'Envolve um acolhido' },
+                                        { id: 'collective', label: 'Coletivo', icon: 'groups', desc: 'Envolve a unidade' },
+                                    ].map(opt => (
+                                        <button
+                                            key={opt.id}
+                                            type="button"
+                                            onClick={() => setType(opt.id as 'individual' | 'collective')}
+                                            className={clsx(
+                                                "p-3.5 rounded-xl border-2 transition-all text-left flex flex-col gap-2",
+                                                type === opt.id
+                                                    ? "bg-red-50 dark:bg-red-900/20 border-red-400 dark:border-red-600"
+                                                    : "bg-gray-50 dark:bg-gray-800/50 border-border-light dark:border-gray-700 hover:border-red-300 dark:hover:border-red-800"
+                                            )}
+                                        >
+                                            <div className={clsx(
+                                                "size-9 rounded-xl flex items-center justify-center transition-colors",
+                                                type === opt.id
+                                                    ? "bg-red-500 text-white"
+                                                    : "bg-white dark:bg-gray-700 text-text-secondary dark:text-gray-400"
+                                            )}>
+                                                <span className="material-symbols-outlined text-[18px]">{opt.icon}</span>
+                                            </div>
+                                            <div>
+                                                <p className={clsx("text-xs font-black uppercase tracking-tight", type === opt.id ? "text-red-600 dark:text-red-400" : "text-text-main dark:text-white")}>{opt.label}</p>
+                                                <p className="text-[10px] text-text-secondary dark:text-gray-500 font-medium mt-0.5">{opt.desc}</p>
+                                            </div>
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
 
-                            {/* Child Selection for Individual Type */}
+                            {/* Identificar acolhido */}
                             {type === 'individual' && (
-                                <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                                    <label className="text-[9px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest px-1 block">Identificar Acolhido</label>
+                                <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <label className={labelClass}>Identificar Acolhido</label>
                                     <div className="relative">
-                                        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">person_search</span>
+                                        <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] pointer-events-none">person_search</span>
                                         <select
                                             value={selectedChildId}
                                             onChange={(e) => setSelectedChildId(e.target.value)}
-                                            className="w-full pl-11 pr-4 py-4 bg-gray-50 dark:bg-gray-900 border-2 border-transparent focus:border-red-500/30 rounded-2xl text-xs font-bold outline-none transition-all appearance-none dark:text-white"
+                                            className={inputClass + " pl-10 appearance-none"}
                                         >
                                             <option value="">Selecione o acolhido...</option>
                                             {children?.map(child => (
                                                 <option key={child.id} value={child.id}>{child.full_name}</option>
                                             ))}
                                         </select>
-                                        <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">expand_more</span>
+                                        <span className="material-symbols-outlined absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-[18px]">expand_more</span>
                                     </div>
                                 </div>
                             )}
 
-                            {/* 2. Motivo - Height limited */}
-                            <div className="space-y-3">
-                                <label className="text-[9px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest px-1 block">Descrição da Emergência</label>
+                            {/* Descrição */}
+                            <div className="space-y-2">
+                                <label className={labelClass}>Descrição da Emergência</label>
                                 <textarea
-                                    className="w-full h-24 p-4 bg-gray-50 dark:bg-gray-900 border-2 border-transparent focus:border-red-500/30 rounded-2xl text-xs font-medium outline-none transition-all placeholder-gray-400 resize-none dark:text-white"
-                                    placeholder="Ex: Fuga, Briga Generalizada, Mal Súbito..."
+                                    className={inputClass + " min-h-[96px] resize-none"}
+                                    placeholder="Ex: Fuga, briga generalizada, mal súbito..."
                                     value={reason}
                                     onChange={(e) => setReason(e.target.value)}
                                 />
                             </div>
 
-                            {/* 3. Números Diretos - Very compact list */}
-                            <div className="space-y-3">
-                                <label className="text-[9px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest px-1 block">Telefones Diretos (Clique para ligar)</label>
+                            {/* Telefones */}
+                            <div className="space-y-2">
+                                <label className={labelClass}>Telefones de Emergência</label>
                                 <div className="grid grid-cols-2 gap-2">
-                                    {emergencyPhones.slice(0, 2).map(phone => (
-                                        <a key={phone.name} href={`tel:${phone.phone}`} className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
+                                    {emergencyPhones.map(phone => (
+                                        <a
+                                            key={phone.name}
+                                            href={`tel:${phone.phone}`}
+                                            className="flex items-center gap-2.5 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-border-light dark:border-gray-700 hover:border-red-300 dark:hover:border-red-800 transition-colors active:scale-95"
+                                        >
                                             <div className={clsx("size-7 rounded-lg flex items-center justify-center text-white shrink-0", phone.color)}>
-                                                <span className="material-symbols-outlined text-xs">{phone.icon}</span>
+                                                <span className="material-symbols-outlined text-[14px]">{phone.icon}</span>
                                             </div>
                                             <div className="min-w-0">
-                                                <p className="text-[7px] font-black uppercase text-text-secondary dark:text-gray-500 leading-none mb-0.5">{phone.name}</p>
-                                                <p className="text-[11px] font-black text-text-main dark:text-white leading-none">{phone.phone}</p>
+                                                <p className={labelClass + " mb-0.5"}>{phone.name}</p>
+                                                <p className="text-xs font-black text-text-main dark:text-white leading-none">{phone.phone}</p>
                                             </div>
                                         </a>
                                     ))}
                                 </div>
                             </div>
-
-                            <div className="pt-2">
-                                <button
-                                    disabled={!type || !reason || (type === 'individual' && !selectedChildId)}
-                                    onClick={handleTrigger}
-                                    className="w-full py-4 bg-red-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-500/20 active:scale-[0.98] disabled:opacity-30 flex items-center justify-center gap-2"
-                                >
-                                    <span className="material-symbols-outlined text-lg">broadcast_on_home</span>
-                                    Disparar Alerta Geral
-                                </button>
-                                <button
-                                    onClick={onClose}
-                                    className="w-full py-3 mt-2 text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest hover:text-text-main transition-colors"
-                                >
-                                    Cancelar
-                                </button>
-                            </div>
                         </div>
+                    </div>
+                )}
+
+                {/* Footer */}
+                {!isTriggered && (
+                    <div className="flex-shrink-0 px-5 py-4 border-t border-border-light dark:border-gray-800 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md space-y-2">
+                        <button
+                            disabled={!canTrigger}
+                            onClick={handleTrigger}
+                            className="w-full h-12 bg-red-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-700 transition-all active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm shadow-red-500/20"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">broadcast_on_home</span>
+                            Disparar Alerta Geral
+                        </button>
+                        <button
+                            onClick={onClose}
+                            className="w-full py-2.5 text-[10px] font-black text-text-secondary dark:text-gray-500 uppercase tracking-widest hover:text-text-main dark:hover:text-white transition-colors"
+                        >
+                            Cancelar
+                        </button>
                     </div>
                 )}
             </div>

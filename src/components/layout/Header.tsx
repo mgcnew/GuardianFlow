@@ -115,11 +115,12 @@ export function Header({ onMenuToggle }: HeaderProps) {
                     {/* Emergency Button */}
                     <button
                         onClick={() => setEmergencyModalOpen(true)}
-                        className="flex items-center gap-2 px-3 py-2 bg-red-100 hover:bg-red-200 dark:bg-red-950/40 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 rounded-xl transition-all active:scale-95 group"
-                        title="Emergência / Alerta"
+                        className="relative flex items-center gap-1.5 h-9 px-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 transition-all active:scale-95"
+                        title="Protocolo de Crise"
                     >
-                        <span className="material-symbols-outlined text-[20px] animate-pulse">emergency</span>
-                        <span className="text-[10px] font-black uppercase tracking-tighter hidden sm:block">Alerta</span>
+                        <span className="material-symbols-outlined text-[18px]">emergency_home</span>
+                        <span className="text-[10px] font-black uppercase tracking-wider hidden sm:block">Crise</span>
+                        <span className="absolute -top-0.5 -right-0.5 size-2 bg-red-500 rounded-full animate-pulse" />
                     </button>
 
                     {/* Theme Toggle */}
