@@ -8,6 +8,7 @@
   html {
     color-scheme: light;
     transition: color-scheme 0.3s;
+    font-size: 15px;
   }
 
   html.dark {

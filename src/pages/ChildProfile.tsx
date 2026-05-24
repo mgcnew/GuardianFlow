@@ -8,7 +8,8 @@ import {
     FamilyContacts,
     HealthOverview,
     RecentDocuments,
-    QuickNote
+    QuickNote,
+    AlertFlags,
 } from '../components/children/ProfileComponents';
 import { ChildHistoryTab } from '../components/children/ChildHistoryTab';
 import { EditChildModal } from '../components/children/EditChildModal';
@@ -132,13 +133,8 @@ export function ChildProfile() {
                 </div>
 
                 <div className="space-y-4 sm:space-y-6">
+                    <AlertFlags child={child} />
                     <QuickNote />
-                    <div className="p-6 bg-primary/5 dark:bg-primary/10 rounded-3xl border border-primary/10 dark:border-primary/20">
-                        <h4 className="text-xs font-black text-primary uppercase tracking-widest mb-2">Resumo de Acesso</h4>
-                        <p className="text-xs text-text-secondary dark:text-gray-400 leading-relaxed font-display">
-                            Você está visualizando as informações técnicas de acolhimento. Acesso restrito a profissionais autorizados.
-                        </p>
-                    </div>
                 </div>
             </div>
 
